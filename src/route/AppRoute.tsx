@@ -1,16 +1,18 @@
 import { Routes, Route } from 'react-router-dom'
-import App from '../App'
+import Index from '../components/index'
 import Reg from '../components/Register'
 import Port from '../components/Create'
-import Promotion from '../components/promotion'
+import Promotion from '../components/Promotion'
+import Login from '../components/Login'
 
 const AppRoute = () => {
     return (
         <Routes>
-            <Route path="/*" element={<App />} />
+            <Route path="/*" element={<Index />} />
             <Route path="/Register" element={<Reg />} />
             <Route path="/Create" element={<Port/>} />
             <Route path="/Promotion" element={<Promotion/>} />
+            <Route path="/Login" element={<Login/>} />
         </Routes>
     )
 }

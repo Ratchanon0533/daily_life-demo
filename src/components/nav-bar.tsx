@@ -1,6 +1,6 @@
 // Nav.tsx
 import './css/navbar.css'
-import Button from './ButtonHover1'; // สมมติว่า ButtonHover1 ใช้สำหรับ 'สร้างแฟ้มของคุณ'
+import Button from './UI/ButtonHover1'; // สมมติว่า ButtonHover1 ใช้สำหรับ 'สร้างแฟ้มของคุณ'
 import { useNavigate } from 'react-router-dom';
 
 
@@ -26,7 +26,7 @@ const Nav = () => {
                     {/* โลโก้/แบรนด์: ใช้ class สำหรับกำหนดขนาด */}
                     <a className="navbar-brand" href="/">
                          <img 
-                            src="img/daily_life.png" 
+                            src="img/image 1.png" 
                             alt="Daily Life Logo" 
                             className="navbar-logo icon" 
                         />
@@ -55,12 +55,7 @@ const Nav = () => {
                             {/* หน้าหลัก */}
                             <li className="nav-item">
                                 {/* ใช้ onClick สำหรับการนำทาง React Router */}
-                                <a 
-                                    className="nav-link active nav-text-custom" 
-                                    aria-current="page" 
-                                    onClick={() => handleNavigation('/')}
-                                    href="/"
-                                >
+                                <a className="nav-link nav-text-custom" href="/*">
                                     หน้าหลัก
                                 </a>
                             </li>
@@ -68,7 +63,7 @@ const Nav = () => {
                             {/* สร้างแฟ้มของคุณ (ใช้ Button Component) */}
                             <li className="nav-item">
                                 <div onClick={() => navigate('/Create')} className="nav-button-wrapper">
-                                    <Button text="สร้างแฟ้มของคุณ" />
+                                    <Button text="สร้างแฟ้ม" />
                                 </div>
                             </li>
                             

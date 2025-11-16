@@ -4,7 +4,7 @@
 
 .custom-navbar {
     /* ปรับพื้นหลังไล่สี: ใช้สีฟ้าอ่อนและทองที่นุ่มนวลกว่า */
-    background: linear-gradient(90deg, #0093E9 0%, #E7B800 100%);
+    background: linear-gradient(#E7B800 100%);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* เงาที่ชัดเจนและดูพรีเมียมขึ้น */
     transition: background 0.3s ease;
     padding: 0.75rem 0; /* เพิ่ม padding แนวตั้ง */
@@ -38,7 +38,7 @@
 /* Hover Effect */
 .nav-text-custom:hover, 
 .nav-text-custom.active {
-    color: #ffd700 !important; /* สีทองสว่าง */
+    color: #033E65 !important; /* สีทองสว่าง */
     background-color: rgba(255, 255, 255, 0.15); /* พื้นหลังจางๆ เมื่อ hover */
 }
 

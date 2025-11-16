@@ -2,15 +2,18 @@ import styled from 'styled-components';
 
 interface ButtonProps {
   text: string;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const Button = ({text} : ButtonProps) => {
+const Button = ({ text, onClick }: ButtonProps) => {
   return (
     <StyledWrapper>
-      <button className="button">{text}</button>
+      <button className="button" onClick={onClick}>
+        {text}
+      </button>
     </StyledWrapper>
   );
-}
+};
 
 const StyledWrapper = styled.div`
   .button {
@@ -29,14 +32,14 @@ const StyledWrapper = styled.div`
     outline: 2px solid #2c9caf;
   }
 
-  button:hover {
+  .button:hover {
     color: #ffffff;
     transform: scale(1.1);
     outline: 2px solid #70bdca;
     box-shadow: 4px 5px 17px -4px #268391;
   }
 
-  button::before {
+  .button::before {
     content: "";
     position: absolute;
     left: -50px;
@@ -49,8 +52,9 @@ const StyledWrapper = styled.div`
     transition: width 1000ms;
   }
 
-  button:hover::before {
+  .button:hover::before {
     width: 250%;
-  }`;
+  }
+`;
 
 export default Button;
