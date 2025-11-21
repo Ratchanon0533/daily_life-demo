@@ -1,74 +1,229 @@
-/* navbar.css */
-
-/* --- 1. Navbar Base Style --- */
 
 .custom-navbar {
-    /* ปรับพื้นหลังไล่สี: ใช้สีฟ้าอ่อนและทองที่นุ่มนวลกว่า */
-    background: linear-gradient(#E7B800 100%);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* เงาที่ชัดเจนและดูพรีเมียมขึ้น */
-    transition: background 0.3s ease;
-    padding: 0.75rem 0; /* เพิ่ม padding แนวตั้ง */
+    position: relative;
+    top: 0;
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    margin: 0;
+
+    background-color: #FFC014;
+    padding: 1rem 1rem;
+    font-family: 'Inter', sans-serif;
+    z-index: 1000;
 }
 
-/* --- 2. Logo & Branding --- */
+
+
+
 
 .navbar-logo {
-    width: 3.5rem; /* ปรับขนาดโลโก้ให้เหมาะสม */
-    height: auto;
-    /* เพิ่ม filter ให้ดูสว่างและเข้ากับพื้นหลังไล่สี */
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)); 
-    transition: transform 0.3s ease;
+    width: 6.6rem;
+    height: 4.75rem;
+    border-radius: 12px;
+    margin-left:1.5rem;
 }
 
-.navbar-logo:hover {
-    transform: scale(1.05); /* เอฟเฟกต์เล็กน้อยเมื่อ Hover */
-}
 
-/* --- 3. Navigation Links (Menu) --- */
 
 .nav-text-custom {
-    color: white !important; /* สีข้อความขาว */
-    font-weight: 600; /* ตัวหนาขึ้น */
-    font-size: 1rem;
+    color: #033E65 !important;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
     transition: all 0.3s ease;
-    padding: 0.5rem 1rem !important; /* เพิ่ม padding ให้คลิกง่าย */
+    padding: 0.5rem 2rem !important;
     border-radius: 0.5rem;
+    letter-spacing: 0.05rem;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+
+
 }
 
-/* Hover Effect */
-.nav-text-custom:hover, 
-.nav-text-custom.active {
-    color: #033E65 !important; /* สีทองสว่าง */
-    background-color: rgba(255, 255, 255, 0.15); /* พื้นหลังจางๆ เมื่อ hover */
+.nav-text-custom::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transform: translateX(-50%);
 }
 
-/* จัดระยะห่างของแต่ละ Nav Item บนจอใหญ่ */
-@media (min-width: 992px) {
-    .nav-list-custom .nav-item {
-        /* ใช้ margin-left แทน padding-right */
-        margin-left: 1.5rem; 
+.nav-text-custom:hover::after {
+    animation: underline-slide 0.4s forwards;
+
+}
+
+.nav-text-custom:active {
+    color: rgb(255, 255, 255) !important;
+}
+
+@keyframes underline-slide {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 80%;
     }
 }
 
-/* --- 4. Custom Toggler (สำหรับ Mobile) --- */
+/* drop down */
+.nav-text-dropdown {
+    color: #033E65 !important;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem 2rem !important;
+    border-radius: 0.5rem;
+    letter-spacing: 0.05rem;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+button.nav-text-dropdown {
+    background: none;
+    border: none;
+}
+
+button.nav-text-dropdown::after {
+    display: none;
+}
+
+
+/* Animated V icon */
+.v-icon {
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-left: 0.5rem;
+    border-right: 3px solid #033E65;
+    border-bottom: 3px solid #033E65;
+
+    /* initial V shape (arrow down-ish) */
+    transform: rotate(45deg);
+
+    transition: transform 0.3s ease;
+}
+
+/* Rotate when dropdown is open */
+.dropdown-toggle[aria-expanded="true"].v-icon {
+    transform: rotate(-135deg);
+    /* This flips into arrow up */
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0.3rem;
+    opacity: 1;
+    visibility: visible;
+
+}
+
+.nav-item.dropdown:hover .v-icon {
+    transform: rotate(-135deg);
+    /* like arrow up */
+}
+
+
+
+/* sign-in */
+
+.signin-custom {
+    color: #033E65;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1.5rem !important;
+    letter-spacing: 0.05rem;
+    display: inline-block;
+    /* ensures the border wraps nicely */
+    border: 2px solid #033E65;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin: 0 2rem;
+}
+
+.signin-custom:hover {
+    background-color: #033E65;
+    color: #fff;
+}
+
+
+/* hamburger */
+@media (max-width: 991.98px) {
+
+    /* Keep nav alignment left on mobile */
+    #navbarNav {
+        justify-content: flex-start !important;
+    }
+
+    #navbarNav .navbar-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #navbarNav .nav-item {
+        text-align: left;
+    }
+
+    /* --- Safe way to disable underline animation without changing layout --- */
+    .nav-text-dropdown::after,
+    .nav-link::after,
+    .dropdown-item::after {
+        /* keep the pseudo-element present but invisible and non-animated */
+        content: "" !important;
+        width: 0 !important;
+        /* no visible length */
+        opacity: 0 !important;
+        /* hide it visually */
+        pointer-events: none !important;
+        transform: none !important;
+        transition: none !important;
+        /* disable animation */
+    }
+
+    .nav-text-dropdown,
+    .nav-link,
+    .dropdown-item {
+        transition: none !important;
+        /* disable hover animation on the element */
+        /* ensure the toggle keeps its flex alignment */
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        /* optional: keeps icon & text spacing stable */
+        justify-content: flex-start;
+    }
+}
+
+
 
 .navbar-toggler {
-    border: none;
+    border: none !important;
     padding: 0.25rem;
 }
 
-.custom-toggler-icon {
-    /* กำหนดสีของ Hamburger Icon เป็นสีขาว */
-    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+.navbar-toggler:focus,
+.navbar-toggler:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    background-color: transparent !important;
 }
 
-/* จัดสไตล์สำหรับปุ่ม ButtonHover1 (เพื่อไม่ให้ดูแปลกแยก) */
-.nav-button-wrapper {
-    /* จัดกึ่งกลางปุ่มเมื่ออยู่ภายใน nav-item */
-    display: flex;
-    align-items: center;
-    height: 100%;
+.navbar-toggler:hover {
+    background-color: transparent !important;
 }
-.icon{
-  width: 5rem;
+
+.custom-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
 }

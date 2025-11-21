@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "./UI/ButtonHover2";
 import Input1 from "./UI/Input1";
-import Nav from "./Nav-bar";
+import Nav from "./nav-bar";
 
 const Reg = () => {
 

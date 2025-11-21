@@ -1,16 +1,19 @@
 // main.tsx
-import Nav from './Nav-bar';
+import Nav from './nav-bar';
 import './css/main.css';
 import Input2 from './UI/Input2';
 import '../App.css'
+
+
 
 const Main = () => {
     return (
         <>
             <Nav />
-        <div className="container-fluid main-page-wrapper" style={{marginTop:'6rem'}}>
-            <div className="container">
-                <div className="card shadow-lg p-4 p-md-5 mb-5 search-card-custom"> 
+            
+        <div className="container-fluid main-page-wrapper" >
+            
+                <div className="card shadow-lg  mb-5 search-card-custom"> 
                     <h3 className="card-title mb-4 fw-bold text-white flex text-center ">ค้นหาข้อมูลเชิงลึก 🔎</h3>
                     
                     <div className="row g-3 align-items-center"> 
@@ -32,7 +35,7 @@ const Main = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            
 
             <div className="container">
                 <div id="carouselExampleCaptions" 

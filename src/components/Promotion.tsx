@@ -1,4 +1,4 @@
-import Nav from "./Nav-bar"
+import Nav from "./nav-bar";
 const Promotion = () =>{
     return (
         <>

@@ -1,12 +1,10 @@
 // Nav.tsx
 import './css/navbar.css'
-import Button from './UI/ButtonHover1'; // สมมติว่า ButtonHover1 ใช้สำหรับ 'สร้างแฟ้มของคุณ'
 import { useNavigate } from 'react-router-dom';
-
 
 const Nav = () => {
     const navigate = useNavigate();
-    
+
     // ฟังก์ชันสำหรับจัดการ NavLink Clicks
     const handleNavigation = (path: string, isButton: boolean = false) => {
         if (!isButton) {
@@ -19,20 +17,19 @@ const Nav = () => {
 
     return (
         <>
-            {/* Navbar หลัก: fixed-top และใช้ class custom-navbar สำหรับสไตล์ */}
-            <nav className="navbar navbar-expand-lg fixed-top custom-navbar">
-                <div className="container-fluid container-xl"> {/* ใช้ container-xl เพื่อจำกัดความกว้างบนจอใหญ่ */}
-                    
-                    {/* โลโก้/แบรนด์: ใช้ class สำหรับกำหนดขนาด */}
-                    <a className="navbar-brand" href="/">
-                         <img 
-                            src="img/image 1.png" 
-                            alt="Daily Life Logo" 
-                            className="navbar-logo icon" 
+            <nav className="navbar navbar-expand-lg  custom-navbar" >
+                <div className="container-fluid p-0">
+
+                    <a className="navbar-brand me-auto " href="/">
+                        <img
+                            src="img/Dailylife Logo Navbar.png"
+                            alt="Daily Life Logo"
+                            className="navbar-logo"
                         />
                     </a>
 
-                    {/* ปุ่ม burger */}
+
+                    {/* Burger button */}
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -42,43 +39,58 @@ const Nav = () => {
                         aria-expanded="false"
                         aria-label="Toggle navigation"
                     >
-                        {/* ไอคอน Toggler: ใช้ class เพื่อกำหนดสีขาวใน CSS */}
                         <span className="navbar-toggler-icon custom-toggler-icon"></span>
                     </button>
 
-                    {/* เมนูที่ Collapse ได้ */}
+
                     <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-                        
-                        {/* nav-list-custom สำหรับจัดระยะห่างของ items ใน CSS */}
-                        <ul className="navbar-nav nav-list-custom"> 
-                            
-                            {/* หน้าหลัก */}
+                        <ul className="navbar-nav nav-list-custom">
                             <li className="nav-item">
-                                {/* ใช้ onClick สำหรับการนำทาง React Router */}
-                                <a className="nav-link nav-text-custom" href="/*">
-                                    หน้าหลัก
-                                </a>
+                                <a className="nav-link nav-text-custom" href="/">หน้าแรก</a>
                             </li>
-                            
-                            {/* สร้างแฟ้มของคุณ (ใช้ Button Component) */}
                             <li className="nav-item">
-                                <div onClick={() => navigate('/Create')} className="nav-button-wrapper">
-                                    <Button text="สร้างแฟ้ม" />
-                                </div>
+                                <a className="nav-link nav-text-custom" href="/quick_search">ค้นหาที่เรียนด่วน</a>
                             </li>
-                            
-                            {/* อัพเกรด */}
-                            <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/Promotion">
-                                    อัพเกรด
-                                </a>
+                            <li className="nav-item dropdown">
+                                <button
+                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center"
+                                    id="regionDropdown"
+                                    aria-expanded="false"
+                                >
+                                    ค้นหามหาลัย
+                                    <span className="v-icon"></span>
+                                </button>
+
+                                <ul className="dropdown-menu" aria-labelledby="regionDropdown">
+                                    <li><a className="dropdown-item" href="#">จุฬาฯ</a></li>
+                                    <li><a className="dropdown-item" href="#">ศิลปากร</a></li>
+                                    <li><a className="dropdown-item" href="#">ศรีปทุม</a></li>
+                                </ul>
                             </li>
-                            
-                            {/* สมัครสมาชิก/เข้าสู่ระบบ */}
+
+                            <li className="nav-item dropdown">
+                                <button
+                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center"
+                                    id="regionDropdown"
+                                    aria-expanded="false"
+                                >
+                                    ภูมิภาค
+                                    <span className="v-icon"></span>
+                                </button>
+
+                                <ul className="dropdown-menu" aria-labelledby="regionDropdown" style={{ right: 30 }}>
+                                    <li><a className="dropdown-item" href="#">เอเชีย</a></li>
+                                    <li><a className="dropdown-item" href="#">ยุโรป</a></li>
+                                    <li><a className="dropdown-item" href="#">อเมริกา</a></li>
+                                </ul>
+                            </li>
+
+
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/Register">
-                                    สมัครสมาชิก/เข้าสู่ระบบ
-                                </a>
+                                <a className="nav-link nav-text-custom" href="/Promotion" >เกี่ยวกับเดลี่ไลพ์</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link signin-custom" href="/Login">เข้าสู่ระบบ</a>
                             </li>
                         </ul>
                     </div>

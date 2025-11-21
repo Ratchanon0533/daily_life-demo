@@ -1,6 +1,5 @@
 /* main.css */
 
-/* --- Variables and Base Styling --- */
 
 :root {
     --primary-color: #007bff; /* สีหลัก */
@@ -14,6 +13,10 @@ body {
     background-color: var(--bg-light);
     font-family: var(--font-body);
 }
+.main-page-wrapper {
+    padding-left: 0;
+    padding-right: 0;
+}
 
 /* --- 1. Header & Title Section --- */
 
@@ -24,21 +27,20 @@ body {
 .main-title {
     color: var(--primary-color) !important;
     font-family: var(--font-heading);
-    margin-bottom: 0.5rem;
+  
 }
 
 /* --- 2. Search Section Styling --- */
 
 .search-card-custom {
     border: none; 
-    border-radius: 1.5rem; /* มุมโค้งมนมากขึ้น */
     background-color: #033E65;
     transition: transform 0.3s ease;
+    border-radius: 0;
 }
 
-.search-card-custom:hover {
-    transform: translateY(-3px); /* ยกขึ้นเล็กน้อยเมื่อวางเมาส์ */
-}
+
+
 
 /* Input Field Styling */
 .form-control-custom {
@@ -61,7 +63,6 @@ body {
     border-color: var(--primary-color);
     font-weight: 700; 
     letter-spacing: 0.5px;
-    border-radius: 0.75rem;
     transition: all 0.3s ease;
 }
 

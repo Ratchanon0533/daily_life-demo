@@ -1,5 +1,5 @@
-import Nav from "./Nav-bar"
-const Create = () => {
+import Nav from "./nav-bar";
+const quick_search = () => {
     return (
         <>
             <Nav/>
@@ -7,4 +7,4 @@ const Create = () => {
         </>
     )
 }
-export default Create
+export default quick_search
