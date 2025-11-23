@@ -2,26 +2,31 @@
 
 import './css/searchsection.css';
 import '../App.css';
-
+import { useState } from 'react';
 
 
 const SearchSection = () => {
+    const [inputValue, setInputValue] = useState('');
+    const handleClear = () => {
+        setInputValue('');
+    };
     return (
         <>
             <div className="card-container" >
                 <div className='card-box p-5 '>
-                    
+
                     <div className="card-title mb-4">
                         <span style={{ fontSize: "1.5rem" }}>ค้นหามหาวิทยาลัย</span>
                         <span style={{ fontSize: "1.25rem" }}> จากทั่วประเทศ</span>
                     </div>
-                    
+
                     <div className="search-box">
                         <div className="search-input-wrapper">
                             <svg
                                 className="search-icon"
                                 aria-hidden="true"
                                 viewBox="0 0 24 24"
+
                             >
                                 <g>
                                     <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z" />
@@ -31,7 +36,15 @@ const SearchSection = () => {
                                 className="search-input"
                                 type="text"
                                 placeholder="ชื่อมหาวิทยาลัย"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
                             />
+                            <svg className="search-icon-right" width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer' }}
+                                onClick={handleClear} >
+                                <rect width="2.78362" height="13.4269" rx="1.39181" transform="matrix(0.7402 -0.672387 0.7402 0.672387 0 1.87158)" fill="#B8B8B8" />
+                                <rect width="2.78362" height="13.4269" rx="1.39181" transform="matrix(-0.7402 -0.672387 -0.7402 0.672387 12 1.87207)" fill="#B8B8B8" />
+                            </svg>
+
                         </div>
                         <div className="search-input-wrapper">
                             <svg
@@ -47,6 +60,11 @@ const SearchSection = () => {
                                 type="text"
                                 placeholder="สถานที่ตั้ง"
                             />
+                            <svg className="search-icon-right" width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                            </svg>
+
                         </div>
                         <div className="search-input-wrapper">
                             <img
@@ -61,6 +79,10 @@ const SearchSection = () => {
                                 type="text"
                                 placeholder="คณะสาขาวิชา"
                             />
+                            <svg className="search-icon-right" width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                            </svg>
                         </div>
 
                         <button className="search-button">
@@ -70,23 +92,43 @@ const SearchSection = () => {
                     <div className="search-box ">
                         <button className='dropdown-search'>
                             ค่าเทอม
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                            </svg>
                         </button>
                         <button className='dropdown-search'>
                             ประเภทมหาล้ย
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                            </svg>
                         </button>
                         <button className='dropdown-search'>
                             ระดับการศึกษา
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                            </svg>
                         </button>
                         <button className='dropdown-search'>
                             การเดินทาง
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                            </svg>
                         </button>
                         <button className='dropdown-search'>
                             อื่นๆ
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                            </svg>
                         </button>
-                        <button className='dropdown-search'>
+                        <button className='reset-button'>
                             รีเซ็ตการตั้งค่า
                         </button>
-                       
+
 
                     </div>
                 </div>
@@ -148,10 +190,11 @@ const SearchSection = () => {
             </div> */}
 
 
-                
+
             </div>
         </>
     )
 }
+
 
 export default SearchSection;

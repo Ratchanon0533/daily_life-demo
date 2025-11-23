@@ -65,21 +65,29 @@
 .search-input-wrapper .search-icon {
     position: absolute;
     left: 10px;
-    /* distance from the left edge */
     top: 50%;
     transform: translateY(-50%);
     width: 24px;
-    /* size of the icon */
     height: 24px;
     fill: gray;
-    /* icon color */
     pointer-events: none;
-    /* so it doesn’t block typing */
+}
+.search-input-wrapper .search-icon-right {
+    position: absolute;
+    right: 10px;   /* place at the right */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    fill: gray;
+    cursor: pointer;          /* makes it clickable */
+    pointer-events: auto;     /* allow click */
+
 }
 
 .search-input-wrapper .search-input {
     padding-left: 40px;
-    /* leave space for the icon */
+    padding-right: 40px; 
     width: 100%;
     box-sizing: border-box;
 }
@@ -95,4 +103,35 @@
     cursor: pointer;
     background-color: #FFFFFF;
     color: #033E65;
+}
+.reset-button {
+    height: 48px;
+    padding: 0 1.5rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.25rem;
+    font-family: Kanit, sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: transparent;
+    color: #FFFFFF;
+    position: relative;
+}
+.reset-button::after {
+    content: "";
+    position: absolute;
+    bottom: 4px; /* adjust as needed */
+    left: 10%; /* starting point */
+    height: 2px;
+    width: 0%; /* start hidden */
+    background-color: #FFFFFF;
+    transition: width 0.4s ease;
+}
+
+.reset-button:hover::after {
+    width: 80%; /* final width */
+}
+
+.reset-button:active {
+    color: rgb(255, 255, 255) !important;
 }
