@@ -90,7 +90,7 @@ const Nav = () => {
                                 <a className="nav-link nav-text-custom" href="/Promotion" >เกี่ยวกับเดลี่ไลพ์</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link signin-custom" href="/Login">เข้าสู่ระบบ</a>
+                                <a className="nav-link signin-custom" href="/Register">เข้าสู่ระบบ</a>
                             </li>
                         </ul>
                     </div>
