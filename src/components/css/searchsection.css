@@ -1,0 +1,95 @@
+/* card section */
+.card {
+    padding: 2em;
+}
+
+.card-title {
+
+    color: white;
+    display: block;
+    font-family: Kanit, sans-serif;
+    font-weight: 400;
+    text-align: left;
+
+}
+
+.card-container {
+    background-color: #033E65;
+}
+
+/* search section */
+.search-box {
+    display: flex;
+    gap: 1.813rem;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    background-color: white;
+    color: black;
+}
+
+.search-button {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    width: 138px;
+    height: 48px;
+
+    padding: 0 1.5rem;
+    border-radius: 12px;
+    border: none;
+
+    font-size: 1.5rem;
+    font-family: Kanit, sans-serif;
+    font-weight: 500;
+
+    cursor: pointer;
+    background-color: #FAC14B;
+    color: #033E65;
+}
+.search-input-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 30%;
+}
+
+.search-input-wrapper .search-icon {
+  position: absolute;
+  left: 10px;       /* distance from the left edge */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;      /* size of the icon */
+  height: 24px;
+  fill: gray;       /* icon color */
+  pointer-events: none; /* so it doesn’t block typing */
+}
+
+.search-input-wrapper .search-input {
+  padding-left: 40px; /* leave space for the icon */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dropdown-search {
+    width: 138px;
+    height: 48px;
+
+    padding: 0 1.5rem;
+    border-radius: 12px;
+    border: none;
+
+    font-size: 1.25rem;
+    font-family: Kanit, sans-serif;
+    font-weight: 500;
+
+    cursor: pointer;
+    background-color: #FFFFFF;
+    color: #033E65;
+}
