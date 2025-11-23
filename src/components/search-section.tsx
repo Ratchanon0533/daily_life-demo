@@ -10,10 +10,12 @@ const SearchSection = () => {
         <>
             <div className="card-container" >
                 <div className='card-box p-5 '>
-                    <h3 className="card-title mb-4">
+                    
+                    <div className="card-title mb-4">
                         <span style={{ fontSize: "1.5rem" }}>ค้นหามหาวิทยาลัย</span>
                         <span style={{ fontSize: "1.25rem" }}> จากทั่วประเทศ</span>
-                    </h3>
+                    </div>
+                    
                     <div className="search-box">
                         <div className="search-input-wrapper">
                             <svg
@@ -65,10 +67,26 @@ const SearchSection = () => {
                             ค้นหา
                         </button>
                     </div>
-                    <div className="search-box">
+                    <div className="search-box ">
                         <button className='dropdown-search'>
                             ค่าเทอม
                         </button>
+                        <button className='dropdown-search'>
+                            ประเภทมหาล้ย
+                        </button>
+                        <button className='dropdown-search'>
+                            ระดับการศึกษา
+                        </button>
+                        <button className='dropdown-search'>
+                            การเดินทาง
+                        </button>
+                        <button className='dropdown-search'>
+                            อื่นๆ
+                        </button>
+                        <button className='dropdown-search'>
+                            รีเซ็ตการตั้งค่า
+                        </button>
+                       
 
                     </div>
                 </div>
@@ -130,7 +148,7 @@ const SearchSection = () => {
             </div> */}
 
 
-                <div className='pb-5'></div>
+                
             </div>
         </>
     )
