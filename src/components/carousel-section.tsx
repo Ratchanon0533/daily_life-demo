@@ -1,6 +1,3 @@
-
-
-import './css/searchsection.css';
 import './css/carousel.css';
 
 

@@ -2,6 +2,7 @@
 import Nav from './nav-bar';
 import SearchSection from './search-section';
 import Carousel from './carousel-section';
+import University from './university-section';
 
 const Main = () => {
     return (
@@ -9,6 +10,7 @@ const Main = () => {
             <Nav />
             <SearchSection />
             <Carousel />
+            <University />
 
         </>
     )
