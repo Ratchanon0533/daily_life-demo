@@ -46,7 +46,7 @@ const Reg = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("https://daily-life-backend.vercel.app/api/login", {
+            const response = await fetch("http://localhost:5000/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -57,7 +57,7 @@ const Reg = () => {
                 }),
             });
 
-            const responseadmin = await fetch("https://daily-life-backend.vercel.app/api/login-@min", {
+            const responseadmin = await fetch("http://localhost:5000/api/login-@min", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -131,7 +131,7 @@ const Reg = () => {
 
         setLoading(true);
         try {
-            const response = await fetch("https://daily-life-backend.vercel.app/api/register", {
+            const response = await fetch("http://localhost:5000/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
