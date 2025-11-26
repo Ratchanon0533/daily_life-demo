@@ -5,33 +5,29 @@ const PopularCareer = () => {
     const [current, setCurrent] = useState(0);
     const [direction, setDirection] = useState("right");
 
-    // Replace the text with image URLs
+    // Replace the text with image URLs - เปลี่ยนเป็น path รูปในโปรเจค
     const slides = [
         [
-            "https://",
-            "https://",
-            "https://via.placeholder.com/150?text=Uni+3",
-            "https://via.placeholder.com/150?text=Uni+4",
-            "https://via.placeholder.com/150?text=Uni+5",
-
+            "./career/dev.jpg",
+            "./career/doctor.jpg",
+            "./career/marketing.jpg",
+            "./career/business.jpg",
+            "./career/finance.jpg",
         ],
         [
-            "https://via.placeholder.com/150?text=Uni+5",
-            "https://via.placeholder.com/150?text=Uni+6",
-            "https://via.placeholder.com/150?text=Uni+7",
-            "https://via.placeholder.com/150?text=Uni+8",
-            "https://via.placeholder.com/150?text=Uni+10",
-
+            "./career/teacher.jpg",
+            "./career/engineer.jpg",
+            "./career/doctor.jpg",
+            "./career/lawyer.jpg",
+            "./career/accountant.jpg",
         ],
         [
-            "https://via.placeholder.com/150?text=Uni+5",
-            "https://via.placeholder.com/150?text=Uni+6",
-            "https://via.placeholder.com/150?text=Uni+7",
-            "https://via.placeholder.com/150?text=Uni+8",
-            "https://via.placeholder.com/150?text=Uni+10",
-
+            "./career/architect.jpg",
+            "./career/scientist.jpg",
+            "./career/artist.jpg",
+            "./career/photographer.jpg",
+            "./career/manager.jpg",
         ],
-
     ];
 
     const nextSlide = () => {
@@ -63,7 +59,6 @@ const PopularCareer = () => {
                                 <div className="five-box-item" key={index}>
                                     <div className="image-box">
                                         <img src={imgUrl} alt={`Career ${index + 1}`} />
-
                                     </div>
                                 </div>
                             ))}

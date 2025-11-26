@@ -5,27 +5,26 @@ const QuickSearchHome = () => {
     const [current, setCurrent] = useState(0);
     const [direction, setDirection] = useState("right");
 
-    // Replace the text with image URLs
+    // Replace the text with image URLs - เปลี่ยนเป็น path รูปในโปรเจค
     const slides = [
         [
-            "https://",
-            "https://",
-            "https://via.placeholder.com/150?text=Uni+3",
-            "https://via.placeholder.com/150?text=Uni+4",
-            "https://via.placeholder.com/150?text=Uni+5",
-            "https://via.placeholder.com/150?text=Uni+6",
-            "https://via.placeholder.com/150?text=Uni+7",
+            "./logo_un/KU.png",
+            "./logo_un/CU.png",
+            "./logo_un/MU.svg",
+            "./logo_un/TU.svg",
+            "./logo_un/BUU.svg",
+            "./logo_un/KMITL.svg",
+            "./logo_un/SWU.png",
         ],
         [
-            "https://via.placeholder.com/150?text=Uni+5",
-            "https://via.placeholder.com/150?text=Uni+6",
-            "https://via.placeholder.com/150?text=Uni+7",
-            "https://via.placeholder.com/150?text=Uni+8",
-            "https://via.placeholder.com/150?text=Uni+10",
-            "https://via.placeholder.com/150?text=Uni+11",
-            "https://via.placeholder.com/150?text=Uni+12",
+            "./logo_un/BU.svg",
+            "./logo_un/AIT.svg",
+            "./logo_un/PIM.svg",
+            "./logo_un/KMUTNB.svg",
+            "./logo_un/KMUTT.svg",
+            "./logo_un/RMUTI.png",
+            "./logo_un/SDU.svg",
         ],
-    
     ];
 
     const nextSlide = () => {
