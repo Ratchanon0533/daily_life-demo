@@ -10,20 +10,20 @@ const University = () => {
         [
             "https://www.chula.ac.th/wp-content/uploads/2020/05/cu-executive-hero.jpg",
             "https://f.tpkcdn.com/images-720/5d73749f9fd86421fe2c192954d912f5.jpg",
-            "https://via.placeholder.com/150?text=Uni+3",
-            "https://via.placeholder.com/150?text=Uni+4",
+            "https://i.ytimg.com/vi/eEspYsI-zz4/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLC0Vv8m-5-PI-BgDSsRK_dwUzVc4g",
+            "https://campus.campus-star.com/app/uploads/2017/01/MFU-6.jpg",
         ],
         [
-            "https://via.placeholder.com/150?text=Uni+5",
-            "https://via.placeholder.com/150?text=Uni+6",
-            "https://via.placeholder.com/150?text=Uni+7",
-            "https://via.placeholder.com/150?text=Uni+8",
+            "https://campus.campus-star.com/app/uploads/2017/01/MFU-5.jpg",
+            "https://campus.campus-star.com/app/uploads/2017/01/KKU-3.jpg",
+            "https://campus.campus-star.com/app/uploads/2017/01/KKU-2.jpg",
+            "https://campus.campus-star.com/app/uploads/2017/01/NU-4.jpeg",
         ],
         [
-            "https://via.placeholder.com/150?text=Uni+9",
-            "https://via.placeholder.com/150?text=Uni+10",
-            "https://via.placeholder.com/150?text=Uni+11",
-            "https://via.placeholder.com/150?text=Uni+12",
+            "https://campus.campus-star.com/app/uploads/2017/01/KU-9.jpg",
+            "https://campus.campus-star.com/app/uploads/2017/01/SUT-1.jpeg",
+            "https://campus.campus-star.com/app/uploads/2017/01/06-1.jpg",
+            "https://campus.campus-star.com/app/uploads/2017/01/KMITL-2.jpg",
         ],
     ];
 
