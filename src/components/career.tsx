@@ -48,7 +48,7 @@ const PopularCareer = () => {
         <div className="career-box">
             <div className="career-content p-5">
                 <div className="career-header">
-                    อาชีพยอดนิยมประจำปี (Popular Career)
+                    อาชีพยอดนิยม (Popular Career)
                 </div>
 
                 <hr className="divider" />

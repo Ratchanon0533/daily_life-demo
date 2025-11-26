@@ -41,7 +41,7 @@ const University = () => {
         <div className="university-box">
             <div className="university-content p-5">
                 <div className="university-header">
-                    มหาวิทยาลัยยอดนิยมในปี 2025 (Top University of 2025)
+                    มหาวิทยาลัยยอดนิยม (Top University)
                 </div>
 
                 <hr className="divider" />
