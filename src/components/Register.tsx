@@ -29,6 +29,12 @@ const Reg = () => {
         return emailRegex.test(email);
     };
 
+    // Validate phone number (digits only, 10 digits)
+    const isValidPhone = (phone: string) => {
+        const phoneRegex = /^[0-9]{10}$/;
+        return phoneRegex.test(phone);
+    };
+
     // Handle Login
     const handleLogin = async () => {
         if (!loginUsername || !loginPassword) {
@@ -52,11 +58,12 @@ const Reg = () => {
 
             const data = await response.json();
 
-            if (response.ok) {
+            console.log("Login response data:", data);
+
+            if (data.message === "Login Success") {
                 setMessage("Login successful!");
                 setAlertType("success");
-                navigatory('/HOME');
-                // Save token if needed
+                navigatory("/HOME");
                 localStorage.setItem("token", data.token);
             } else {
                 setMessage(data.message || "Login failed");
@@ -72,14 +79,6 @@ const Reg = () => {
     };
 
 
-    const token = localStorage.getItem("token");
-
-    if (token) {
-        console.log("ผู้ใช้ล็อกอินอยู่");
-    } else {
-        console.log("ยังไม่ได้ล็อกอิน");
-    }
-
 
     // Handle Register
     const handleRegister = async () => {
@@ -93,6 +92,13 @@ const Reg = () => {
         // Validate email format
         if (!isValidEmail(email)) {
             setMessage("❌ Please enter a valid email format (example@mail.com)");
+            setAlertType("danger");
+            return;
+        }
+
+        // Validate phone number
+        if (!isValidPhone(phone)) {
+            setMessage("❌ Phone number must be 10 digits (numbers only)");
             setAlertType("danger");
             return;
         }
@@ -123,7 +129,7 @@ const Reg = () => {
 
             const data = await response.json();
 
-            if (response.ok) {
+            if (data.message === "Register Success") {
                 setMessage("✅ Registration successful! Please login.");
                 setAlertType("success");
                 // Clear form
@@ -136,7 +142,49 @@ const Reg = () => {
                 // Switch to login mode
                 setTimeout(() => setMode("login"), 2000);
             } else {
-                setMessage(data.message || "Registration failed");
+                // ตรวจสอบข้อความ error จาก backend
+                let errorMsg = data.message?.toLowerCase() || "";
+                const sqlMessageRaw = data.error?.sqlMessage || "";
+                const sqlMessage = sqlMessageRaw.toLowerCase();
+
+                // ถ้า message ว่าง ให้ใช้ sqlMessage แทน
+                if (!errorMsg && sqlMessage) {
+                    errorMsg = sqlMessage;
+                }
+
+                // ตรวจสอบรูปแบบ Duplicate entry 'value' for key 'users.column'
+                const dupMatch = sqlMessageRaw.match(/Duplicate entry '(.+?)' for key '(.+?)'/i);
+                if (dupMatch) {
+                    const dupValue = dupMatch[1]; // เช่น 'c'
+                    const dupKey = dupMatch[2];   // เช่น users.username
+                    const column = dupKey.split('.').pop()?.replace(/`/g, "") || dupKey;
+
+                    console.log("Duplicate entry detected:", { dupValue, column });
+
+                    if (column.includes("username")) {
+                        setMessage("❌ ชื่อผู้ใช้ (username) นี้มีในระบบแล้ว กรุณาใช้อื่น");
+                    } else if (column.includes("email")) {
+                        setMessage("❌ อีเมลนี้มีในระบบแล้ว กรุณาใช้อีเมลอื่น");
+                    } else if (column.includes("phone")) {
+                        setMessage("❌ เบอร์โทรนี้มีในระบบแล้ว กรุณาใช้อื่น");
+                    } else if (column.includes("firstname") || column.includes("lastname")) {
+                        setMessage("❌ ชื่อหรือนามสกุลนี้มีในระบบแล้ว กรุณาใช้อื่น");
+                    } else {
+                        // กรณี key ไม่ตรงกับที่คาดไว้ ให้แสดงข้อความ SQL ต้นฉบับ
+                        setMessage(`❌ ${sqlMessageRaw}`);
+                    }
+                } else if (errorMsg.includes("username")) {
+                    setMessage("❌ ชื่อผู้ใช้ (username) นี้มีในระบบแล้ว กรุณาใช้อื่น");
+                } else if (errorMsg.includes("email")) {
+                    setMessage("❌ อีเมลนี้มีในระบบแล้ว กรุณาใช้อีเมลอื่น");
+                } else if (errorMsg.includes("phone")) {
+                    setMessage("❌ เบอร์โทรนี้มีในระบบแล้ว กรุณาใช้อื่น");
+                } else if (data.error?.sqlMessage) {
+                    setMessage(`❌ ${data.error.sqlMessage}`);
+                } else {
+                    setMessage(data.message || "Registration failed");
+                }
+
                 setAlertType("danger");
             }
         } catch (error) {
