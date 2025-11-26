@@ -4,6 +4,7 @@ import SearchSection from './search-section';
 import Carousel from './carousel-section';
 import University from './university-section';
 import QuickSearchHome from './quick-search(Home)';
+import PopularCareer from './career';
 
 
 const Main = () => {
@@ -14,7 +15,8 @@ const Main = () => {
             <Carousel />
             <University />
             <QuickSearchHome />
-
+            <PopularCareer />
+            
         </>
     )
 }

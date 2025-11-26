@@ -1,15 +1,18 @@
 /* ---------- MAIN LAYOUT ---------- */
-.quick-box {
+.career-box {
     background-color: transparent;
     display: flex;
     justify-content: center;
-}
-.quick-content{
-    position: relative;   /* establish a containing block */
-    overflow: hidden;  
+
+
 }
 
-.quick-header {
+.career-content {
+    position: relative;
+    overflow: hidden;
+}
+
+.career-header {
     font-size: 1.5rem;
     font-weight: 400;
     margin-bottom: 16px;
@@ -24,7 +27,7 @@
 }
 
 /* ---------- BOX CONTAINER ---------- */
-.seven-box-container {
+.five-box-container {
     gap: 24px;
     width: 100%;
     display: flex;
@@ -32,9 +35,9 @@
     flex-wrap: wrap;
 }
 
-.seven-box-item .image-box img{
-    height: 9.063rem;
-    width: 10.188rem;
+.five-box-item .image-box img {
+    height: 11.688rem;
+    width: 14.813rem;
     background: #f8f9fa;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -46,27 +49,28 @@
     transition: 0.3s ease;
     cursor: pointer;
     object-fit: cover;
-    
+
 }
 
 
-.seven-box-item:hover {
+.five-box-item:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 /* ---------- MOBILE ---------- */
 @media (max-width: 768px) {
-    .seven-box-item {
+    .five-box-item {
         width: 45%;
     }
 }
 
 /* ---------- SLIDESHOW CORE ---------- */
-.quick-slideshow {
+.career-slideshow {
     position: relative;
     width: 100%;
-    overflow: hidden; 
+
+    overflow: hidden;
 }
 
 
@@ -79,11 +83,11 @@
 }
 
 /* Animate the whole group of 4 boxes as one unit */
-.slide-right .seven-box-container {
+.slide-right .five-box-container {
     animation: slideInFromRight 0.25s ease forwards;
 }
 
-.slide-left .seven-box-container {
+.slide-left .five-box-container {
     animation: slideInFromLeft 0.2s ease forwards;
 }
 
@@ -93,6 +97,7 @@
         transform: translateX(10%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -104,6 +109,7 @@
         transform: translateX(-10%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -112,7 +118,7 @@
 
 
 /* Slide buttons */
-.quick-slide-btn {
+.career-slide-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -127,10 +133,14 @@
     z-index: 20;
 }
 
-.quick-slide-btn:hover {
+.career-slide-btn:hover {
     opacity: 1;
 }
 
-.quick-prev { left: 0; }
-.quick-next { right: 0; }
-    
+.career-prev {
+    left: 0;
+}
+
+.career-next {
+    right: 0;
+}
