@@ -1,19 +1,8 @@
 // Nav.tsx
 import './css/navbar.css'
-import { useNavigate } from 'react-router-dom';
 
 const Nav = () => {
-    const navigate = useNavigate();
 
-    // ฟังก์ชันสำหรับจัดการ NavLink Clicks
-    const handleNavigation = (path: string, isButton: boolean = false) => {
-        if (!isButton) {
-            // ป้องกันการ navigate ซ้ำถ้าเป็นลิงก์ภายนอก หรือใช้ Link component แทน
-            if (path.startsWith('/')) {
-                navigate(path);
-            }
-        }
-    };
 
     return (
         <>
