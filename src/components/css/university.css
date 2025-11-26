@@ -1,0 +1,137 @@
+/* ---------- MAIN LAYOUT ---------- */
+.university-box {
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+}
+.university-content{
+    position: relative;   /* establish a containing block */
+    overflow: hidden;  
+}
+
+.university-header {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 16px;
+    font-family: Kanit, sans-serif;
+    text-align: left;
+}
+
+.divider {
+    height: 2px;
+    background-color: #828282;
+    margin: 2rem 0;
+}
+
+/* ---------- BOX CONTAINER ---------- */
+.four-box-container {
+    gap: 24px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.four-box-item .image-box img{
+    height: 23.125rem;
+    width: 18.75rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: 0.3s ease;
+    cursor: pointer;
+    object-fit: cover;
+    
+}
+
+
+.four-box-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 768px) {
+    .four-box-item {
+        width: 45%;
+    }
+}
+
+/* ---------- SLIDESHOW CORE ---------- */
+.uni-slideshow {
+    position: relative;
+    width: 100%;
+    min-height: 24rem; /* Ensures boxes are visible */
+    overflow: hidden; 
+}
+
+
+
+/* ---------- SLIDE DIRECTION ANIMATION ---------- */
+
+/* Default slide container */
+.slide {
+    width: 100%;
+}
+
+/* Animate the whole group of 4 boxes as one unit */
+.slide-right .four-box-container {
+    animation: slideInFromRight 0.25s ease forwards;
+}
+
+.slide-left .four-box-container {
+    animation: slideInFromLeft 0.2s ease forwards;
+}
+
+/* Keyframes */
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(10%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-10%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+
+/* Slide buttons */
+.slide-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.4rem;
+    opacity: 0.75;
+    transition: 0.2s;
+    z-index: 20;
+}
+
+.slide-btn:hover {
+    opacity: 1;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }

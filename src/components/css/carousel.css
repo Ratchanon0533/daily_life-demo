@@ -1,0 +1,45 @@
+
+
+.container {
+    max-width: 100% !important;
+    padding: 0;
+   
+}
+/* Make images fill the container evenly */
+.carousel-img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+/* Overlay should cover the fixed height */
+.carousel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1;
+}
+
+/* Ensure captions layer correctly */
+.carousel-caption {
+    z-index: 2;
+}
+.custom-carousel-height {
+    height:450px; /* your desired height */
+    position: relative;
+}
+
+/* Force image to fill the container height */
+.carousel-item {
+    height: 100%;
+}
+
+.carousel-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* ensures clean cropping */
+    object-position: center; /* centers the crop */
+}
