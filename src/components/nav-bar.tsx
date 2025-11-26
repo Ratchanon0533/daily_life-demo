@@ -2,8 +2,6 @@
 import './css/navbar.css'
 
 const Nav = () => {
-
-
     return (
         <>
             <nav className="navbar navbar-expand-lg  custom-navbar" >
