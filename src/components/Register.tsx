@@ -44,6 +44,7 @@ const Reg = () => {
         }
 
         setLoading(true);
+
         try {
             const response = await fetch("http://localhost:5000/api/login", {
                 method: "POST",
@@ -56,16 +57,34 @@ const Reg = () => {
                 }),
             });
 
+            const responseadmin = await fetch("http://localhost:5000/api/login-@min", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: loginUsername,
+                    password: loginPassword,
+                }),
+            });
+
             const data = await response.json();
+            const dataadmin = await responseadmin.json();
 
             console.log("Login response data:", data);
 
-            if (data.message === "Login Success") {
+            if (dataadmin.message === "Admin Login Success") {
                 setMessage("Login successful!");
                 setAlertType("success");
                 navigatory("/HOME");
                 localStorage.setItem("token", data.token);
-            } else {
+            }else if (data.message === "Login Success") {
+                setMessage("Admin Login successful!");
+                setAlertType("success");
+                navigatory("/HOME");
+                localStorage.setItem("token", data.token);
+            }
+            else {
                 setMessage(data.message || "Login failed");
                 setAlertType("danger");
             }
