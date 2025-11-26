@@ -1,15 +1,15 @@
 /* ---------- MAIN LAYOUT ---------- */
-.university-box {
+.quick-box {
     background-color: transparent;
     display: flex;
     justify-content: center;
 }
-.university-content{
+.quick-content{
     position: relative;   /* establish a containing block */
     overflow: hidden;  
 }
 
-.university-header {
+.quick-header {
     font-size: 1.5rem;
     font-weight: 400;
     margin-bottom: 16px;
@@ -24,7 +24,7 @@
 }
 
 /* ---------- BOX CONTAINER ---------- */
-.four-box-container {
+.seven-box-container {
     gap: 24px;
     width: 100%;
     display: flex;
@@ -32,9 +32,9 @@
     flex-wrap: wrap;
 }
 
-.four-box-item .image-box img{
-    height: 23.125rem;
-    width: 18.75rem;
+.seven-box-item .image-box img{
+    height: 9.063rem;
+    width: 10.188rem;
     background: #f8f9fa;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -50,20 +50,20 @@
 }
 
 
-.four-box-item:hover {
+.seven-box-item:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 /* ---------- MOBILE ---------- */
 @media (max-width: 768px) {
-    .four-box-item {
+    .seven-box-item {
         width: 45%;
     }
 }
 
 /* ---------- SLIDESHOW CORE ---------- */
-.uni-slideshow {
+.quick-slideshow {
     position: relative;
     width: 100%;
     min-height: 24rem; /* Ensures boxes are visible */
@@ -80,11 +80,11 @@
 }
 
 /* Animate the whole group of 4 boxes as one unit */
-.slide-right .four-box-container {
+.slide-right .seven-box-container {
     animation: slideInFromRight 0.25s ease forwards;
 }
 
-.slide-left .four-box-container {
+.slide-left .seven-box-container {
     animation: slideInFromLeft 0.2s ease forwards;
 }
 
@@ -113,25 +113,25 @@
 
 
 /* Slide buttons */
-.slide-btn {
+.quick-slide-btn {
     position: absolute;
-    top: 50%;
+    top: 19%;
     transform: translateY(-50%);
-    background: #000;
+
     color: #fff;
     border: none;
-    padding: 12px 18px;
-    border-radius: 50%;
+    padding: 55px 18px;
     cursor: pointer;
     font-size: 1.4rem;
-    opacity: 0.75;
+    opacity: 0;
     transition: 0.2s;
     z-index: 20;
 }
 
-.slide-btn:hover {
+.quick-slide-btn:hover {
     opacity: 1;
 }
 
-.prev { left: 10px; }
-.next { right: 10px; }
+.quick-prev { left: 0; }
+.quick-next { right: 0; }
+    
