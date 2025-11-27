@@ -21,13 +21,7 @@ const PopularCareer = () => {
             "./career/lawyer.jpg",
             "./career/accountant.jpg",
         ],
-        [
-            "./career/architect.jpg",
-            "./career/scientist.jpg",
-            "./career/artist.jpg",
-            "./career/photographer.jpg",
-            "./career/manager.jpg",
-        ],
+        
     ];
 
     const nextSlide = () => {

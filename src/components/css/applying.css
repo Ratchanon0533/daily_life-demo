@@ -59,7 +59,7 @@
 /* Shrink others when one is active */
 .apply-item:not(.active):hover,
 .apply-item:not(.active) {
-    flex: 1;
+    flex: 0.5;
 }
 
 .apply-item h3 {

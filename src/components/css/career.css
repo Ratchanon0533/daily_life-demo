@@ -36,7 +36,7 @@
 }
 
 .five-box-item .image-box img {
-    height: 11.688rem;
+    height: 20rem;
     width: 14.813rem;
     background: #f8f9fa;
     border-radius: 12px;
@@ -56,6 +56,7 @@
 .five-box-item:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+                                        
 }
 
 /* ---------- MOBILE ---------- */
