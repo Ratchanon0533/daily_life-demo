@@ -8,6 +8,7 @@ import PopularCareer from './career';
 import Applying from './applying';
 import Banner from './banner';
 import Suggestion from './suggestion';
+import Partner from './partner';
 
 
 const Main = () => {
@@ -22,6 +23,8 @@ const Main = () => {
             <Applying />
             <Banner />
             <Suggestion />
+            <Partner />
+
         </>
     )
 }
