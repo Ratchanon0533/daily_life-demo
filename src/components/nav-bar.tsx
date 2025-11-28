@@ -66,9 +66,10 @@ const Nav = () => {
                                 </button>
 
                                 <ul className="dropdown-menu" aria-labelledby="regionDropdown" style={{ right: 30 }}>
-                                    <li><a className="dropdown-item" href="#">เอเชีย</a></li>
-                                    <li><a className="dropdown-item" href="#">ยุโรป</a></li>
-                                    <li><a className="dropdown-item" href="#">อเมริกา</a></li>
+                                    <li><a className="dropdown-item" href="#">ภาคเหนือ</a></li>
+                                    <li><a className="dropdown-item" href="#">ภาคกลาง</a></li>
+                                    <li><a className="dropdown-item" href="#">ภาคตะวันออก</a></li>
+                                    <li><a className="dropdown-item" href="#">ภาคใต้</a></li>
                                 </ul>
                             </li>
 

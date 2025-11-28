@@ -1,0 +1,154 @@
+/* card section */
+.card-container {
+    height: 27rem;
+}
+
+.card-title {
+    color: white;
+    display: block;
+    font-family: Kanit, sans-serif;
+    font-weight: 400;
+    text-align: left;
+}
+
+
+.card-container {
+    background-color: #033E65;
+    display: flex;
+    justify-content: center;
+}
+
+/* search section */
+.search-box {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+}
+
+.search-box2 {
+    margin-top: 24px;
+    display: flex;
+
+    justify-content: space-between;
+}
+
+@media (max-width: 1300px) {
+    .search-box {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card-container {
+        height: 30rem;
+    }
+
+
+}
+
+@media (max-width: 1000px) {
+    .search-box {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .card-container {
+        height: 47rem;
+    }
+
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    background-color: white;
+    color: black;
+}
+
+.search-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 138px;
+    height: 48px;
+    padding: 0 1.5rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.5rem;
+    font-family: Kanit, sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: #FAC14B;
+    color: #033E65;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 450px;
+
+}
+
+.search-input-wrapper .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    fill: gray;
+    pointer-events: none;
+}
+
+.search-input-wrapper .search-icon-right {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    fill: gray;
+    cursor: pointer;
+    pointer-events: auto;
+
+}
+
+.search-input-wrapper .search-input {
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dropdown-search {
+    height: 48px;
+    padding: 0 1.5rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.25rem;
+    font-family: Kanit, sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: #FFFFFF;
+    color: #033E65;
+}
+
+.reset-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 190px;
+    height: 48px;
+    padding: 0 1.5rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.5rem;
+    font-family: Kanit, sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: #FAC14B;
+    color: #033E65;
+}

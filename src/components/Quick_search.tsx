@@ -2,6 +2,8 @@ import Navnologin from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import QuicksearchMain from "./quick-search-content";
+import QuicksearchCarousel from "./quicksearch-carousel";
 
 const QuickSearch = () => {
 
@@ -41,9 +43,13 @@ const QuickSearch = () => {
             {mode === "no-login" && (
                 <>
                     <Navnologin />
-                    <div>ผู้ใช้ยังไม่ล็อกอิน!</div>
+                    <QuicksearchCarousel />
+                    <QuicksearchMain />
+                    
                 </>
             )}
+
+
         </>
     );
 };
