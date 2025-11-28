@@ -9,6 +9,7 @@ import Applying from './applying';
 import Banner from './banner';
 import Suggestion from './suggestion';
 import Partner from './partner';
+import Contact from './contact';
 
 
 const Main = () => {
@@ -24,6 +25,7 @@ const Main = () => {
             <Banner />
             <Suggestion />
             <Partner />
+            <Contact />
 
         </>
     )

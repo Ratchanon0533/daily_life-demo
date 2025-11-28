@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Index from '../components/index'
 import Reg from '../components/Register'
 import QuickSerach from '../components/Quick_search'
-import Promotion from '../components/Promotion'
+import Promotion from '../components/About'
 import HOME from '../components/home'
 
 const AppRoute = () => {

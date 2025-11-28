@@ -125,6 +125,9 @@ button.nav-text-dropdown::after {
     visibility: visible;
 
 }
+.dropdown-menu{
+    right: 2rem;
+}
 
 .nav-item.dropdown:hover .v-icon {
     transform: rotate(-135deg);

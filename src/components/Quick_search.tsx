@@ -2,7 +2,7 @@ import Navnologin from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import QuicksearchMain from "./quick-search-content";
+import QuicksearchMain from "./quick-search-main";
 import QuicksearchCarousel from "./quicksearch-carousel";
 
 const QuickSearch = () => {
@@ -26,6 +26,8 @@ const QuickSearch = () => {
             {mode === "login" && (
                 <>
                     <Navlogin />
+                    <QuicksearchCarousel />
+                    <QuicksearchMain />
                     <div>ยินดีต้อนรับผู้ใช้ที่ล็อกอินแล้ว!</div>
 
                     <button

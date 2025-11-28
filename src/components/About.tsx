@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import Navnologin from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
+import AboutCarousel from "./about-carousel";
+import Aboutmain from "./about-main";
+import Contact from "./contact";
 
-const Promotion = () => {
+const About = () => {
 
     const [mode, setMode] = useState<"login" | "no-login">("no-login");
     const navigate = useNavigate();
@@ -25,6 +28,9 @@ const Promotion = () => {
             {mode === "login" && (
                 <>
                     <Navlogin />
+                    <AboutCarousel />
+                    <Aboutmain />
+                    
                     <h1>This is the Promotion Page</h1>
                     <p>🎉 คุณสามารถดูโปรโมชั่นพิเศษได้เพราะคุณล็อกอินแล้ว</p>
 
@@ -36,6 +42,7 @@ const Promotion = () => {
                     >
                         Logout
                     </button>
+                    <Contact />
                 </>
             )}
 
@@ -43,12 +50,16 @@ const Promotion = () => {
             {mode === "no-login" && (
                 <>
                     <Navnologin />
+                    <AboutCarousel />
+                    <Aboutmain />
+                    
                     <h1>This is the Promotion Page</h1>
                     <p>⚠ กรุณาเข้าสู่ระบบเพื่อดูโปรโมชั่นทั้งหมด</p>
+                    <Contact />
                 </>
             )}
         </>
     );
 };
 
-export default Promotion;
+export default About;
