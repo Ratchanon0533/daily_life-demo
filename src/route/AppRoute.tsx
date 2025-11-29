@@ -4,6 +4,7 @@ import Reg from '../components/Register'
 import QuickSerach from '../components/Quick_search'
 import Promotion from '../components/Promotion'
 import HOME from '../components/home'
+import UN from '../components/University-information'
 
 const AppRoute = () => {
     return (
@@ -13,7 +14,7 @@ const AppRoute = () => {
             <Route path="/quick_search" element={<QuickSerach/>} />
             <Route path="/Promotion" element={<Promotion/>} />
             <Route path="/HOME" element={<HOME/>} />
-            <Route path="/home" element={<Index />} />
+            <Route path="/search" element={<UN />} />
         </Routes>
     )
 }
