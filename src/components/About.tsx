@@ -30,16 +30,6 @@ const About = () => {
                     <Navlogin />
                     <AboutCarousel />
                     <Aboutmain />
-                
-
-                    <button
-                        onClick={() => {
-                            localStorage.removeItem("token");
-                            navigate("/Register");
-                        }}
-                    >
-                        Logout
-                    </button>
                     <Contact />
                 </>
             )}

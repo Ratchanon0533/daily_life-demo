@@ -6,6 +6,10 @@ import University from './university-section';
 import QuickSearchHome from './quick-search(Home)';
 import PopularCareer from './career';
 import Applying from './applying';
+import Banner from './banner';
+import Suggestion from './suggestion';
+import Partner from './partner';
+import Contact from './contact';
 
 const Home = () => {
     return (
@@ -17,7 +21,10 @@ const Home = () => {
             <QuickSearchHome />
             <PopularCareer />
             <Applying />
-            หน้าแรกหลังจากloginสำเร็จ
+            <Banner />
+            <Suggestion />
+            <Partner />
+            <Contact />
 
         </>
     )
