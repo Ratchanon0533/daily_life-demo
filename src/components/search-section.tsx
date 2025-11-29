@@ -3,41 +3,89 @@ import './css/searchsection.css';
 import '../App.css';
 import { useState } from 'react';
 
-
 const SearchSection = () => {
     const navigatory = useNavigate();
-    const [inputuniversity, setInputUniversity] = useState('');
-    // const [inputlocation, setInputLocation] = useState('');
-    // const [inputValue, setInputValue] = useState('');
-    const handleClear = () => {
-        setInputUniversity('');
+    
+    // Main search input (Thai or English)
+    const [inputUniversity, setInputUniversity] = useState('');
+    const [inputProvince, setInputProvince] = useState('');
+    const [inputFaculty, setInputFaculty] = useState('');
+    const [inputShortName, setInputShortName] = useState('');
+    const [inputMajor, setInputMajor] = useState('');
+
+    // Check if text is Thai
+    const isThaiText = (text: string): boolean => {
+        const thaiRegex = /[\u0E00-\u0E7F]/;
+        return thaiRegex.test(text);
     };
 
+    // Clear all inputs
+    const handleClear = () => {
+        setInputUniversity('');
+        setInputProvince('');
+        setInputFaculty('');
+        setInputShortName('');
+        setInputMajor('');
+    };
+
+    // Handle search
     const handlesearch = async () => {
+        // เปลี่ยน: ไม่บังคับต้องกรอกชื่อมหาวิทยาลัย
+        const hasAnyInput = inputUniversity.trim() || inputProvince.trim() || 
+                           inputFaculty.trim() || inputShortName.trim() || inputMajor.trim();
+
+        if (!hasAnyInput) {
+            alert('กรุณากรอกข้อมูลค้นหาอย่างน้อย 1 ช่อง');
+            return;
+        }
+
+        const requestBody: any = {};
+
+        // Handle university name (Thai or English)
+        if (inputUniversity.trim()) {
+            const searchText = inputUniversity.trim();
+            if (isThaiText(searchText)) {
+                requestBody.university_th = searchText;
+            } else {
+                requestBody.university_en = searchText;
+            }
+        }
+
+        // Handle shortName - ส่งแบบปกติโดยไม่ตรวจภาษา
+        if (inputShortName.trim()) {
+            requestBody.shortName = inputShortName.trim();
+        }
+
+        // Add optional filters
+        if (inputProvince.trim()) requestBody.province = inputProvince;
+        if (inputFaculty.trim()) requestBody.faculty = inputFaculty;
+        if (inputMajor.trim()) requestBody.major = inputMajor;
+
         try {
             const response = await fetch('http://localhost:5000/api/search-university', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ university: inputuniversity }),
+                body: JSON.stringify(requestBody),
             });
 
             const data = await response.json();
+            console.log('Search Result:', data);
 
-            // const contentType = response.headers.get("content-type") || "";
-            // console.log("Content-Type:", contentType);
-            if (data != null) {
-                console.log('Success:', data);
-                navigatory("/search", { state: data});
+            if (data.success) {
+                navigatory("/search", { state: data });
+            } else {
+                alert(data.message || 'ไม่พบข้อมูล');
             }
         } catch (error) {
             console.error('Error:', error);
+            alert('เกิดข้อผิดพลาดในการค้นหา');
         }
     };
 
     return (
         <>
-            <div className="card-container" >
-                <div className='card-box p-5 '>
+            <div className="card-container">
+                <div className='card-box p-5'>
 
                     <div className="card-title mb-4">
                         <span style={{ fontSize: "1.5rem" }}>ค้นหามหาวิทยาลัย</span>
@@ -45,12 +93,12 @@ const SearchSection = () => {
                     </div>
 
                     <div className="search-box">
+                        {/* ชื่อมหาวิทยาลัย (ไทย/อังกฤษ) */}
                         <div className="search-input-wrapper">
                             <svg
                                 className="search-icon"
                                 aria-hidden="true"
                                 viewBox="0 0 24 24"
-
                             >
                                 <g>
                                     <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z" />
@@ -59,17 +107,27 @@ const SearchSection = () => {
                             <input
                                 className="search-input"
                                 type="text"
-                                placeholder="ชื่อมหาวิทยาลัย"
-                                value={inputuniversity}
+                                placeholder="ชื่อมหาวิทยาลัย (ไทย/English) - ไม่บังคับ"
+                                value={inputUniversity}
                                 onChange={(e) => setInputUniversity(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handlesearch()}
                             />
-                            <svg className="search-icon-right" width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer' }}
-                                onClick={handleClear} >
+                            <svg 
+                                className="search-icon-right" 
+                                width="12" 
+                                height="11" 
+                                viewBox="0 0 12 11" 
+                                fill="none" 
+                                xmlns="http://www.w3.org/2000/svg" 
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => setInputUniversity('')}
+                            >
                                 <rect width="2.78362" height="13.4269" rx="1.39181" transform="matrix(0.7402 -0.672387 0.7402 0.672387 0 1.87158)" fill="#B8B8B8" />
                                 <rect width="2.78362" height="13.4269" rx="1.39181" transform="matrix(-0.7402 -0.672387 -0.7402 0.672387 12 1.87207)" fill="#B8B8B8" />
                             </svg>
-
                         </div>
+
+                        {/* สถานที่ตั้ง (จังหวัด) */}
                         <div className="search-input-wrapper">
                             <svg
                                 className="search-icon"
@@ -82,28 +140,85 @@ const SearchSection = () => {
                             <input
                                 className="search-input"
                                 type="text"
-                                placeholder="สถานที่ตั้ง"
+                                placeholder="สถานที่ตั้ง (จังหวัด) - ไม่บังคับ"
+                                value={inputProvince}
+                                onChange={(e) => setInputProvince(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handlesearch()}
                             />
-                            <svg className="search-icon-right" width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg 
+                                className="search-icon-right" 
+                                width="16" 
+                                height="11" 
+                                viewBox="0 0 16 11" 
+                                fill="none" 
+                                xmlns="http://www.w3.org/2000/svg"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => setInputProvince('')}
+                            >
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
                             </svg>
-
                         </div>
+
+                        {/* คณะสาขาวิชา */}
                         <div className="search-input-wrapper">
                             <img
                                 src="/img/graduation-hat-3 1.png"
                                 alt="Logo"
                                 className="search-icon"
                             />
-
-
                             <input
                                 className="search-input"
                                 type="text"
-                                placeholder="คณะสาขาวิชา"
+                                placeholder="คณะสาขาวิชา - ไม่บังคับ"
+                                value={inputFaculty}
+                                onChange={(e) => setInputFaculty(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handlesearch()}
                             />
-                            <svg className="search-icon-right" width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg 
+                                className="search-icon-right" 
+                                width="16" 
+                                height="11" 
+                                viewBox="0 0 16 11" 
+                                fill="none" 
+                                xmlns="http://www.w3.org/2000/svg"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => setInputFaculty('')}
+                            >
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                                <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                            </svg>
+                        </div>
+
+                        {/* ชื่อย่อมหาวิทยาลัย - เพิ่มใหม่ */}
+                        <div className="search-input-wrapper">
+                            <svg
+                                className="search-icon"
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                            >
+                                <g>
+                                    <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z" />
+                                </g>
+                            </svg>
+                            <input
+                                className="search-input"
+                                type="text"
+                                placeholder="ชื่อย่อมหาวิทยาลัย (เช่น CU, KU) - ไม่บังคับ"
+                                value={inputShortName}
+                                onChange={(e) => setInputShortName(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handlesearch()}
+                            />
+                            <svg 
+                                className="search-icon-right" 
+                                width="16" 
+                                height="11" 
+                                viewBox="0 0 16 11" 
+                                fill="none" 
+                                xmlns="http://www.w3.org/2000/svg"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => setInputShortName('')}
+                            >
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
                             </svg>
@@ -113,57 +228,51 @@ const SearchSection = () => {
                             ค้นหา
                         </button>
                     </div>
-                    <div className="search-box ">
-                        <button className='dropdown-search'>
+
+                    <div className="search-box">
+                        <button className='dropdown-search' disabled>
                             ค่าเทอม
-                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
                             </svg>
                         </button>
-                        <button className='dropdown-search'>
-                            ประเภทมหาล้ย
-                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                        <button className='dropdown-search' disabled>
+                            ประเภทมหาวิทยาลัย
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
                             </svg>
                         </button>
-                        <button className='dropdown-search'>
+                        <button className='dropdown-search' disabled>
                             ระดับการศึกษา
-                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
                             </svg>
                         </button>
-                        <button className='dropdown-search'>
+                        <button className='dropdown-search' disabled>
                             การเดินทาง
-                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
                             </svg>
                         </button>
-                        <button className='dropdown-search'>
+                        <button className='dropdown-search' disabled>
                             อื่นๆ
-                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                            <svg className="search-icon-right ms-2" width="20" height="20" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
                                 <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
                             </svg>
                         </button>
-                        <button className='reset-button'>
+                        <button className='reset-button' onClick={handleClear}>
                             รีเซ็ตการตั้งค่า
                         </button>
-
-
                     </div>
                 </div>
-
-
-
-               
             </div>
         </>
     )
 }
-
 
 export default SearchSection;
