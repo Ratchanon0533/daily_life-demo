@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 import Navnologin from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
@@ -10,7 +10,7 @@ import Contact from "./contact";
 const About = () => {
 
     const [mode, setMode] = useState<"login" | "no-login">("no-login");
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");

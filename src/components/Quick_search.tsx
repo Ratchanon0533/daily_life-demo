@@ -8,7 +8,7 @@ import QuicksearchCarousel from "./quicksearch-carousel";
 const QuickSearch = () => {
 
     const [mode, setMode] = useState<"login" | "no-login">("no-login");
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
