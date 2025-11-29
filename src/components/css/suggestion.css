@@ -58,7 +58,9 @@
     width: 100%;
     height: auto;
     border-radius: 12px;
-    object-fit: cover;
+    display: flex;
+    object-fit: contain;
+    aspect-ratio: 1 / 1; /* perfect square */
     
 }
 

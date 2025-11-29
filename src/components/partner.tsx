@@ -3,13 +3,13 @@ import "./css/partner.css";
 const Partner = () => {
     // 15 items total (5 columns × 3 rows)
     const careers = [
-        "./partner/dev.jpg",
-        "./partner/doctor.jpg",
-        "./partner/marketing.jpg",
-        "./partner/business.jpg",
-        "./partner/finance.jpg",
-        "./partner1/teacher.jpg",
-        "./partner/engineer.jpg",
+        "./logo_un/PIM.svg",
+        "./logo_un/KU.png",
+        "./logo_un/KMUTT.svg",
+        "./logo_un/BUU.svg",
+        "./logo_un/KMITL.svg",
+        "./logo_un/BU.svg",
+        "./logo_un/TU.svg",
   
       
     ];

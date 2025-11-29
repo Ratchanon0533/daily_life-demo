@@ -3,27 +3,27 @@ import "./css/suggestion.css";
 const Suggestion = () => {
     // 15 items total (5 columns × 3 rows)
     const careers = [
-        "./suggestion/dev.jpg",
-        "./suggestion/doctor.jpg",
-        "./suggestion/marketing.jpg",
-        "./suggestion/business.jpg",
-        "./suggestion/finance.jpg",
-        "./suggestion/teacher.jpg",
-        "./suggestion/engineer.jpg",
-        "./suggestion/doctor.jpg",
-        "./suggestion/lawyer.jpg",
-        "./suggestion/accountant.jpg",
-        "./suggestion/marketing.jpg",
-        "./suggestion/business.jpg",
-        "./suggestion/dev.jpg",
-        "./suggestion/teacher.jpg",
-      
+        "./logo_un/KU.png",
+        "./logo_un/CU.png",
+        "./logo_un/MU.svg",
+        "./logo_un/TU.svg",
+        "./logo_un/BUU.svg",
+        "./logo_un/KMITL.svg",
+        "./logo_un/SWU.png",
+        "./logo_un/BU.svg",
+        "./logo_un/AIT.svg",
+        "./logo_un/PIM.svg",
+        "./logo_un/KMUTNB.svg",
+        "./logo_un/KMUTT.svg",
+        "./logo_un/RMUTI.png",
+        "./logo_un/SDU.svg",
+
     ];
 
     return (
         <div className="suggestion-box">
             <div className="suggestion-content p-5">
-                
+
                 <div className="suggestion-header">
                     มหาวิทยาลัยแนะนำ (Suggest University)
                 </div>
