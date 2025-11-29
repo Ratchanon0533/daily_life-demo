@@ -1,9 +1,9 @@
 // Nav.tsx
 import './css/navbar.css'
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Navlogin = () => {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     // ฟังก์ชันสำหรับจัดการ NavLink Clicks
     // const handleNavigation = (path: string, isButton: boolean = false) => {
@@ -87,11 +87,43 @@ const Navlogin = () => {
 
 
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/Promotion" >เกี่ยวกับเดลี่ไลพ์</a>
+                                <a className="nav-link nav-text-custom" href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
                             </li>
-                            <li className="nav-item">
-                                    <img src="./img/5987424.png" alt="" style={{width:'3rem',marginLeft:'3rem',marginRight:'5rem'}} />
+                            <li className="nav-item dropdown">
+                                <img
+                                    src="./img/5987424.png"
+                                    alt="menu"
+                                    className="dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    style={{
+                                        width: "3rem",
+                                        marginLeft: "3rem",
+                                        marginRight: "5rem",
+                                        cursor: "pointer"
+                                    }}
+                                />
+
+                                <ul className="dropdown-menu">
+                                    <li><a className="dropdown-item" href="#">Profile</a></li>
+                                    <li><a className="dropdown-item" href="#">Settings</a></li>
+                                    <li><hr className="dropdown-divider" /></li>
+                                    <li>
+                                        <button
+                                            className="dropdown-item"
+                                            onClick={() => {
+                                                localStorage.removeItem("token");
+                                                navigate("/Register");
+                                            }}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            Logout
+                                        </button>
+                                    </li>
+
+                                </ul>
                             </li>
+
                         </ul>
                     </div>
                 </div>

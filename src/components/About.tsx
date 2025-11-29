@@ -30,9 +30,7 @@ const About = () => {
                     <Navlogin />
                     <AboutCarousel />
                     <Aboutmain />
-                    
-                    <h1>This is the Promotion Page</h1>
-                    <p>🎉 คุณสามารถดูโปรโมชั่นพิเศษได้เพราะคุณล็อกอินแล้ว</p>
+                
 
                     <button
                         onClick={() => {
@@ -52,9 +50,6 @@ const About = () => {
                     <Navnologin />
                     <AboutCarousel />
                     <Aboutmain />
-                    
-                    <h1>This is the Promotion Page</h1>
-                    <p>⚠ กรุณาเข้าสู่ระบบเพื่อดูโปรโมชั่นทั้งหมด</p>
                     <Contact />
                 </>
             )}
