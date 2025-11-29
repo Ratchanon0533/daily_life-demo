@@ -67,22 +67,29 @@ const UN = () => {
                 </>
             ) : (
                 <>
-                    <Nav />
-                    <div className="university-container">
-                        <div className="university-header">
-                            <h1>🎓 ข้อมูลมหาวิทยาลัย</h1>
-                            <p>กรุณาเข้าสู่ระบบเพื่อดูข้อมูลมหาวิทยาลัยทั้งหมด</p>
-                        </div>
+                    <Navlogin />
 
-                        <div className="login-prompt">
-                            <p>ผู้ใช้ยังไม่ได้เข้าสู่ระบบ</p>
-                            <button
-                                onClick={() => navigate("/Register")}
-                                className="login-button"
-                            >
-                                เข้าสู่ระบบ
-                            </button>
-                        </div>
+                    <div className="suggestion-header">
+                        {universities.length > 0 ? (
+                            universities.map((u, index) => (
+                                <div key={index}>
+                                    <div>{u.university}</div>
+                                    <div>{u.id}</div>
+                                    <div>{u.university_shortname}</div>
+                                    <div>{u.university_type}</div>
+                                    <div>{u.province}</div>
+                                    <div>{u.website}</div>
+                                    <img src={u.logo} alt="" />
+                                    <div>{u.type}</div>
+                                    <div>{u.faculties?.join(", ")}</div>
+                                    <div>{u.departments?.join(", ")}</div>
+                                    <div>{u.programs?.join(", ")}</div>
+                                    
+                                </div>
+                            ))
+                        ) : (
+                            "กำลังโหลดข้อมูล..."
+                        )}
                     </div>
                 </>
             )}

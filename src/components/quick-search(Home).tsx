@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./css/quicksearch.css";
+import "./css/quicksearch(home).css";
 
 const QuickSearchHome = () => {
     const [current, setCurrent] = useState(0);

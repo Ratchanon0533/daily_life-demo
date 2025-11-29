@@ -49,9 +49,17 @@ const Nav = () => {
                                 </button>
 
                                 <ul className="dropdown-menu" aria-labelledby="regionDropdown">
-                                    <li><a className="dropdown-item" href="#">จุฬาฯ</a></li>
-                                    <li><a className="dropdown-item" href="#">ศิลปากร</a></li>
-                                    <li><a className="dropdown-item" href="#">ศรีปทุม</a></li>
+                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยมหิดล (Mahidol University)</a></li>
+                                    <li><a className="dropdown-item" href="#">จุฬาลงกรณ์มหาวิทยาลัย (Chulalongkorn University)</a></li>
+                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเชียงใหม่ (Chiang Mai University)</a></li>
+                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเกษตรศาสตร์ (Kasetsart University)</a></li>
+                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยขอนแก่น (Khon Kaen University)</a></li>
+                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี (KMUTT)</a></li>
+                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยสงขลานครินทร์ (Prince of Songkla University)</a></li>
+                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยธรรมศาสตร์ (Thammasat University)</a></li>
+                                    <li><a className="dropdown-item" href="#">Asian Institute of Technology (AIT)</a></li>
+                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยรามคำแหง (Ramkhamhaeng University)</a></li>
+                                    <li><a className="dropdown-item" href="#">สถาบันการจัดการปัญญาภิวัฒน์ (PIM)</a></li>
                                 </ul>
                             </li>
 
@@ -66,15 +74,16 @@ const Nav = () => {
                                 </button>
 
                                 <ul className="dropdown-menu" aria-labelledby="regionDropdown" style={{ right: 30 }}>
-                                    <li><a className="dropdown-item" href="#">เอเชีย</a></li>
-                                    <li><a className="dropdown-item" href="#">ยุโรป</a></li>
-                                    <li><a className="dropdown-item" href="#">อเมริกา</a></li>
+                                    <li><a className="dropdown-item" href="#">ภาคเหนือ</a></li>
+                                    <li><a className="dropdown-item" href="#">ภาคกลาง</a></li>
+                                    <li><a className="dropdown-item" href="#">ภาคตะวันออก</a></li>
+                                    <li><a className="dropdown-item" href="#">ภาคใต้</a></li>
                                 </ul>
                             </li>
 
 
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/Promotion" >เกี่ยวกับเดลี่ไลพ์</a>
+                                <a className="nav-link nav-text-custom" href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link signin-custom" href="/Register">เข้าสู่ระบบ</a>
