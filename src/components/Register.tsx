@@ -29,6 +29,8 @@ const Reg = () => {
         return emailRegex.test(email);
     };
 
+
+
     // Validate phone number (digits only, 10 digits)
     const isValidPhone = (phone: string) => {
         const phoneRegex = /^[0-9]{10}$/;
@@ -215,6 +217,15 @@ const Reg = () => {
             setLoading(false);
         }
     };
+
+    const token = localStorage.getItem("token");
+    console.log("Token from localStorage:", token);
+    if(token === null){
+        console.log("No token found, user not logged in.");
+    }else{
+        console.log("Token found, user might be logged in.");
+        navigatory("/HOME");
+    }
 
     return (
         <div className="google-page">

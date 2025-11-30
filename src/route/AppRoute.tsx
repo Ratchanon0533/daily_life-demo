@@ -5,6 +5,7 @@ import QuickSerach from '../components/Quick_search'
 import About from '../components/About'
 import HOME from '../components/home'
 import UN from '../components/University-information'
+import Faculty from '../components/UniversityInfo'
 
 const AppRoute = () => {
     return (
@@ -15,6 +16,7 @@ const AppRoute = () => {
             <Route path="/About" element={<About/>} />
             <Route path="/HOME" element={<HOME/>} />
             <Route path="/search" element={<UN />} />
+            <Route path="/faculty" element={<Faculty />} />
         </Routes>
     )
 }
