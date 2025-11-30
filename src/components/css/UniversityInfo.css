@@ -1,0 +1,205 @@
+/* =================================================== */
+/* --- Global Styles & Main Container --- */
+/* =================================================== */
+
+.suggestion-header {
+    /* bg-gray-50, pt-10, pb-10, min-h-screen */
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+    min-height: 100vh;
+    background-color: #f9fafb; /* สีพื้นหลังอ่อน */
+}
+
+.results-header {
+    text-align: center;
+    margin-bottom: 2.5rem; /* mb-10 */
+}
+
+.results-header h1 {
+    /* text-4xl, font-extrabold, text-blue-800 */
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1e40af; /* สีน้ำเงินเข้ม */
+}
+
+/* --- University Card Container --- */
+.uni-container-main {
+    /* bg-white, shadow-lg, rounded-xl, p-8, max-w-4xl, mx-auto, my-10, border-t-4, border-blue-500 */
+    background-color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    max-width: 64rem; /* 1024px */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+    border-top: 4px solid #3b82f6; /* สีน้ำเงินเส้นด้านบน */
+}
+
+/* =================================================== */
+/* --- Header/Logo Section --- */
+/* =================================================== */
+
+.uni-container-main > div:first-child {
+    /* flex, items-center, space-x-6, pb-6, border-b, mb-6 */
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+}
+
+.uni-container-main img {
+    /* w-20, h-20, object-contain, rounded-full, border, p-1 */
+    width: 5rem;
+    height: 5rem;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 1px solid #e5e7eb;
+    padding: 0.25rem;
+}
+
+.uni-container-main h1 {
+    /* text-3xl, font-bold, text-gray-800 */
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.uni-container-main p.text-xl {
+    /* text-xl, text-gray-600 */
+    font-size: 1.25rem;
+    color: #4b5563;
+}
+
+.uni-container-main p.text-sm {
+    /* text-sm, text-gray-400 */
+    font-size: 0.875rem;
+    color: #9ca3af;
+}
+
+/* =================================================== */
+/* --- General Information Grid --- */
+/* =================================================== */
+
+.uni-container-main .grid-cols-1 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem; /* gap-4 */
+    color: #374151; /* text-gray-700 */
+    margin-bottom: 2rem; /* mb-8 */
+}
+
+/* For md:grid-cols-2 */
+@media (min-width: 768px) {
+    .uni-container-main .grid-cols-1 {
+        grid-template-columns: 1fr 1fr;
+    }
+    .uni-container-main .col-span-1.md\:col-span-2 {
+        grid-column: span 2 / span 2;
+    }
+}
+
+.uni-container-main .font-semibold {
+    /* font-semibold, text-blue-600 */
+    font-weight: 600;
+    color: #2563eb;
+    margin-right: 0.5rem;
+}
+
+.uni-container-main a {
+    /* text-blue-500, hover:underline, ml-2 */
+    color: #3b82f6;
+    margin-left: 0.5rem;
+    text-decoration: none;
+}
+.uni-container-main a:hover {
+    text-decoration: underline;
+}
+
+/* =================================================== */
+/* --- Sections (Faculties & Majors) --- */
+/* =================================================== */
+
+.uni-container-main h2 {
+    /* text-2xl, font-bold, text-gray-800, mb-4, border-b, pb-2 */
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-top: 2rem; /* สำหรับ h2 ของ Majors ที่ใช้ mt-8 */
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+/* --- Faculties List Grid --- */
+.uni-container-main .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0.75rem; /* gap-3 */
+}
+/* For sm:grid-cols-2 */
+@media (min-width: 640px) { 
+    .uni-container-main .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+/* For lg:grid-cols-3 */
+@media (min-width: 1024px) { 
+    .uni-container-main .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Faculty Item Style */
+.uni-container-main .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div {
+    /* bg-gray-50, p-3, rounded-lg, shadow-sm, text-sm, border-l-4, border-yellow-500 */
+    background-color: #f9fafb;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+    border-left: 4px solid #f59e0b; /* สีเหลือง */
+}
+/* Fallback สำหรับ p.text-gray-500 */
+.uni-container-main p.text-gray-500 {
+    color: #6b7280;
+    font-style: italic;
+}
+
+
+/* --- Majors List Grid --- */
+.uni-container-main .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-4 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem; /* gap-2 */
+}
+/* For sm:grid-cols-3 */
+@media (min-width: 640px) { 
+    .uni-container-main .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-4 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+/* For lg:grid-cols-4 */
+@media (min-width: 1024px) { 
+    .uni-container-main .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* Major Tag Style (span) */
+.uni-container-main .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-4 span {
+    /* bg-green-50, text-green-700, text-xs, font-medium, px-2.5, py-1, rounded-full */
+    background-color: #ecfdf5; /* สีเขียวอ่อนมาก */
+    color: #047857; /* สีเขียวเข้ม */
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden; /* ป้องกันข้อความล้น */
+    text-overflow: ellipsis;
+}

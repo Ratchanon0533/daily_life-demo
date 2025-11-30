@@ -2,7 +2,7 @@ import Nav from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
 import { useEffect, useState } from "react";
 import { 
-        // useNavigate,
+        useNavigate,
         useLocation 
        }
      from "react-router-dom";
@@ -28,7 +28,7 @@ const UN = () => {
     const [universities, setUniversities] = useState<University[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
@@ -68,6 +68,10 @@ const UN = () => {
         if (universities.length === 0) {
             return <div className="text-center p-5">ไม่พบข้อมูลมหาวิทยาลัยที่ค้นหา</div>;
         }
+
+
+        const handelfaculty = universities[0].faculties;
+        console.log("FACULTY =", handelfaculty);
 
         return (
             <div className="universities-container">
@@ -119,7 +123,7 @@ const UN = () => {
                         </div>
 
                         <div className="university-actions">
-                            <button className="btn btn-primary">ดูรายละเอียด</button>
+                            <button className="btn btn-primary"  onClick={() => faculty({ un: u.uni_id })}>ดูรายละเอียด</button>
                             <button className="btn btn-secondary">เพิ่มเป็นรายการโปรด</button>
                         </div>
                     </div>
@@ -127,6 +131,31 @@ const UN = () => {
             </div>
         );
     };
+
+const faculty = ({ un }: { un: number }) => {
+    // 1. Log ค่า Input ที่รับเข้ามา
+    // console.log("Input University ID (un) =", un);
+
+    // 2. กรองหาข้อมูลมหาวิทยาลัยที่ตรงกับ ID
+    // ผลลัพธ์ที่ได้จะเป็น Array ([...]) เสมอ
+    const data = universities.filter(u => u.uni_id === un);
+
+    // 3. ตรวจสอบว่าพบข้อมูลหรือไม่
+    if (data.length > 0) {
+        // หากพบข้อมูล:
+        const universityData = data[0]; // ดึง Object แรกออกมา
+
+        // console.log("Found University ID =", universityData.uni_id);
+        
+        // 4. นำทางไปยังหน้า '/faculty' พร้อมส่งข้อมูล Object นั้นไป
+        navigate("/faculty", { state: universityData });
+    } else {
+        // หากไม่พบข้อมูล (data.length === 0)
+        console.log(`Error: University ID ${un} not found.`);
+        // **(ทางเลือก)** อาจเพิ่มการจัดการ เช่น แจ้งเตือนผู้ใช้ หรือนำไปหน้า Home
+        // navigate("/"); 
+    }
+};
 
     return (
         <>
