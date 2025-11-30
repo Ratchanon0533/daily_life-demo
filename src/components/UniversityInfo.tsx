@@ -2,43 +2,68 @@ import Nav from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import "./css/UniversityInfo.css"; // ตรวจสอบว่ามี CSS ไฟล์นี้อยู่จริง
+import "./css/UniversityInfo.css";
 
-// Type สำหรับข้อมูลมหาวิทยาลัยตัวเดียว (เพราะเราส่งข้อมูลมหาวิทยาลัยตัวเดียวมา)
 interface UniversityData {
     id?: number;
-    uni_id: string; // ให้แน่ใจว่า uni_id มีค่า
-    university_th: string;
-    university_en: string;
+    uni_id?: string;
+    university_th?: string;
+    university_en?: string;
     university_shortname?: string;
     university_type?: string;
     province?: string;
     website?: string;
     logo?: string;
-    campuses?: string; // เปลี่ยนจาก any เป็น string หรือ Array<string> ตามข้อมูลจริง
-    faculties?: string; // เปลี่ยนจาก any เป็น string (ถ้าเป็น JSON string)
-    majors?: string; // เปลี่ยนจาก any เป็น string (ถ้าเป็น JSON string)
+    campuses?: any;
+    faculties?: any; // อาจเป็น string (JSON) หรือ array
+    majors?: any;    // อาจเป็น string (JSON) หรือ array
 }
 
-// Function เพื่อแปลง JSON String เป็น Array (ถ้าข้อมูล faculties/majors ถูกส่งมาเป็น string)
-const safeParseJSON = (jsonString: string | undefined): string[] => {
-    if (!jsonString) return [];
-    try {
-        // อาจจะต้องปรับตามรูปแบบ JSON จริงที่ได้รับมา เช่นถ้าเป็น Array of String
-        const parsed = JSON.parse(jsonString);
-        console.log("Parsed JSON =", parsed);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        console.error("Error parsing JSON string:", error);
-        return [];
+// ฟังก์ชั่นแปลง JSON String เป็น Array
+const safeParseJSON = (data: any): string[] => {
+    if (!data) return [];
+    
+    // ถ้าเป็น array อยู่แล้ว
+    if (Array.isArray(data)) {
+        return data.map((item) => {
+            // ถ้า item เป็น object ให้ดึง faculty_name หรือ name
+            if (typeof item === "object" && item !== null) {
+                return item.faculty_name || item.name || item.major_name || JSON.stringify(item);
+            }
+            return String(item);
+        });
     }
+    
+    // ถ้าเป็น object เดี่ยว (ไม่ใช่ array)
+    if (typeof data === "object" && data !== null) {
+        // ถ้า object มี faculty_name
+        if (data.faculty_name) return [data.faculty_name];
+        // ถ้า object มี keys ให้ loop
+        return Object.values(data)
+            .filter(v => typeof v === "string")
+            .map(String);
+    }
+    
+    // ถ้าเป็น string ให้ parse
+    if (typeof data === "string") {
+        try {
+            const parsed = JSON.parse(data);
+            // recursive call สำหรับ parsed result
+            return safeParseJSON(parsed);
+        } catch {
+            // ถ้า parse ไม่ได้ ให้ return string เป็น array
+            return [data];
+        }
+    }
+    
+    return [];
 };
 
-// เปลี่ยนชื่อ Component เพื่อความชัดเจน
 const UniversityInfo = () => {
     const [mode, setMode] = useState<"login" | "no-login">("no-login");
-    // เปลี่ยนชื่อ State ให้เป็น university แทน faculty เพื่อไม่ให้สับสน
     const [university, setUniversity] = useState<UniversityData | null>(null);
+    const [faculties, setFaculties] = useState<string[]>([]);
+    const [majors, setMajors] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
 
     const location = useLocation();
@@ -47,96 +72,35 @@ const UniversityInfo = () => {
         const token = localStorage.getItem("token");
         setMode(token ? "login" : "no-login");
 
-        // ข้อมูลที่ส่งมาจาก navigate("/faculty", { state: universityData })
-        const data: UniversityData | null = location.state as UniversityData | null;
-        console.log("STATE (University Data) =", data);
+        // ข้อมูลที่ส่งมา
+        const data = location.state as UniversityData | null;
+        console.log("University Data:", data);
 
-        if (data && data.uni_id) { // ตรวจสอบว่ามีข้อมูลและมี uni_id (key หลัก)
+        if (data) {
             setUniversity(data);
+            setFaculties(safeParseJSON(data.faculties));
+            setMajors(safeParseJSON(data.majors));
         }
         setLoading(false);
     }, [location.state]);
 
-    // **ลบ Function faculty_data** เพราะตอนนี้เรามีข้อมูลอยู่ใน state 'university' แล้ว
-
-    const renderUniversityContent = () => {
-        if (loading) {
-            return <div className="text-center p-5 text-lg">กำลังโหลดข้อมูล... ⏳</div>;
-        }
-
-        if (!university) {
-            return <div className="text-center p-5 text-lg">ไม่พบข้อมูลมหาวิทยาลัยที่ค้นหา 🧐</div>;
-        }
-
-        // ดึงและแปลงข้อมูล faculties/majors ที่อาจเป็น JSON String
-        const faculty: UniversityData | null = location.state as UniversityData | null;
-        const facultyList = faculty['faculties'];
-        const majorList = faculty['majors'];
-        console.log("Parsed Faculties =", facultyList);
-        console.log("Parsed Majors =", majorList);
-
+    if (loading) {
         return (
-            <div className="uni-container-main bg-white shadow-lg rounded-xl p-8 max-w-4xl mx-auto my-10 border-t-4 border-blue-500">
-                
-                {/* --- Header/Logo Section --- */}
-                <div className="flex items-center space-x-6 pb-6 border-b mb-6">
-                    {university.logo && (
-                        <img src={university.logo} alt={`${university.university_shortname} logo`} className="w-20 h-20 object-contain rounded-full border p-1" />
-                    )}
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-800">{university.university_th}</h1>
-                        <p className="text-xl text-gray-600">{university.university_en}</p>
-                        <p className="text-sm text-gray-400">({university.university_shortname})</p>
-                    </div>
-                </div>
-                
-                {/* --- General Information --- */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 mb-8">
-                    <p>
-                        <span className="font-semibold text-blue-600">ประเภท:</span> {university.university_type || '-'}
-                    </p>
-                    <p>
-                        <span className="font-semibold text-blue-600">ที่ตั้ง:</span> {university.province || '-'}
-                    </p>
-                    <p className="col-span-1 md:col-span-2">
-                        <span className="font-semibold text-blue-600">เว็บไซต์:</span> 
-                        <a href={university.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline ml-2">
-                            {university.website || 'ไม่มีข้อมูล'}
-                        </a>
-                    </p>
-                </div>
-                
-                {/* --- Faculties Section --- */}
-                <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">คณะที่เปิดสอน ({facultyList})</h2>
-                {/* {facultyList.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {facultyList.map((item, index) => (
-                            <div key={index} className="bg-gray-50 p-3 rounded-lg shadow-sm text-sm border-l-4 border-yellow-500">
-                                {item}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-gray-500">ไม่พบข้อมูลคณะที่เปิดสอน</p>
-                )} */}
-                
-                {/* --- Majors Section (Optional, ถ้ามีข้อมูล) --- */}
-                {/* {majorList.length > 0 && (
-                    <>
-                        <h2 className="text-2xl font-bold text-gray-800 mt-8 mb-4 border-b pb-2">สาขาที่เปิดสอน ({majorList.length})</h2>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                            {majorList.map((item, index) => (
-                                <span key={index} className="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full text-center">
-                                    {item}
-                                </span>
-                            ))}
-                        </div>
-                    </>
-                )} */}
-
-            </div>
+            <>
+                {mode === "login" ? <Navlogin /> : <Nav />}
+                <div className="text-center p-10 text-lg">กำลังโหลดข้อมูล... ⏳</div>
+            </>
         );
-    };
+    }
+
+    if (!university) {
+        return (
+            <>
+                {mode === "login" ? <Navlogin /> : <Nav />}
+                <div className="text-center p-10 text-lg text-red-600">❌ ไม่พบข้อมูลมหาวิทยาลัย</div>
+            </>
+        );
+    }
 
     return (
         <>
@@ -144,10 +108,103 @@ const UniversityInfo = () => {
 
             <div className="suggestion-header pt-10 pb-10">
                 <div className="results-header text-center mb-10">
-                    <h1 className="text-4xl font-extrabold text-blue-800">ข้อมูลมหาวิทยาลัย</h1>
+                    <h1 className="text-4xl font-extrabold text-blue-800">🎓 ข้อมูลมหาวิทยาลัย</h1>
                 </div>
-                
-                {renderUniversityContent()}
+
+                <div className="uni-container-main bg-white shadow-lg rounded-xl p-8 max-w-4xl mx-auto my-10 border-t-4 border-blue-500">
+                    
+                    {/* --- Header/Logo Section --- */}
+                    <div className="flex items-center space-x-6 pb-6 border-b mb-6">
+                        {university.logo ? (
+                            <img 
+                                src={university.logo} 
+                                alt={university.university_shortname} 
+                                className="w-20 h-20 object-contain rounded-full border p-1"
+                            />
+                        ) : (
+                            <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">🏛️</div>
+                        )}
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-800">
+                                {university.university_th || "ไม่ระบุชื่อ"}
+                            </h1>
+                            <p className="text-xl text-gray-600">
+                                {university.university_en || ""}
+                            </p>
+                            <p className="text-sm text-gray-400">
+                                ({university.university_shortname || "-"})
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* --- General Information --- */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 mb-8">
+                        <div>
+                            <span className="font-semibold text-blue-600">📋 ประเภท:</span> 
+                            <span className="ml-2">{university.university_type || "-"}</span>
+                        </div>
+                        <div>
+                            <span className="font-semibold text-blue-600">📍 ที่ตั้ง:</span> 
+                            <span className="ml-2">{university.province || "-"}</span>
+                        </div>
+                        <div className="col-span-1 md:col-span-2">
+                            <span className="font-semibold text-blue-600">🌐 เว็บไซต์:</span> 
+                            {university.website ? (
+                                <a 
+                                    href={university.website} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-blue-500 hover:underline ml-2"
+                                >
+                                    {university.website}
+                                </a>
+                            ) : (
+                                <span className="ml-2 text-gray-400">ไม่มีข้อมูล</span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* --- Faculties Section --- */}
+                    <div className="mb-8">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
+                            📚 คณะที่เปิดสอน ({faculties.length})
+                        </h2>
+                        {faculties.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {faculties.map((faculty, index) => (
+                                    <div 
+                                        key={index} 
+                                        className="bg-yellow-50 p-4 rounded-lg shadow-sm border-l-4 border-yellow-500"
+                                    >
+                                        <p className="text-sm font-medium text-gray-800">✓ {faculty}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500">ไม่พบข้อมูลคณะที่เปิดสอน</p>
+                        )}
+                    </div>
+
+                    {/* --- Majors Section --- */}
+                    {majors.length > 0 && (
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
+                                📖 สาขาวิชา ({majors.length})
+                            </h2>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                                {majors.map((major, index) => (
+                                    <span 
+                                        key={index} 
+                                        className="bg-green-100 text-green-700 text-xs font-medium px-3 py-2 rounded-full text-center"
+                                    >
+                                        {major}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                </div>
             </div>
         </>
     );
