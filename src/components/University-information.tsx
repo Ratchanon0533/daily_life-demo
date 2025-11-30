@@ -70,8 +70,8 @@ const UN = () => {
         }
 
 
-        const handelfaculty = universities[0].faculties;
-        console.log("FACULTY =", handelfaculty);
+        // const handelfaculty = universities[0].faculties;
+        // console.log("FACULTY =", handelfaculty);
 
         return (
             <div className="universities-container">

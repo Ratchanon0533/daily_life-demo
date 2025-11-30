@@ -26,6 +26,7 @@ const safeParseJSON = (jsonString: string | undefined): string[] => {
     try {
         // อาจจะต้องปรับตามรูปแบบ JSON จริงที่ได้รับมา เช่นถ้าเป็น Array of String
         const parsed = JSON.parse(jsonString);
+        console.log("Parsed JSON =", parsed);
         return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
         console.error("Error parsing JSON string:", error);
@@ -68,8 +69,9 @@ const UniversityInfo = () => {
         }
 
         // ดึงและแปลงข้อมูล faculties/majors ที่อาจเป็น JSON String
-        const facultyList = safeParseJSON(university.faculties);
-        const majorList = safeParseJSON(university.majors);
+        const faculty: UniversityData | null = location.state as UniversityData | null;
+        const facultyList = faculty['faculties'];
+        const majorList = faculty['majors'];
         console.log("Parsed Faculties =", facultyList);
         console.log("Parsed Majors =", majorList);
 
@@ -105,8 +107,8 @@ const UniversityInfo = () => {
                 </div>
                 
                 {/* --- Faculties Section --- */}
-                <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">คณะที่เปิดสอน ({facultyList.length})</h2>
-                {facultyList.length > 0 ? (
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">คณะที่เปิดสอน ({facultyList})</h2>
+                {/* {facultyList.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {facultyList.map((item, index) => (
                             <div key={index} className="bg-gray-50 p-3 rounded-lg shadow-sm text-sm border-l-4 border-yellow-500">
@@ -116,10 +118,10 @@ const UniversityInfo = () => {
                     </div>
                 ) : (
                     <p className="text-gray-500">ไม่พบข้อมูลคณะที่เปิดสอน</p>
-                )}
+                )} */}
                 
                 {/* --- Majors Section (Optional, ถ้ามีข้อมูล) --- */}
-                {majorList.length > 0 && (
+                {/* {majorList.length > 0 && (
                     <>
                         <h2 className="text-2xl font-bold text-gray-800 mt-8 mb-4 border-b pb-2">สาขาที่เปิดสอน ({majorList.length})</h2>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -130,7 +132,7 @@ const UniversityInfo = () => {
                             ))}
                         </div>
                     </>
-                )}
+                )} */}
 
             </div>
         );
