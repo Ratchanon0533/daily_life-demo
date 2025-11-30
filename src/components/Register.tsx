@@ -57,28 +57,29 @@ const Reg = () => {
                 }),
             });
 
-            const responseadmin = await fetch("https://daily-life-backend.vercel.app/api/login-@min", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: loginUsername,
-                    password: loginPassword,
-                }),
-            });
+            // const responseadmin = await fetch("https://daily-life-backend.vercel.app/api/login-@min", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify({
+            //         username: loginUsername,
+            //         password: loginPassword,
+            //     }),
+            // });
 
             const data = await response.json();
-            const dataadmin = await responseadmin.json();
+            // const dataadmin = await responseadmin.json();
 
             console.log("Login response data:", data);
 
-            if (dataadmin.message === "Admin Login Success") {
-                setMessage("Login successful!");
-                setAlertType("success");
-                navigatory("/HOME");
-                localStorage.setItem("token", data.token);
-            }else if (data.message === "Login Success") {
+            // if (dataadmin.message === "Admin Login Success") {
+            //     setMessage("Login successful!");
+            //     setAlertType("success");
+            //     navigatory("/HOME");
+            //     localStorage.setItem("token", data.token);
+            // }
+            if (data.message === "Login Success") {
                 setMessage("Admin Login successful!");
                 setAlertType("success");
                 navigatory("/HOME");
