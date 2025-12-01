@@ -13,16 +13,6 @@ import Partner from './partner';
 import Contact from './contact';
 
 const Home = () => {
-
-    const navigate = useNavigate();
-    const location = useLocation();
-    
-
-    const data: any = location.state;
-    const newdata = data ? data.data : null;
-    console.log("STATE in HOME =", data);
-    console.log("NEW DATA in HOME =", newdata);
-
     return (
         <>
             <Nav />
