@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Index from '../components/index'
-import REG from '../components/Register'
+import Reg from '../components/Register'
 import QuickSerach from '../components/Quick_search'
 import About from '../components/About'
 import HOME from '../components/home'
@@ -12,11 +12,11 @@ const AppRoute = () => {
     return (
         <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/register" element={<REG />} />
-            <Route path="/quick_search" element={<QuickSerach />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/home" element={<HOME />} />
-            <Route path="/search" element={<UN/>} />
+            <Route path="/Register" element={<Reg />} />
+            <Route path="/quick_search" element={<QuickSerach/>} />
+            <Route path="/About" element={<About/>} />
+            <Route path="/HOME" element={<HOME/>} />
+            <Route path="/search" element={<UN />} />
             <Route path="/faculty" element={<Faculty />} />
             <Route path="/profile" element={<Profile />} />
         </Routes>
