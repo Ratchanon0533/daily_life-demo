@@ -1,5 +1,4 @@
 // main.tsx
-import { useNavigate, useLocation } from "react-router-dom";
 import Nav from './nav-bar(login)';
 import SearchSection from './search-section';
 import Carousel from './carousel-section';
