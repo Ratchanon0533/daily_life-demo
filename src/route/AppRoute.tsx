@@ -6,6 +6,7 @@ import About from '../components/About'
 import HOME from '../components/home'
 import UN from '../components/University-information'
 import Faculty from '../components/UniversityInfo'
+import Profile from '../components/Profile'
 
 const AppRoute = () => {
     return (
@@ -17,6 +18,7 @@ const AppRoute = () => {
             <Route path="/home" element={<HOME />} />
             <Route path="/search" element={<UN/>} />
             <Route path="/faculty" element={<Faculty />} />
+            <Route path="/profile" element={<Profile />} />
         </Routes>
     )
 }

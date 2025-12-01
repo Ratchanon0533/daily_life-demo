@@ -1,4 +1,5 @@
 // main.tsx
+import { useNavigate, useLocation } from "react-router-dom";
 import Nav from './nav-bar(login)';
 import SearchSection from './search-section';
 import Carousel from './carousel-section';
@@ -12,6 +13,16 @@ import Partner from './partner';
 import Contact from './contact';
 
 const Home = () => {
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    
+
+    const data: any = location.state;
+    const newdata = data ? data.data : null;
+    console.log("STATE in HOME =", data);
+    console.log("NEW DATA in HOME =", newdata);
+
     return (
         <>
             <Nav />

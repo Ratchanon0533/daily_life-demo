@@ -105,7 +105,15 @@ const Navlogin = () => {
                                 />
 
                                 <ul className="dropdown-menu">
-                                    <li><a className="dropdown-item" href="#">Profile</a></li>
+                                    <li>
+                                        <button
+                                            className="dropdown-item"
+                                            onClick={() => navigate("/profile")}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            Profile
+                                        </button>
+                                    </li>
                                     <li><a className="dropdown-item" href="#">Settings</a></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li>
@@ -113,7 +121,7 @@ const Navlogin = () => {
                                             className="dropdown-item"
                                             onClick={() => {
                                                 localStorage.removeItem("token");
-                                                navigate("/Register");
+                                                navigate("/");
                                             }}
                                             style={{ cursor: "pointer" }}
                                         >

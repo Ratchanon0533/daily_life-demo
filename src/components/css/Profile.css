@@ -1,0 +1,32 @@
+:root{--accent:#1b74e4;--muted:#7a7a7a}
+.ps-page{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#222}
+.ps-header{position:relative;height:160px;display:flex;align-items:flex-end}
+.ps-header-bg{position:absolute;inset:0;background:linear-gradient(90deg,#0b2f4a, #123e6b);opacity:0.95}
+.ps-header-inner{position:relative;display:flex;align-items:center;gap:20px;padding:18px 28px}
+.ps-avatar{width:96px;height:96px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#3aa0ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:32px;box-shadow:0 8px 24px rgba(11,32,48,0.45)}
+.ps-user{color:#fff}
+.ps-name{margin:0;font-size:22px}
+.ps-sub{color:rgba(255,255,255,0.8);margin-top:6px}
+.ps-ctas{margin-top:10px;display:flex;gap:8px}
+.ps-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);color:#fff;padding:8px 12px;border-radius:6px;cursor:pointer}
+.ps-btn.primary{background:var(--accent);border-color:transparent}
+
+.ps-main{display:flex;gap:20px;padding:22px}
+.ps-left{flex:1}
+.ps-right{width:320px}
+.ps-panel{background:#fff;border-radius:8px;padding:12px;box-shadow:0 6px 14px rgba(16,24,40,0.06);margin-bottom:14px}
+.ps-panel h3{margin:0 0 8px 0}
+.ps-panel label{display:block;font-size:12px;color:var(--muted);margin-top:8px}
+.ps-panel input{width:100%;padding:8px;margin-top:6px;border:1px solid #e6e6e6;border-radius:6px}
+
+.ps-badges{display:flex;flex-wrap:wrap;gap:8px}
+.ps-badge{background:linear-gradient(90deg,#f0f8ff,#e6f3ff);padding:6px 10px;border-radius:20px;font-size:12px;color:#065;box-shadow:0 2px 6px rgba(11,32,48,0.06)}
+
+.ps-activity{list-style:none;padding:0;margin:0}
+.ps-activity li{padding:8px 0;border-bottom:1px dashed #f0f0f0;color:#333}
+
+.ps-stats{display:flex;gap:8px}
+.ps-stat{flex:1;background:linear-gradient(180deg,#f8fbff,#fff);padding:10px;border-radius:6px;text-align:center}
+.ps-stat strong{display:block;font-size:18px;color:var(--accent)}
+
+@media(max-width:900px){.ps-main{flex-direction:column}.ps-right{width:100%}}
