@@ -7,6 +7,7 @@ import HOME from '../components/home'
 import UN from '../components/University-information'
 import Faculty from '../components/UniversityInfo'
 import Profile from '../components/Profile'
+import Setting from '../components/Setting'
 
 const AppRoute = () => {
     return (
@@ -19,6 +20,7 @@ const AppRoute = () => {
             <Route path="/search" element={<UN />} />
             <Route path="/faculty" element={<Faculty />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path='/setting' element={<Setting/>}/>
         </Routes>
     )
 }

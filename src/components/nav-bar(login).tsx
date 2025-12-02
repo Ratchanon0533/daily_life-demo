@@ -114,7 +114,15 @@ const Navlogin = () => {
                                             Profile
                                         </button>
                                     </li>
-                                    <li><a className="dropdown-item" href="#">Settings</a></li>
+                                    <li>
+                                        <button
+                                            className="dropdown-item"
+                                            onClick={() => navigate("/setting")}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            Settings
+                                        </button>
+                                    </li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li>
                                         <button

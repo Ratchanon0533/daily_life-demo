@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/Profile.css';
 
@@ -11,6 +11,7 @@ type UserProfile = {
   level?: number;
   badges?: string[];
   recent?: string[];
+  profile_image?: string;
 };
 
 const defaultBadges = ['Welcome', 'Verified', 'Contributor'];
@@ -20,63 +21,92 @@ const ProfileSteam: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile>({});
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const storedUserString = localStorage.getItem("user");
+  const storedUser = storedUserString ? JSON.parse(storedUserString) : null;
 
   // โหลดข้อมูลผู้ใช้จาก localStorage ตอนเข้าเพจ
   useEffect(() => {
     const token = localStorage.getItem('token');
-
     if (!token) {
       navigate('/Register');
       return;
     }
 
-    const storedUser = localStorage.getItem("user");
-
     if (storedUser) {
-      const u = JSON.parse(storedUser);
-
       setProfile({
-        firstname: u.firstname || "",
-        lastname: u.lastname || "",
-        username: u.username || "",
-        email: u.email || "",
-        phone: u.phone || "",
-        level: u.level || 1,
+        firstname: storedUser.firstname || "",
+        lastname: storedUser.lastname || "",
+        username: storedUser.username || "",
+        email: storedUser.email || "",
+        phone: storedUser.phone || "",
+        level: storedUser.level || 1,
         badges: defaultBadges,
-        recent: ["Logged in successfully"]
+        recent: ["Logged in successfully"],
+        profile_image: storedUser.profile_image || ''
       });
     }
-
   }, [navigate]);
 
-  // ชื่อย่อ Avatar
-  const initials = () => {
-    const f = profile.firstname || '';
-    const l = profile.lastname || '';
-    if (f || l) return (f.charAt(0) + (l ? l.charAt(0) : '')).toUpperCase();
-    return (profile.username || 'U').charAt(0).toUpperCase();
-  };
-
-  // อัปเดตข้อมูล input
+  // อัปเดต input
   const handleChange = (key: keyof UserProfile, value: string) => {
     setProfile((p) => ({ ...p, [key]: value }));
   };
 
-  // Save profile (เก็บเฉพาะใน localStorage)
-  const handleSave = () => {
+  // เปลี่ยนไฟล์รูป
+  // const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     const file = e.target.files[0];
+  //     setImageFile(file);
+  //     setProfile((p) => ({ ...p, profile_image: URL.createObjectURL(file) }));
+  //   }
+  // };
+
+  // Save profile
+  const handleSave = async () => {
     setSaving(true);
     try {
-      localStorage.setItem('user', JSON.stringify(profile));
+      let formData: FormData | null = null;
+
+      if (imageFile) {
+        // ถ้ามีไฟล์รูป ให้ส่ง FormData
+        formData = new FormData();
+        formData.append("profile_image", imageFile);
+        formData.append("firstname", profile.firstname || "");
+        formData.append("lastname", profile.lastname || "");
+        formData.append("email", profile.email || "");
+        formData.append("phone", profile.phone || "");
+        formData.append("username", profile.username || "");
+      }
+
+      const response = await fetch(`http://localhost:5000/api/user/${storedUser.id}`, {
+        method: 'PUT',
+        headers: formData ? {} : { "Content-Type": "application/json" },
+        body: formData ? formData : JSON.stringify(profile),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Server Error:", data);
+        alert("Update failed: " + data.message);
+        return;
+      }
+
+      // อัปเดต localStorage
+      localStorage.setItem('user', JSON.stringify({ ...storedUser, ...profile }));
+
       setEditing(false);
+      setImageFile(null);
+      alert("Profile updated successfully!");
     } catch (e) {
-      console.error('save error', e);
-      alert('Cannot save profile');
+      console.error("Save Error:", e);
+      alert("Cannot save profile");
     } finally {
       setSaving(false);
     }
   };
 
-  // Logout
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -88,7 +118,17 @@ const ProfileSteam: React.FC = () => {
       <header className="ps-header">
         <div className="ps-header-bg" />
         <div className="ps-header-inner">
-          <div className="ps-avatar">{initials()}</div>
+          <div className="ps-avatar-box">
+            <img
+              src={profile.profile_image || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
+              alt="Profile"
+              className="ps-avatar"
+            />
+            {/* {editing && (
+              <input type="file" onChange={handleFileChange} accept="image/*" />
+            )} */}
+          </div>
+
           <div className="ps-user">
             <h2 className="ps-name">
               {(profile.firstname || '') + (profile.lastname ? ` ${profile.lastname}` : '') || profile.username || 'User'}
@@ -97,7 +137,11 @@ const ProfileSteam: React.FC = () => {
             <div className="ps-ctas">
               {!editing ? (
                 <>
+
                   <button className="ps-btn primary" onClick={() => setEditing(true)}>Edit Profile</button>
+
+                  {/* <button className="ps-btn" onClick={() => setEditing(true)}>Edit</button> */}
+
                   <button className="ps-btn" onClick={handleLogout}>Logout</button>
                 </>
               ) : (
@@ -132,7 +176,14 @@ const ProfileSteam: React.FC = () => {
               onChange={(e) => handleChange('lastname', e.target.value)}
             />
 
-            <label>E-mail</label>
+            <label>Username</label>
+            <input
+              value={profile.username || ''}
+              disabled={!editing}
+              onChange={(e) => handleChange('username', e.target.value)}
+            />
+
+            <label>Email</label>
             <input
               value={profile.email || ''}
               disabled={!editing}
