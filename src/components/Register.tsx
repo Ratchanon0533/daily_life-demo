@@ -60,7 +60,6 @@ const Reg = () => {
             });
 
             const data = await response.json();
-            console.log("Login response data:", data); 
 
              if (data.message === "Login Success") {
                 setMessage("Admin Login successful!");
