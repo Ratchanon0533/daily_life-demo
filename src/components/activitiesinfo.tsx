@@ -27,6 +27,7 @@ const Activitiesinfo = () => {
   const [mode, setMode] = useState<"login" | "no-login">("no-login");
   const [organizers, setOrganizers] = useState<Organizer[]>([]);
   const [activity, setActivity] = useState<Activity | null>(null);
+  console.log(organizers)
 
   const { id } = useParams<{ id: string }>();
 
