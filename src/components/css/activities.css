@@ -1,0 +1,104 @@
+/* ---------------------------------- */
+/* 1. Layout หลัก และ Header (ยังคงเดิม) */
+/* ---------------------------------- */
+.main-content-wrapper {
+    max-width: 1200px;
+    margin: 20px auto; 
+    padding: 0 15px; 
+}
+
+.activities-header {
+    margin-bottom: 30px;
+    border-bottom: 3px solid #f0f0f0; 
+    padding-bottom: 10px;
+}
+
+.activities-title {
+    font-size: 28px;
+    color: #007bff; 
+    font-weight: bold;
+    margin: 0;
+    display: inline-block;
+}
+
+.header-decoration {
+    height: 3px;
+    width: 80px;
+    background-color: #ffc107; 
+    margin-top: 5px;
+}
+
+
+/* ---------------------------------- */
+/* 3. Activities List (รายการ) */
+/* ---------------------------------- */
+.activities-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px; 
+}
+
+.activity-item-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    /* *สำคัญ*: Card ใช้ Flex Column เพื่อจัดเรียง รูปภาพ -> เนื้อหา */
+    display: flex;
+    flex-direction: column; 
+    
+    padding: 0; /* ลบ padding ออกจาก Card เพื่อให้รูปภาพชิดขอบ */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); 
+    transition: transform 0.2s;
+}
+
+.activity-item-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ส่วนที่จัดการรูปภาพ (ทำให้เด่น) */
+.activity-image-wrapper {
+    /* ทำให้รูปภาพครอบคลุมความกว้างทั้งหมดของ Card */
+    width: 100%; 
+    /* กำหนดความสูงเพื่อให้เป็นสี่เหลี่ยมจัตุรัส หรือมีอัตราส่วนที่ชัดเจน */
+    height: 200px; 
+    overflow: hidden; 
+    /* ลบขอบมนด้านบนเพื่อให้รูปภาพดูเด่นและชิดขอบ Card */
+    border-radius: 8px 8px 0 0; 
+}
+
+.activity-image {
+    width: 100%;
+    height: 100%;
+    /* ทำให้รูปภาพครอบคลุมพื้นที่โดยไม่บิดเบี้ยว */
+    object-fit: cover; 
+    display: block;
+}
+
+/* ส่วนของเนื้อหา (ข้อความ + Timestamp) */
+.activity-content {
+    /* เพิ่ม padding ให้กับส่วนข้อความแทน */
+    padding: 15px; 
+    flex-grow: 1; 
+    display: flex; 
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.activity-text {
+    /* เน้นข้อความหลัก */
+    font-weight: 600; 
+    margin: 0 0 8px 0; 
+    color: #333;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.activity-timestamp {
+    font-size: 12px;
+    color: #999;
+    align-self: flex-start; 
+}

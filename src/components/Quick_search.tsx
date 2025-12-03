@@ -28,7 +28,6 @@ const QuickSearch = () => {
                     <Navlogin />
                     <QuicksearchCarousel />
                     <QuicksearchMain />
-                    <div>ยินดีต้อนรับผู้ใช้ที่ล็อกอินแล้ว!</div>
                 </>
             )}
 

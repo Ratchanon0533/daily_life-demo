@@ -1,7 +1,11 @@
 // Nav.tsx
 import './css/navbar.css'
+import { useNavigate } from 'react-router-dom';
 
 const Nav = () => {
+
+     const navigate = useNavigate();
+
     return (
         <>
             <nav className="navbar navbar-expand-lg  custom-navbar" >
@@ -33,10 +37,10 @@ const Nav = () => {
                     <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
                         <ul className="navbar-nav nav-list-custom">
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/">หน้าแรก</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/">หน้าแรก</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/quick_search">ค้นหาที่เรียนด่วน</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/quick_search">แบบทดสอบ</a>
                             </li>
                             <li className="nav-item dropdown">
                                 <button
@@ -44,7 +48,7 @@ const Nav = () => {
                                     id="regionDropdown"
                                     aria-expanded="false"
                                 >
-                                    ค้นหามหาลัย
+                                    สร้างPortfolio
                                     <span className="v-icon"></span>
                                 </button>
 
@@ -63,28 +67,25 @@ const Nav = () => {
                                 </ul>
                             </li>
 
-                            <li className="nav-item dropdown">
+                            <li className="nav-item">
                                 <button
                                     className="nav-text-dropdown dropdown-toggle d-flex align-items-center"
                                     id="regionDropdown"
                                     aria-expanded="false"
+                                     onClick={() => navigate("/activities")}
                                 >
-                                    ภูมิภาค
+                                    ค้นหากิจกรรม
                                     <span className="v-icon"></span>
                                 </button>
-
-                                <ul className="dropdown-menu" aria-labelledby="regionDropdown" style={{ right: 30 }}>
-                                    <li><a className="dropdown-item" href="#">ภาคเหนือ</a></li>
-                                    <li><a className="dropdown-item" href="#">ภาคกลาง</a></li>
-                                    <li><a className="dropdown-item" href="#">ภาคตะวันออก</a></li>
-                                    <li><a className="dropdown-item" href="#">ภาคใต้</a></li>
-                                </ul>
                             </li>
-
-
+                            
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >ค้นหาตัวตน</a>
                             </li>
+                            <li className="nav-item">
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
+                            </li>
+
                             <li className="nav-item">
                                 <a className="nav-link signin-custom" href="/Register">เข้าสู่ระบบ</a>
                             </li>

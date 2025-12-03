@@ -1,19 +1,48 @@
 // Nav.tsx
 import './css/navbar.css'
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+type UserProfile = {
+    firstname?: string;
+    lastname?: string;
+    username?: string;
+    email?: string;
+    phone?: string;
+    level?: number;
+    recent?: string[];
+    profile_image?: string;
+};
+
 
 const Navlogin = () => {
     const navigate = useNavigate();
+    const [profile, setProfile] = useState<UserProfile>({});
 
-    // ฟังก์ชันสำหรับจัดการ NavLink Clicks
-    // const handleNavigation = (path: string, isButton: boolean = false) => {
-    //     if (!isButton) {
-    //         // ป้องกันการ navigate ซ้ำถ้าเป็นลิงก์ภายนอก หรือใช้ Link component แทน
-    //         if (path.startsWith('/')) {
-    //             navigate(path);
-    //         }
-    //     }
-    // };
+
+    const storedUserString = localStorage.getItem("user");
+    const storedUser = storedUserString ? JSON.parse(storedUserString) : null;
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/Register');
+            return;
+        }
+
+        if (storedUser) {
+            setProfile({
+                firstname: storedUser.firstname || "",
+                lastname: storedUser.lastname || "",
+                username: storedUser.username || "",
+                email: storedUser.email || "",
+                phone: storedUser.phone || "",
+                level: storedUser.level || 1,
+                recent: ["Logged in successfully"],
+                profile_image: storedUser.profile_image || ''
+            });
+        }
+    }, [navigate]);
 
     return (
         <>
@@ -49,15 +78,15 @@ const Navlogin = () => {
                                 <a className="nav-link nav-text-custom" href="/HOME">หน้าแรก</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/quick_search">ค้นหาที่เรียนด่วน</a>
+                                <a className="nav-link nav-text-custom" href="/quick_search">แบบทดสอบ</a>
                             </li>
                             <li className="nav-item dropdown">
                                 <button
-                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center"
+                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center nav-text-custom"
                                     id="regionDropdown"
                                     aria-expanded="false"
                                 >
-                                    ค้นหามหาลัย
+                                    สร้างPortfolio
                                     <span className="v-icon"></span>
                                 </button>
 
@@ -76,41 +105,31 @@ const Navlogin = () => {
                                 </ul>
                             </li>
 
-                            <li className="nav-item dropdown">
+                            <li className="nav-item">
                                 <button
-                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center"
+                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center nav-text-custom"
                                     id="regionDropdown"
                                     aria-expanded="false"
+                                    onClick={() => navigate("/activities")}
                                 >
-                                    ภูมิภาค
+                                    ค้นหากิจกรรม
                                     <span className="v-icon"></span>
                                 </button>
-
-                                <ul className="dropdown-menu" aria-labelledby="regionDropdown" style={{ right: 30 }}>
-                                    <li><a className="dropdown-item" href="#">ภาคเหนือ</a></li>
-                                    <li><a className="dropdown-item" href="#">ภาคกลาง</a></li>
-                                    <li><a className="dropdown-item" href="#">ภาคตะวันออก</a></li>
-                                    <li><a className="dropdown-item" href="#">ภาคใต้</a></li>
-                                </ul>
                             </li>
 
-
+                            <li className="nav-item">
+                                <a className="nav-link nav-text-custom" href="/About" >ค้นหาตัวตน</a>
+                            </li>
                             <li className="nav-item">
                                 <a className="nav-link nav-text-custom" href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
                             </li>
                             <li className="nav-item dropdown">
                                 <img
-                                    src="./img/5987424.png"
+                                    src={profile.profile_image || "./img/5987424.png"}
                                     alt="menu"
-                                    className="dropdown-toggle"
+                                    className="dropdown-toggle proflieimg"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
-                                    style={{
-                                        width: "3rem",
-                                        marginLeft: "3rem",
-                                        marginRight: "5rem",
-                                        cursor: "pointer"
-                                    }}
                                 />
 
                                 <ul className="dropdown-menu">

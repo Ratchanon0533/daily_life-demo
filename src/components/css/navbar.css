@@ -27,6 +27,7 @@
 
 
 .nav-text-custom {
+    margin-top: 1.4rem;
     color: #033E65 !important;
     font-family: 'Kanit', sans-serif;
     font-weight: 600;
@@ -229,4 +230,14 @@ button.nav-text-dropdown::after {
 
 .custom-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+.proflieimg {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    /* object-fit: cover; */
+    margin-right: 2rem;
+    margin-left: 2.4rem;
 }

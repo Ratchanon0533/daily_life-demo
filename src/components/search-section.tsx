@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 const SearchSection = () => {
     const navigatory = useNavigate();
-    
+
     // Main search input (Thai or English)
     const [inputUniversity, setInputUniversity] = useState('');
     const [inputProvince, setInputProvince] = useState('');
@@ -31,8 +31,8 @@ const SearchSection = () => {
     // Handle search
     const handlesearch = async () => {
         // เปลี่ยน: ไม่บังคับต้องกรอกชื่อมหาวิทยาลัย
-        const hasAnyInput = inputUniversity.trim() || inputProvince.trim() || 
-                           inputFaculty.trim() || inputShortName.trim() || inputMajor.trim();
+        const hasAnyInput = inputUniversity.trim() || inputProvince.trim() ||
+            inputFaculty.trim() || inputShortName.trim() || inputMajor.trim();
 
         if (!hasAnyInput) {
             alert('กรุณากรอกข้อมูลค้นหาอย่างน้อย 1 ช่อง');
@@ -112,13 +112,13 @@ const SearchSection = () => {
                                 onChange={(e) => setInputUniversity(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handlesearch()}
                             />
-                            <svg 
-                                className="search-icon-right" 
-                                width="12" 
-                                height="11" 
-                                viewBox="0 0 12 11" 
-                                fill="none" 
-                                xmlns="http://www.w3.org/2000/svg" 
+                            <svg
+                                className="search-icon-right"
+                                width="12"
+                                height="11"
+                                viewBox="0 0 12 11"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => setInputUniversity('')}
                             >
@@ -145,12 +145,12 @@ const SearchSection = () => {
                                 onChange={(e) => setInputProvince(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handlesearch()}
                             />
-                            <svg 
-                                className="search-icon-right" 
-                                width="16" 
-                                height="11" 
-                                viewBox="0 0 16 11" 
-                                fill="none" 
+                            <svg
+                                className="search-icon-right"
+                                width="16"
+                                height="11"
+                                viewBox="0 0 16 11"
+                                fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => setInputProvince('')}
@@ -175,12 +175,12 @@ const SearchSection = () => {
                                 onChange={(e) => setInputFaculty(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handlesearch()}
                             />
-                            <svg 
-                                className="search-icon-right" 
-                                width="16" 
-                                height="11" 
-                                viewBox="0 0 16 11" 
-                                fill="none" 
+                            <svg
+                                className="search-icon-right"
+                                width="16"
+                                height="11"
+                                viewBox="0 0 16 11"
+                                fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => setInputFaculty('')}
@@ -209,12 +209,12 @@ const SearchSection = () => {
                                 onChange={(e) => setInputShortName(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handlesearch()}
                             />
-                            <svg 
-                                className="search-icon-right" 
-                                width="16" 
-                                height="11" 
-                                viewBox="0 0 16 11" 
-                                fill="none" 
+                            <svg
+                                className="search-icon-right"
+                                width="16"
+                                height="11"
+                                viewBox="0 0 16 11"
+                                fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => setInputShortName('')}
@@ -226,6 +226,9 @@ const SearchSection = () => {
 
                         <button className="search-button" onClick={handlesearch}>
                             ค้นหา
+                        </button>
+                        <button className="search-button2" onClick={() => navigatory("/quick_search")}>
+                            ค้นหาแบบละเอียด
                         </button>
                     </div>
 

@@ -8,6 +8,8 @@ import UN from '../components/University-information'
 import Faculty from '../components/UniversityInfo'
 import Profile from '../components/Profile'
 import Setting from '../components/Setting'
+import Activities from '../components/activities'
+import Activitiesinfo from '../components/activitiesinfo'
 
 const AppRoute = () => {
     return (
@@ -21,6 +23,8 @@ const AppRoute = () => {
             <Route path="/faculty" element={<Faculty />} />
             <Route path="/profile" element={<Profile />} />
             <Route path='/setting' element={<Setting/>}/>
+            <Route path='/activities' element={<Activities/>}/>
+            <Route path='/activities/:id' element={<Activitiesinfo/>}/>
         </Routes>
     )
 }
