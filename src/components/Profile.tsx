@@ -80,7 +80,7 @@ const ProfileSteam: React.FC = () => {
         formData.append("username", profile.username || "");
       }
 
-      const response = await fetch(`http://localhost:5000/api/user/${storedUser.id}`, {
+      const response = await fetch(`http://localhost:5000/user/update${storedUser.id}`, {
         method: 'PUT',
         headers: formData ? {} : { "Content-Type": "application/json" },
         body: formData ? formData : JSON.stringify(profile),

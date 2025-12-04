@@ -35,7 +35,7 @@ const Activitiesinfo = () => {
     const token = localStorage.getItem("token");
     setMode(token ? "login" : "no-login");
 
-    fetch("http://localhost:5000/event/get")
+    fetch("https://daily-life-backend.vercel.app/event/get")
       .then(res => res.json())
       .then(res => {
         setOrganizers(res.data || []);

@@ -16,7 +16,7 @@ const Setting = () => {
 
     const updateProfile = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/user/${storedUser.id}`, {
+            const response = await fetch(`https://daily-life-backend.vercel.app/user/update/${storedUser.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

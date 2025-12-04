@@ -62,7 +62,7 @@ const SearchSection = () => {
         if (inputMajor.trim()) requestBody.major = inputMajor;
 
         try {
-            const response = await fetch('https://daily-life-backend.vercel.app/api/search-university', {
+            const response = await fetch('https://daily-life-backend.vercel.app/university/search', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody),
