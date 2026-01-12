@@ -2,12 +2,14 @@
 import Nav from './nav-bar';
 import styles from './css/portfolio.module.css';
 import Contact from './contact';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
     getDaysInMonth,
     format,
-    setMonth as updateMonth,
-    setYear as updateYear
+    // setMonth as 
+    // updateMonth,
+    // setYear as 
+    // updateYear
 } from 'date-fns';
 import { th } from 'date-fns/locale'; // For Thai month names
 
