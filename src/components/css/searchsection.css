@@ -1,4 +1,19 @@
-/* card section */
+/* =========================
+   Card Section
+========================= */
+
+.card-container {
+    background-color: #033E65;
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.card-box {
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+}
 
 .card-title {
     color: white;
@@ -6,42 +21,75 @@
     font-family: Kanit, sans-serif;
     font-weight: 400;
     text-align: left;
+    margin-bottom: 1rem;
 }
 
+/* =========================
+   Search Section
+========================= */
 
-.card-container {
-    background-color: #033E65;
-    display: flex;
-    justify-content: center; 
-}
-
-/* search section */
 .search-box {
     display: flex;
-    gap: 1.813rem;
-    margin-bottom: 20px;
-    justify-content: left;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+    align-items: center;
     flex-wrap: wrap;
 }
 
-.search-input {
-    flex: 1;
+/* Input wrapper */
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1 1 300px;
+    max-width: 450px;
+}
+
+.search-input-wrapper .search-input {
+    width: 100%;
     padding: 0.75rem 1rem;
+    padding-left: 50px;
+    padding-right: 32px;
     border-radius: 12px;
     border: none;
     font-size: 1rem;
     outline: none;
     background-color: white;
     color: black;
+    box-sizing: border-box;
 }
+
+/* Icons */
+
+.search-input-wrapper .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    pointer-events: none;
+}
+
+.search-input-wrapper .search-icon-right {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+/* =========================
+   Search Button
+========================= */
 
 .search-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 138px;
     height: 48px;
-    padding: 0 1.5rem;
+    padding: 0 1.75rem;
     border-radius: 12px;
     border: none;
     font-size: 1.5rem;
@@ -50,62 +98,16 @@
     cursor: pointer;
     background-color: #FAC14B;
     color: #033E65;
+    white-space: nowrap;
 }
 
-.search-button2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 138px;
-    height: 48px;
-    padding: 0 1.5rem;
-    border-radius: 12px;
-    border: none;
-    font-size: 1.5rem;
-    font-family: Kanit, sans-serif;
-    font-weight: 500;
-    cursor: pointer;
-    background-color: #FAC14B;
-    color: #033E65;
-    font-size: 0.7rem;
+.search-button:active {
+    background-color: #ffffff;
 }
 
-.search-input-wrapper {
-    position: relative;
-    display: inline-block;
-    width: 450px;
-
-}
-
-.search-input-wrapper .search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    fill: gray;
-    pointer-events: none;
-}
-.search-input-wrapper .search-icon-right {
-    position: absolute;
-    right: 10px;   /* place at the right */
-    top: 50%;
-    transform: translateY(-50%);
-    width: 15px;
-    height: 15px;
-    fill: gray;
-    cursor: pointer;          /* makes it clickable */
-    pointer-events: auto;     /* allow click */
-
-}
-
-.search-input-wrapper .search-input {
-    padding-left: 40px;
-    padding-right: 40px; 
-    width: 100%;
-    box-sizing: border-box;
-}
+/* =========================
+   Dropdown Filters
+========================= */
 
 .dropdown-search {
     height: 48px;
@@ -116,12 +118,24 @@
     font-family: Kanit, sans-serif;
     font-weight: 500;
     cursor: pointer;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     color: #033E65;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
 }
+
+/* =========================
+   Reset Button
+========================= */
+
 .reset-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     height: 48px;
-    padding: 0 1.5rem;
+    padding: 0 0.75rem;
     border-radius: 12px;
     border: none;
     font-size: 1.25rem;
@@ -129,24 +143,167 @@
     font-weight: 500;
     cursor: pointer;
     background-color: transparent;
-    color: #FFFFFF;
+    color: #ffffff;
     position: relative;
 }
+
 .reset-button::after {
     content: "";
     position: absolute;
-    bottom: 4px; /* adjust as needed */
-    left: 10%; /* starting point */
+    bottom: 6px;
+    left: 10%;
     height: 2px;
-    width: 0%; /* start hidden */
-    background-color: #FFFFFF;
-    transition: width 0.4s ease;
+    width: 0%;
+    background-color: #ffffff;
+    transition: width 0.3s ease;
+}
+
+.reset-button:hover {
+    color: #FAC14B;
 }
 
 .reset-button:hover::after {
-    width: 80%; /* final width */
+    width: 80%;
+    background-color: #FAC14B;
 }
 
-.reset-button:active {
-    color: rgb(255, 255, 255) !important;
+/* =========================
+   Deep Search Button
+========================= */
+
+.deep-search-button {
+    border-radius: 12px;
+    border: none;
+    font-size: 1.2rem;
+    font-family: Kanit, sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: transparent;
+    color: #ffffff;
+    position: relative;
+    display: inline-block;
+    padding: 0.5rem 0;
+    width: fit-content;
+}
+
+.deep-search-button:hover {
+    color: #FAC14B;
+}
+
+/* =========================
+   Tablet (≤ 1370px)
+========================= */
+
+@media (max-width: 1370px) {
+    .search-input-wrapper {
+        flex: 1 1 48%;
+        max-width: 100%;
+    }
+
+    .dropdown-search {
+        flex: 1 1 48%;
+        justify-content: space-between;
+    }
+
+    .search-button {
+        order: 1;
+        width: 100%;
+        font-size: 1.3rem;
+    }
+
+    .reset-button {
+        order: 2;
+    }
+    .search-box .search-button {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 170px;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 60%;
+        visibility: visible;
+        pointer-events: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+    }
+
+    
+    .deep-search-button {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        top: 2.5rem;
+        left: 5px;
+    }
+
+}
+
+/* =========================
+   Mobile Search Button Relocation
+   (≤ 767px)
+========================= */
+
+@media (max-width: 767px) {
+
+  
+    .search-box .search-button {
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    
+    .card-box {
+        position: relative;
+    }
+
+    .search-box .search-button {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 56px;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 60%;
+        visibility: visible;
+        pointer-events: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+    }
+
+    
+    .deep-search-button {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        top: 2.5rem;
+        left: 5px;
+    }
+
+    .search-box .reset-button {
+        display: block;
+        width: 100%;
+        min-height: 44px;
+        font-size: 1.25rem;
+        font-weight: 500;
+        border-radius: 12px;
+        background-color: #FAC14B;
+        color: #033E65;
+        padding: 0;
+        text-align: center;
+    }
+
+    .search-box .reset-button::after {
+        display: none;
+    }
+
+    .search-box .reset-button:active {
+        background-color: #FAC14B;
+        color: #033E65;
+
+    }
 }

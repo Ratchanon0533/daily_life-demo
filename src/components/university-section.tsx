@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./css/university.css";
+import style from "./css/university.module.css";
 
 const University = () => {
     const [current, setCurrent] = useState(0);
@@ -12,7 +12,7 @@ const University = () => {
             "https://f.tpkcdn.com/images-720/5d73749f9fd86421fe2c192954d912f5.jpg",
             "https://i.ytimg.com/vi/eEspYsI-zz4/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLC0Vv8m-5-PI-BgDSsRK_dwUzVc4g",
             "https://campus.campus-star.com/app/uploads/2019/05/DSC_0828-1024x678.jpg",
-            "https://campus.campus-star.com/app/uploads/2019/05/DSC_0828-1024x678.jpgbugตอนกดย้ิน",
+            
         ],
         [
             "https://campus.campus-star.com/app/uploads/2017/01/MFU-5.jpg",
@@ -39,23 +39,23 @@ const University = () => {
     };
 
     return (
-        <div className="university-box">
-            <div className="university-content p-5">
-                <div className="university-header">
+        <div className={style["university-box"]}>
+            <div className={style["university-content"] + " p-5"}>
+                <div className={style["university-header"]}>
                     มหาวิทยาลัยยอดนิยม (Top University)
                 </div>
 
-                <hr className="divider" />
+                <hr className={style["divider"]} />
 
-                <div className="uni-slideshow">
+                <div className={style["uni-slideshow"]}>
                     <div
                         key={current + direction}
                         className={`slide slide-${direction}`}
                     >
-                        <div className="four-box-container">
+                        <div className={style["four-box-container"]}>
                             {slides[current].map((imgUrl, index) => (
-                                <div className="four-box-item" key={index}>
-                                    <div className="image-box">
+                                <div className={style["four-box-item"]} key={index}>
+                                    <div className={style["image-box"]}>
                                         <img src={imgUrl} alt={`University ${index + 1}`} />
                                         
                                     </div>
@@ -64,8 +64,8 @@ const University = () => {
                         </div>
                     </div>
 
-                    <button className="slide-btn prev" onClick={prevSlide}>❮</button>
-                    <button className="slide-btn next" onClick={nextSlide}>❯</button>
+                    <button className={style["slide-btn"] + " " + style["prev"]} onClick={prevSlide}>❮</button>
+                    <button className={style["slide-btn"] + " " + style["next"]} onClick={nextSlide}>❯</button>
                 </div>
             </div>
         </div>

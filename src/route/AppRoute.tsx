@@ -10,6 +10,8 @@ import Profile from '../components/Profile'
 import Setting from '../components/Setting'
 import Activities from '../components/activities'
 import Activitiesinfo from '../components/activitiesinfo'
+import Portfolio from '../components/portfolio'
+import SelfDiscoveryQuiz from '../components/Quiz'
 
 const AppRoute = () => {
     return (
@@ -25,6 +27,8 @@ const AppRoute = () => {
             <Route path='/setting' element={<Setting/>}/>
             <Route path='/activities' element={<Activities/>}/>
             <Route path='/activities/:id' element={<Activitiesinfo/>}/>
+            <Route path='/portfolio' element={<Portfolio/>}/>
+            <Route path='/quiz' element={<SelfDiscoveryQuiz/>}/>
         </Routes>
     )
 }

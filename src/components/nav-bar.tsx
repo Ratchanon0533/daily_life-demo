@@ -1,14 +1,13 @@
 // Nav.tsx
-import './css/navbar.css'
-import { useNavigate } from 'react-router-dom';
+import './css/navbar.css';
 
 const Nav = () => {
 
-     const navigate = useNavigate();
+;
 
     return (
         <>
-            <nav className="navbar navbar-expand-lg  custom-navbar" >
+            <nav className="navbar navbar-expand-xl  custom-navbar" >
                 <div className="container-fluid p-0">
 
                     <a className="navbar-brand me-auto " href="/">
@@ -40,43 +39,16 @@ const Nav = () => {
                                 <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/">หน้าแรก</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/quick_search">แบบทดสอบ</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/quiz">แบบทดสอบ</a>
                             </li>
-                            <li className="nav-item dropdown">
-                                <button
-                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center"
-                                    id="regionDropdown"
-                                    aria-expanded="false"
-                                >
-                                    สร้างPortfolio
-                                    <span className="v-icon"></span>
-                                </button>
+                            <li className="nav-item">
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/portfolio">สร้างแฟ้มสะสมผลงาน</a>
+                            </li>
 
-                                <ul className="dropdown-menu" aria-labelledby="regionDropdown">
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยมหิดล (Mahidol University)</a></li>
-                                    <li><a className="dropdown-item" href="#">จุฬาลงกรณ์มหาวิทยาลัย (Chulalongkorn University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเชียงใหม่ (Chiang Mai University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเกษตรศาสตร์ (Kasetsart University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยขอนแก่น (Khon Kaen University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี (KMUTT)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยสงขลานครินทร์ (Prince of Songkla University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยธรรมศาสตร์ (Thammasat University)</a></li>
-                                    <li><a className="dropdown-item" href="#">Asian Institute of Technology (AIT)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยรามคำแหง (Ramkhamhaeng University)</a></li>
-                                    <li><a className="dropdown-item" href="#">สถาบันการจัดการปัญญาภิวัฒน์ (PIM)</a></li>
-                                </ul>
-                            </li>
+    
 
                             <li className="nav-item">
-                                <button
-                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center"
-                                    id="regionDropdown"
-                                    aria-expanded="false"
-                                     onClick={() => navigate("/activities")}
-                                >
-                                    ค้นหากิจกรรม
-                                    <span className="v-icon"></span>
-                                </button>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >ค้นหากิจกรรม</a>
                             </li>
                             
                             <li className="nav-item">

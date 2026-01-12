@@ -46,7 +46,7 @@ const Navlogin = () => {
 
     return (
         <>
-            <nav className="navbar navbar-expand-lg  custom-navbar" >
+            <nav className="navbar navbar-expand-xl  custom-navbar" >
                 <div className="container-fluid p-0">
 
                     <a className="navbar-brand me-auto " href="/">
@@ -80,7 +80,10 @@ const Navlogin = () => {
                             <li className="nav-item">
                                 <a className="nav-link nav-text-custom" href="/quick_search">แบบทดสอบ</a>
                             </li>
-                            <li className="nav-item dropdown">
+                            <li className="nav-item">
+                                <a className="nav-link nav-text-custom" href="/quick_search">สร้าง Portfolio</a>
+                            </li>
+                            {/* <li className="nav-item dropdown">
                                 <button
                                     className="nav-text-dropdown dropdown-toggle d-flex align-items-center nav-text-custom"
                                     id="regionDropdown"
@@ -103,25 +106,17 @@ const Navlogin = () => {
                                     <li><a className="dropdown-item" href="#">มหาวิทยาลัยรามคำแหง (Ramkhamhaeng University)</a></li>
                                     <li><a className="dropdown-item" href="#">สถาบันการจัดการปัญญาภิวัฒน์ (PIM)</a></li>
                                 </ul>
-                            </li>
+                            </li> */}
 
                             <li className="nav-item">
-                                <button
-                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center nav-text-custom"
-                                    id="regionDropdown"
-                                    aria-expanded="false"
-                                    onClick={() => navigate("/activities")}
-                                >
-                                    ค้นหากิจกรรม
-                                    <span className="v-icon"></span>
-                                </button>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >ค้นหากิจกรรม</a>
                             </li>
-
+                            
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/About" >ค้นหาตัวตน</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >ค้นหาตัวตน</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
                             </li>
                             <li className="nav-item dropdown">
                                 <img

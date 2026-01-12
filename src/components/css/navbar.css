@@ -163,11 +163,12 @@ button.nav-text-dropdown::after {
 
 
 /* hamburger */
-@media (max-width: 991.98px) {
 
-    /* Keep nav alignment left on mobile */
+@media (max-width:1200px) {
+
+    
     #navbarNav {
-        justify-content: flex-start !important;
+        justify-content: flex-start ;
     }
 
     #navbarNav .navbar-nav {

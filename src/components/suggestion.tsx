@@ -1,4 +1,4 @@
-import "./css/suggestion.css";
+import style from "./css/suggestion.module.css";
 
 const Suggestion = () => {
     // 15 items total (5 columns × 3 rows)
@@ -21,19 +21,18 @@ const Suggestion = () => {
     ];
 
     return (
-        <div className="suggestion-box">
-            <div className="suggestion-content p-5">
+        <div className={style["suggestion-box"]}>
+            <div className={style["suggestion-content"] + " p-5"}>
 
-                <div className="suggestion-header">
+                <div className={style["suggestion-header"]}>
                     มหาวิทยาลัยแนะนำ (Suggest University)
                 </div>
 
-                <hr className="divider" />
-
-                <div className="suggestion-grid">
+                <hr className={style["divider"]} />
+                <div className={style["suggestion-grid"]}>
                     {careers.map((imgUrl, index) => (
-                        <div className="suggestion-grid-item" key={index}>
-                            <div className="suggestion-image-box">
+                        <div className={style["suggestion-grid-item"]} key={index}>
+                            <div className={style["suggestion-image-box"]}>
                                 <img src={imgUrl} alt={`suggestion ${index + 1}`} />
                             </div>
                         </div>
