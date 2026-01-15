@@ -17,15 +17,15 @@ interface Activity {
   contact2?: string;
 }
 
-interface Organizer {
-  organizer_id: string;
-  organizer_name: string;
-  activities: Activity[];
-}
+// interface Organizer {
+//   organizer_id: string;
+//   organizer_name: string;
+//   activities: Activity[];
+// }
 
 const Activitiesinfo = () => {
   const [mode, setMode] = useState<"login" | "no-login">("no-login");
-  const [organizers, setOrganizers] = useState<Organizer[]>([]);
+  // const [organizers, setOrganizers] = useState<Organizer[]>([]);
   const [activity, setActivity] = useState<Activity | null>(null);
 
   const { id } = useParams<{ id: string }>();
@@ -37,7 +37,7 @@ const Activitiesinfo = () => {
     fetch("https://daily-life-backend.vercel.app/event/get")
       .then(res => res.json())
       .then(res => {
-        setOrganizers(res.data || []);
+        // setOrganizers(res.data || []);
         // หา activity ตาม id
         for (const org of res.data) {
           const found = org.activities.find((a: Activity) => a.activity_id === id);
