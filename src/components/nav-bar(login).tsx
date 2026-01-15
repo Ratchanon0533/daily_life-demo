@@ -75,65 +75,39 @@ const Navlogin = () => {
                     <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
                         <ul className="navbar-nav nav-list-custom">
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/HOME">หน้าแรก</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/">หน้าแรก</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/quick_search">แบบทดสอบ</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/quiz">แบบทดสอบ</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" href="/quick_search">สร้าง Portfolio</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/portfolio">สร้างแฟ้มสะสมผลงาน</a>
                             </li>
-                            {/* <li className="nav-item dropdown">
-                                <button
-                                    className="nav-text-dropdown dropdown-toggle d-flex align-items-center nav-text-custom"
-                                    id="regionDropdown"
-                                    aria-expanded="false"
-                                >
-                                    สร้างPortfolio
-                                    <span className="v-icon"></span>
-                                </button>
 
-                                <ul className="dropdown-menu" aria-labelledby="regionDropdown">
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยมหิดล (Mahidol University)</a></li>
-                                    <li><a className="dropdown-item" href="#">จุฬาลงกรณ์มหาวิทยาลัย (Chulalongkorn University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเชียงใหม่ (Chiang Mai University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเกษตรศาสตร์ (Kasetsart University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยขอนแก่น (Khon Kaen University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี (KMUTT)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยสงขลานครินทร์ (Prince of Songkla University)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยธรรมศาสตร์ (Thammasat University)</a></li>
-                                    <li><a className="dropdown-item" href="#">Asian Institute of Technology (AIT)</a></li>
-                                    <li><a className="dropdown-item" href="#">มหาวิทยาลัยรามคำแหง (Ramkhamhaeng University)</a></li>
-                                    <li><a className="dropdown-item" href="#">สถาบันการจัดการปัญญาภิวัฒน์ (PIM)</a></li>
-                                </ul>
-                            </li> */}
+
 
                             <li className="nav-item">
                                 <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/activities" >ค้นหากิจกรรม</a>
                             </li>
-                            
+
                             <li className="nav-item">
                                 <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >ค้นหาตัวตน</a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
                             </li>
+
                             <li className="nav-item dropdown">
                                 <img
                                     src={profile.profile_image || "./img/5987424.png"}
-                                    alt="menu"
-                                    className="dropdown-toggle proflieimg"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                />
-
+                                    alt="menu" className="dropdown-toggle proflieimg"
+                                    data-bs-toggle="dropdown" aria-expanded="false" />
                                 <ul className="dropdown-menu">
                                     <li>
                                         <button
                                             className="dropdown-item"
                                             onClick={() => navigate("/profile")}
-                                            style={{ cursor: "pointer" }}
-                                        >
+                                            style={{ cursor: "pointer" }} >
                                             Profile
                                         </button>
                                     </li>
@@ -141,28 +115,24 @@ const Navlogin = () => {
                                         <button
                                             className="dropdown-item"
                                             onClick={() => navigate("/setting")}
-                                            style={{ cursor: "pointer" }}
-                                        >
+                                            style={{ cursor: "pointer" }} >
                                             Settings
                                         </button>
                                     </li>
-                                    <li><hr className="dropdown-divider" /></li>
+                                    <li>
+                                        <hr
+                                            className="dropdown-divider" />
+                                    </li>
                                     <li>
                                         <button
                                             className="dropdown-item"
-                                            onClick={() => {
-                                                localStorage.removeItem("token");
-                                                navigate("/");
-                                            }}
-                                            style={{ cursor: "pointer" }}
-                                        >
+                                            onClick={() => { localStorage.removeItem("token"); navigate("/"); }}
+                                            style={{ cursor: "pointer" }} >
                                             Logout
                                         </button>
                                     </li>
-
                                 </ul>
                             </li>
-
                         </ul>
                     </div>
                 </div>
