@@ -1,5 +1,6 @@
 
 import Nav from './nav-bar';
+import Navlogin from './nav-bar(login)';
 import styles from './css/portfolio.module.css';
 import Contact from './contact';
 import { useState, useMemo, useEffect } from 'react';
@@ -23,6 +24,18 @@ const Portfolio = () => {
         certificate: false,
         university: false,
     });
+
+        const [mode, setMode] = useState<"login" | "no-login">("no-login");
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            setMode("login");
+        } else {
+            setMode("no-login");
+        }
+    }, []);
 
     const toggleSection = (key: string) => {
         setOpenSections(prev => ({
@@ -113,8 +126,22 @@ const Portfolio = () => {
 
     return (
         <>
-            <Nav />
 
+            {
+                mode === "no-login" && (
+                    <>
+                        <Nav />
+                        <h1>กรุณนาลงชื่อเข้าใช้</h1>
+                    </>
+                )
+            }
+
+
+    {
+        mode === "login" && (
+            <>
+                
+                <Navlogin />
             <div className={styles["portfolio-wrapper"]}>
                 <div className={styles["portfolio-btn-group"]}>
                     <button className={styles["port-btn"]}>จัดการแฟ้มสะสมผลงานทั้งหมด</button>
@@ -636,6 +663,11 @@ const Portfolio = () => {
 
 
             </div >
+            </>
+        )
+    }
+
+            
 
 
 

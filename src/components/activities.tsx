@@ -46,6 +46,7 @@ const Activities = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     setMode(token ? "login" : "no-login");
+    localStorage.setItem("activities", JSON.stringify(activities));
 
     fetch("https://daily-life-backend.vercel.app/event/get")
       .then((res) => res.json())

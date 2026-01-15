@@ -1,3 +1,4 @@
+import { Weight } from "lucide-react";
 import "./css/activitiesinfo.css";
 import Nav from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
@@ -17,6 +18,18 @@ interface Activity {
   contact2?: string;
 }
 
+type UserProfile = {
+  firstname?: string;
+  lastname?: string;
+  username?: string;
+  email?: string;
+  phone?: string;
+  level?: number;
+  badges?: string[];
+  recent?: string[];
+  profile_image?: string;
+};
+
 // interface Organizer {
 //   organizer_id: string;
 //   organizer_name: string;
@@ -24,15 +37,26 @@ interface Activity {
 // }
 
 const Activitiesinfo = () => {
+
+  const [activity_id, setActivityId] = useState<string>("");
+  const [organizer_name, setOrganizerName] = useState<string>("");
+  const [firstname, setFirstname] = useState<string>("");
+  const [lastname, setLastname] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+
+
+  const [profile, setProfile] = useState<UserProfile>({});
   const [mode, setMode] = useState<"login" | "no-login">("no-login");
   // const [organizers, setOrganizers] = useState<Organizer[]>([]);
   const [activity, setActivity] = useState<Activity | null>(null);
-
   const { id } = useParams<{ id: string }>();
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setMode(token ? "login" : "no-login");
+    setProfile(JSON.parse(localStorage.getItem("user") || "{}"));
+    
 
     fetch("https://daily-life-backend.vercel.app/event/get")
       .then(res => res.json())
@@ -41,6 +65,7 @@ const Activitiesinfo = () => {
         // หา activity ตาม id
         for (const org of res.data) {
           const found = org.activities.find((a: Activity) => a.activity_id === id);
+            setOrganizerName(org.organizer_name);
           if (found) {
             setActivity(found);
             break;
@@ -51,7 +76,6 @@ const Activitiesinfo = () => {
   }, [id]);
 
   if (!activity) return <p>กำลังโหลดกิจกรรม...</p>;
-
   const timeAgo = (dateStr: string) => {
     const now = new Date();
     const date = new Date(dateStr);
@@ -63,6 +87,36 @@ const Activitiesinfo = () => {
     if (diff < 172800) return "เมื่อวานนี้";
     return date.toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
   };
+
+  const handleRegister = async () => {
+  try {
+    const response = await fetch("http://localhost:5000/register-event", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        activity_id: activity_id,
+        organizer_name: organizer_name,
+        firstname: firstname,
+        lastname: lastname,
+        phone: phone,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("ลงทะเบียนไม่สำเร็จ");
+    }
+
+    const data = await response.json();
+    alert("ลงทะเบียนสำเร็จ 🎉");
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+    alert("เกิดข้อผิดพลาดในการลงทะเบียน");
+  }
+};
+
 
   return (
     <>
@@ -84,6 +138,17 @@ const Activitiesinfo = () => {
             <p>สถานะ: {activity.status}</p>
             {activity.contact1 && <p>ติดต่อ 1: {activity.contact1}</p>}
             {activity.contact2 && <p>ติดต่อ 2: {activity.contact2}</p>}
+            <button
+              onClick={() => {
+                setActivityId(activity.activity_id);
+                setFirstname(profile.firstname || "");
+                setLastname(profile.lastname || "");
+                setPhone(profile.phone || "");
+                handleRegister();
+              }}
+            >
+              ลงทะเบียน
+            </button>
           </div>
         </div>
       </div>
