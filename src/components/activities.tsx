@@ -4,48 +4,80 @@ import Navlogin from "./nav-bar(login)";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+/* ================= INTERFACES ================= */
+
 interface Activity {
   activity_id: string;
+  organizer_id: number;
+  organizer_name: string;
   title: string;
   description: string;
   location: string;
   open_date: string;
   close_date: string;
+  image_url?: string;
   status: string;
-  image?: string;
-  contact1?: string;
-  contact2?: string;
 }
 
-interface Organizer {
-  organizer_id: string;
+interface OrganizerResponse {
+  organizer_id: number;
   organizer_name: string;
-  activities: Activity[];
+  activities: {
+    activity_id: string;
+    title: string;
+    description: string;
+    location: string;
+    open_date: string;
+    close_date: string;
+    status: string;
+    image_url?: string;
+  }[];
 }
+
+/* ================= COMPONENT ================= */
 
 const Activities = () => {
   const [mode, setMode] = useState<"login" | "no-login">("no-login");
-  const [organizers, setOrganizers] = useState<Organizer[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
 
+  console.log(activities);
+
+  /* ================= FETCH DATA ================= */
   useEffect(() => {
     const token = localStorage.getItem("token");
     setMode(token ? "login" : "no-login");
 
     fetch("https://daily-life-backend.vercel.app/event/get")
-      .then(res => res.json())
-      .then(res => setOrganizers(res.data || []))
-      .catch(err => console.error(err));
+      .then((res) => res.json())
+      .then((res) => {
+        if (!res.success || !Array.isArray(res.data)) return;
+
+        // flatten organizer -> activities[]
+        const flatActivities: Activity[] = res.data.flatMap(
+          (org: OrganizerResponse) =>
+            org.activities.map((act) => ({
+              ...act,
+              organizer_id: org.organizer_id,
+              organizer_name: org.organizer_name,
+            }))
+        );
+
+        setActivities(flatActivities);
+      })
+      .catch((err) => console.error("Fetch error:", err));
   }, []);
 
+  /* ================= TIME AGO ================= */
   const timeAgo = (dateStr: string) => {
     const now = new Date();
     const date = new Date(dateStr);
-    const diff = (now.getTime() - date.getTime()) / 1000; // วินาที
+    const diff = (now.getTime() - date.getTime()) / 1000;
 
     if (diff < 60) return "เมื่อสักครู่";
     if (diff < 3600) return `${Math.floor(diff / 60)} นาทีที่แล้ว`;
     if (diff < 86400) return `${Math.floor(diff / 3600)} ชั่วโมงที่แล้ว`;
     if (diff < 172800) return "เมื่อวานนี้";
+
     return date.toLocaleDateString("th-TH", {
       year: "numeric",
       month: "long",
@@ -53,9 +85,11 @@ const Activities = () => {
     });
   };
 
+  /* ================= RENDER ================= */
   return (
     <>
       {mode === "login" ? <Navlogin /> : <Nav />}
+
       <div className="main-content-wrapper">
         <div className="activities-container">
           <header className="activities-header">
@@ -63,35 +97,57 @@ const Activities = () => {
             <div className="header-decoration"></div>
           </header>
 
-          <ul className="activities-list">
-            {organizers.map(org =>
-              org.activities.map(act => (
-                <li key={act.activity_id} className="activity-item-card">
-                  <Link to={`/activities/${act.activity_id}`} className="activity-link">
-                    <div className="activity-image-wrapper">
-                      <img
-                        src={act.image || "https://www.pim.ac.th/wp-content/uploads/2018/11/PP-0560.jpg"}
-                        alt={act.title}
-                        className="activity-image"
-                      />
-                    </div>
-                    <div className="activity-content">
-                      <p className="activity-text">{act.title}</p>
-                      <p>{act.description}</p>
-                      <span className="activity-timestamp">
-                        สถานะ: {act.status}
+          <div className="activities-list">
+            {activities.length > 0 ? (
+              activities.map((activity) => (
+                <Link
+                  key={activity.activity_id}
+                  to={`/activities/${activity.activity_id}`}
+                  className="activity-card"
+                >
+                  <img
+                    src={activity.image_url || "/no-image.png"}
+                    alt={activity.title}
+                    className="activity-image"
+                  />
+
+                  <div className="activity-content">
+                    <h3 className="activity-title">
+                      {activity.title}
+                    </h3>
+
+                    <p className="activity-organizer">
+                      {activity.organizer_name}
+                    </p>
+
+
+                    <div className="activity-footer">
+                      <span className="activity-location">
+                        สถานที่จัด:
+                        {activity.location}
                       </span>
-                      <span className="activity-timestamp">
-                        วันที่เปิด: {timeAgo(act.open_date)} | ปิด: {timeAgo(act.close_date)}
+                      <span className="activity-time">
+                        {timeAgo(activity.open_date)}
                       </span>
-                      {act.contact1 && <span className="activity-timestamp">ติดต่อ 1: {act.contact1}</span>}
-                      {act.contact2 && <span className="activity-timestamp">ติดต่อ 2: {act.contact2}</span>}
                     </div>
-                  </Link>
-                </li>
+
+                    {/* STATUS */}
+                    <span
+                      className={`activity-status ${
+                        activity.status === "ใกล้เต็ม"
+                          ? "status-warning"
+                          : "status-open"
+                      }`}
+                    >
+                      {activity.status}
+                    </span>
+                  </div>
+                </Link>
               ))
+            ) : (
+              <p className="no-activities">ไม่มีกิจกรรมในขณะนี้</p>
             )}
-          </ul>
+          </div>
         </div>
       </div>
     </>

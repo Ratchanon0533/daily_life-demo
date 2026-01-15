@@ -12,7 +12,7 @@ interface Activity {
   open_date: string;
   close_date: string;
   status: string;
-  image?: string;
+  image_url?: string;
   contact1?: string;
   contact2?: string;
 }
@@ -27,7 +27,6 @@ const Activitiesinfo = () => {
   const [mode, setMode] = useState<"login" | "no-login">("no-login");
   const [organizers, setOrganizers] = useState<Organizer[]>([]);
   const [activity, setActivity] = useState<Activity | null>(null);
-  console.log(organizers)
 
   const { id } = useParams<{ id: string }>();
 
@@ -70,9 +69,9 @@ const Activitiesinfo = () => {
       {mode === "login" ? <Navlogin /> : <Nav />}
       <div className="activities-container">
         <div className="activity-card">
-          {activity.image && (
+          {activity.image_url && (
             <div className="activity-image">
-              <img src={activity.image} alt={activity.title} />
+              <img src={activity.image_url} alt={activity.title} />
             </div>
           )}
           <div className="activity-content">
