@@ -109,7 +109,7 @@ const Navlogin = () => {
                             </li> */}
 
                             <li className="nav-item">
-                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >ค้นหากิจกรรม</a>
+                                <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/activities" >ค้นหากิจกรรม</a>
                             </li>
                             
                             <li className="nav-item">
