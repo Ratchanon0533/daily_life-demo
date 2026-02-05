@@ -6,11 +6,98 @@ import { useState, useMemo, useEffect } from 'react';
 import {
     getDaysInMonth,
     format,
+    set,
 } from 'date-fns';
 import { th } from 'date-fns/locale';
 
+interface PersonalInfo {
+    portfolio_name?: string | null;
+    introduce?: string | null;
+    prefix?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
+    date_birth?: string | null; // ISO date
+    nationality?: string | null;
+    national_id?: string | null;
+    phone_number1?: string | null;
+    phone_number2?: string | null;
+    email?: string | null;
+    address?: string | null;
+    province?: string | null;
+    district?: string | null;
+    subdistrict?: string | null;
+    postal_code?: string | null;
+    height?: string | null;
+    weight?: string | null;
+    gender?: string | null;
+    marital_status?: string | null;
+    disability?: string | null;
+    military_status?: string | null;
+    image?: File | null;
+}
+
+interface EducationalItem {
+    number?: number | null;
+    school?: string | null;
+    graduation?: string | null;
+    educational_qualifications?: string | null;
+    province?: string | null;
+    district?: string | null;
+    study_path?: string | null;
+    grade_average?: string | number | null;
+    study_results?: string | null;
+}
+
+interface LanguageSkill {
+    language?: string | null;
+    listening?: string | null;
+    speaking?: string | null;
+    reading?: string | null;
+    writing?: string | null;
+}
+
+interface SkillsAbilities {
+    details?: string | null;
+    language_skills?: LanguageSkill[] | null;
+}
+
+interface ActivityCertificate {
+    number?: number | null;
+    name_project?: string | null;
+    date?: string | null; // ISO date
+    photo?: string | null; // S3 url or base64
+    details?: string | null;
+}
+
+interface UniversityChoice {
+    university?: string | null;
+    faculty?: string | null;
+    major?: string | null;
+    details?: string | null;
+}
+
+interface CreatePortRequest {
+    user_id: number | string;
+    port_id: string;
+    personal_info?: PersonalInfo | null;
+    educational?: EducationalItem[] | null;
+    skills_abilities?: SkillsAbilities | null;
+    activities_certificates?: ActivityCertificate[] | null;
+    university_choice?: UniversityChoice[] | null;
+}
+
+interface User{
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+    phone : string;
+}
+
 
 const Portfolio = () => {
+
+    
 
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         personal: false,
@@ -31,6 +118,37 @@ const Portfolio = () => {
             setMode("login");
         } else {
             setMode("no-login");
+        }
+    }, []);
+
+    // set userId from localStorage and ensure a default portId
+    useEffect(() => {
+        const tryGet = (keys: string[]) => {
+            for (const k of keys) {
+                const v = localStorage.getItem(k);
+                if (v) return v;
+            }
+            return null;
+        };
+
+        const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
+        if (raw) {
+            try {
+                // some apps store a JSON user object
+                const maybeObj = JSON.parse(raw);
+                if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
+                    setUserId(maybeObj.id || maybeObj.user_id);
+                } else if (typeof raw === 'string') {
+                    setUserId(Number(raw) || raw);
+                }
+            } catch (e) {
+                setUserId(Number(raw) || raw);
+            }
+        }
+
+        if (!portId) {
+            const seed = localStorage.getItem('user_id') || localStorage.getItem('userId') || 'anon';
+            setPortId(`port_${seed}_${Date.now()}`);
         }
     }, []);
 
@@ -114,6 +232,162 @@ const Portfolio = () => {
         }
     }, [openSections.personal]);
 
+    // const [users, setUsers] = useState<User[]>([]);
+    // setUsers(localStorage.getItem("users") ? JSON.parse(localStorage.getItem("users") || "") : []);
+    // ...existing code...
+    const [Personal, setPersonal] = useState<PersonalInfo>({
+        portfolio_name: '',
+        introduce: '',
+        prefix: '',
+        first_name: '',
+        last_name: '',
+        date_birth: '',
+        nationality: '',
+        national_id: '',
+        phone_number1: '',
+        phone_number2: '',
+        email: '',
+        address: '',
+        province: '',
+        district: '',
+        subdistrict: '',
+        postal_code: ''
+    });
+
+    // Keep the computed birth date in sync with day/month/year selectors
+    useEffect(() => {
+        try {
+            const d = new Date(year, month, day);
+            if (!isNaN(d.getTime())) {
+                setPersonal(prev => ({ ...prev, date_birth: d.toISOString().slice(0, 10) } as PersonalInfo));
+            }
+        } catch (e) {
+            // ignore
+        }
+    }, [day, month, year]);
+
+    const updatePersonal = (field: keyof PersonalInfo, value: any) => {
+        setPersonal(prev => ({ ...prev, [field]: value } as PersonalInfo));
+    };
+
+    const updateEducational = (index: number, field: keyof EducationalItem, value: any) => {
+        setEducational(prev => {
+            const copy = [...prev];
+            copy[index] = { ...(copy[index] || {}), [field]: value } as EducationalItem;
+            return copy;
+        });
+    };
+
+    const updateSkills = (field: keyof SkillsAbilities, value: any) => {
+        setSkillsAbilities(prev => ({ ...(prev || {}), [field]: value } as SkillsAbilities));
+    };
+
+    const updateLanguageSkill = (index: number, field: keyof LanguageSkill, value: any) => {
+        setSkillsAbilities(prev => {
+            const ls = prev?.language_skills ? [...prev.language_skills] : [] as LanguageSkill[];
+            ls[index] = { ...(ls[index] || {}), [field]: value } as LanguageSkill;
+            return { ...(prev || {}), language_skills: ls } as SkillsAbilities;
+        });
+    };
+
+    const updateActivity = (index: number, field: keyof ActivityCertificate, value: any) => {
+        setActivitiesCertificates(prev => {
+            const copy = [...prev];
+            copy[index] = { ...(copy[index] || {}), [field]: value } as ActivityCertificate;
+            return copy;
+        });
+    };
+
+    const updateUniversity = (index: number, field: keyof UniversityChoice, value: any) => {
+        setUniversityChoice(prev => {
+            const copy = [...prev];
+            copy[index] = { ...(copy[index] || {}), [field]: value } as UniversityChoice;
+            return copy;
+        });
+    };
+
+    const [educational, setEducational] = useState<EducationalItem[]>([
+        {
+            number: 1,
+            school: '',
+            graduation: '',
+            educational_qualifications: '',
+            province: '',
+            district: '',
+            study_path: '',
+            grade_average: '',
+            study_results: ''
+        }
+    ]);
+
+    const [skillsAbilities, setSkillsAbilities] = useState<SkillsAbilities>({
+        details: '',
+        language_skills: [
+            { language: '', listening: '', speaking: '', reading: '', writing: '' }
+        ]
+    });
+
+    const [activitiesCertificates, setActivitiesCertificates] = useState<ActivityCertificate[]>([
+        { number: 1, name_project: '', date: '', photo: '', details: '' }
+    ]);
+
+    const [universityChoice, setUniversityChoice] = useState<UniversityChoice[]>([
+        { university: '', faculty: '', major: '', details: '' }
+    ]);
+
+    const [userId, setUserId] = useState<number | string>('');
+    const [portId, setPortId] = useState<string>('');
+    const [saving, setSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState<string | null>(null);
+
+    const buildCreatePortPayload = (): CreatePortRequest => ({
+        user_id: userId,
+        port_id: portId,
+        personal_info: Personal,
+        educational,
+        skills_abilities: skillsAbilities,
+        activities_certificates: activitiesCertificates,
+        university_choice: universityChoice
+    });
+
+    const handleSavePort = async () => {
+        setSaveMessage(null);
+        setSaving(true);
+        try {
+            const payload = buildCreatePortPayload();
+            const token = localStorage.getItem('token');
+
+            const res = await fetch('http://localhost:5000/createport', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || `HTTP ${res.status}`);
+            }
+
+            const data = await res.json();
+            setSaveMessage('บันทึกสำเร็จ');
+            console.log('createport response', data);
+        } catch (err: any) {
+            console.error(err);
+            setSaveMessage(`เกิดข้อผิดพลาด: ${err.message || err}`);
+        } finally {
+            setSaving(false);
+        }
+    };
+    // ...existing code...
+
+
+    // const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     setPersonal(prev => ({ ...prev, image: e.target.files?.[0] || null }));
+    // };
+
     const renderPortfolioContent = () => (
         <div className={styles["portfolio-box"]}>
             <div className={styles["port-progress"]}>
@@ -135,7 +409,6 @@ const Portfolio = () => {
                     </div>
                 </div>
                 <div className={styles["port-progress-group"]}>
-                    <div className={styles["update-date"]}>อัพเดทล่าสุด : 18 ธันวาคม 2568</div>
                     <div className={styles["divider"]}></div>
                     <div className={styles["progression-bar"]}>
                         <p>ความสมบูรณ์ของแฟ้มสะสมผลงาน : ครบถ้วน</p>
@@ -149,9 +422,14 @@ const Portfolio = () => {
                         ข้อมูลครบถ้วน
                     </div>
                     <div className={styles["progress-info-btn-group"]}>
-                        <button className={styles["progress-info-btn"]}>บันทึกการเปลี่ยนแปลง</button>
+                        <button className={styles["progress-info-btn"]} onClick={handleSavePort} disabled={saving}>
+                            {saving ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}
+                        </button>
                         <button className={styles["progress-info-btn"]}>เผยแพร่</button>
                     </div>
+                    {saveMessage && (
+                        <div style={{ marginTop: 8, color: saveMessage.startsWith('เกิดข้อผิดพลาด') ? 'crimson' : 'green' }}>{saveMessage}</div>
+                    )}
                     <p className={styles["progress-caution"]}>*หมายเหตุ :เมื่อกดปุ่มเผยแพร่ ระบบจะใช้เวลาประมวลผลภายใน 30 นาที ทางมหาวิทยาลัยจึงจะสามารถมองเห็นแฟ้มสะสมผลงานของคุณได้</p>
                 </div>
             </div>
@@ -172,25 +450,54 @@ const Portfolio = () => {
                     >
                         <div className={styles["portfolio-expand-content"]} onClick={e => e.stopPropagation()}>
                             <p>ชื่อแฟ้มสะสมผลงาน</p>
-                            <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                            <input
+                                type="text"
+                                className={styles["port-input"]}
+                                onClick={e => e.stopPropagation()}
+                                value={Personal.portfolio_name || ''}
+                                onChange={e => updatePersonal('portfolio_name', e.target.value)}
+                            />
                             <p>แนะนำตัว</p>
-                            <textarea className={styles["port-textarea"]} onClick={e => e.stopPropagation()} rows={4} />
+                            <textarea
+                                className={styles["port-textarea"]}
+                                onClick={e => e.stopPropagation()}
+                                rows={4}
+                                value={Personal.introduce || ''}
+                                onChange={e => updatePersonal('introduce', e.target.value)}
+                            />
 
                             <div className={styles["personal-section"]}>
                                 <div className={styles["custom-name-group"]}>
                                     <p>คำนำหน้า</p>
-                                    <select className={styles["port-input"]} onClick={e => e.stopPropagation()} >
-                                        <option >นาย</option>
-                                        <option>นางสาว</option>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.prefix || ''}
+                                        onChange={e => updatePersonal('prefix', e.target.value)}
+                                    >
+                                        <option value="นาย">นาย</option>
+                                        <option value="นางสาว">นางสาว</option>
                                     </select>
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>ชื่อ</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.first_name || ''}
+                                        onChange={e => updatePersonal('first_name', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>นามสกุล</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.last_name || ''}
+                                        onChange={e => updatePersonal('last_name', e.target.value)}
+                                    />
                                 </div>
                             </div>
 
@@ -232,72 +539,155 @@ const Portfolio = () => {
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>สัญชาติ</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.nationality || ''}
+                                        onChange={e => updatePersonal('nationality', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>หมายเลขบัตรประชาชน</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.national_id || ''}
+                                        onChange={e => updatePersonal('national_id', e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>เบอร์ติดต่อ</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.phone_number1 || ''}
+                                        onChange={e => updatePersonal('phone_number1', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>เบอร์ติดต่อ (สำรอง)</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.phone_number2 || ''}
+                                        onChange={e => updatePersonal('phone_number2', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>อีเมล</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.email || ''}
+                                        onChange={e => updatePersonal('email', e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]} style={{ width: '100%' }}>
                                     <p>ที่อยู่ปัจจุบัน</p>
-                                    <textarea className={styles["port-textarea"]} onClick={e => e.stopPropagation()} rows={4} style={{ height: '150px', resize: 'vertical' }} />
+                                    <textarea
+                                        className={styles["port-textarea"]}
+                                        onClick={e => e.stopPropagation()}
+                                        rows={4}
+                                        style={{ height: '150px', resize: 'vertical' }}
+                                        value={Personal.address || ''}
+                                        onChange={e => updatePersonal('address', e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>จังหวัด</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.province || ''}
+                                        onChange={e => updatePersonal('province', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>เขต/อำเภอ</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.district || ''}
+                                        onChange={e => updatePersonal('district', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>แขวง/ตำบล</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.subdistrict || ''}
+                                        onChange={e => updatePersonal('subdistrict', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>รหัสไปรษณีย์</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.postal_code || ''}
+                                        onChange={e => updatePersonal('postal_code', e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>ส่วนสูง</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.height || ''}
+                                        onChange={e => updatePersonal('height', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>น้ำหนัก</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.weight || ''}
+                                        onChange={e => updatePersonal('weight', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>เพศ</p>
-                                    <select className={styles["port-input"]} onClick={e => e.stopPropagation()} >
-                                        <option >ชาย</option>
-                                        <option>หญิง</option>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.gender || ''}
+                                        onChange={e => updatePersonal('gender', e.target.value)}
+                                    >
+                                        <option value="ชาย">ชาย</option>
+                                        <option value="หญิง">หญิง</option>
                                     </select>
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>สถานภาพสมรส</p>
-                                    <select className={styles["port-input"]} onClick={e => e.stopPropagation()} >
-                                        <option>โสด</option>
-                                        <option>สมรส</option>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.marital_status || ''}
+                                        onChange={e => updatePersonal('marital_status', e.target.value)}
+                                    >
+                                        <option value="โสด">โสด</option>
+                                        <option value="สมรส">สมรส</option>
                                     </select>
                                 </div>
                             </div>
@@ -306,10 +696,22 @@ const Portfolio = () => {
                                     <p>ความพิการ</p>
                                     <div className={styles["radio-container"]} onClick={e => e.stopPropagation()}>
                                         <label>
-                                            <input type="radio" name="disability" value="none" /> ไม่มี
+                                            <input
+                                                type="radio"
+                                                name="disability"
+                                                value="none"
+                                                checked={Personal.disability !== 'have'}
+                                                onChange={() => updatePersonal('disability', 'none')}
+                                            /> ไม่มี
                                         </label>
                                         <label>
-                                            <input type="radio" name="disability" value="have" /> มีความพิการ
+                                            <input
+                                                type="radio"
+                                                name="disability"
+                                                value="have"
+                                                checked={Personal.disability === 'have'}
+                                                onChange={() => updatePersonal('disability', 'have')}
+                                            /> มีความพิการ
                                         </label>
                                     </div>
                                 </div>
@@ -317,13 +719,31 @@ const Portfolio = () => {
                                     <p>สถานภาพทางทหาร</p>
                                     <div className={styles["radio-container"]} onClick={e => e.stopPropagation()}>
                                         <label>
-                                            <input type="radio" name="militaryStatus" value="exempt" /> ได้รับการยกเว้น
+                                            <input
+                                                type="radio"
+                                                name="militaryStatus"
+                                                value="exempt"
+                                                checked={Personal.military_status === 'exempt'}
+                                                onChange={() => updatePersonal('military_status', 'exempt')}
+                                            /> ได้รับการยกเว้น
                                         </label>
                                         <label>
-                                            <input type="radio" name="militaryStatus" value="completed" /> ผ่านการเกณฑ์ทหารแล้ว
+                                            <input
+                                                type="radio"
+                                                name="militaryStatus"
+                                                value="completed"
+                                                checked={Personal.military_status === 'completed'}
+                                                onChange={() => updatePersonal('military_status', 'completed')}
+                                            /> ผ่านการเกณฑ์ทหารแล้ว
                                         </label>
                                         <label>
-                                            <input type="radio" name="militaryStatus" value="waiting" /> รอการเกณฑ์ทหาร
+                                            <input
+                                                type="radio"
+                                                name="militaryStatus"
+                                                value="waiting"
+                                                checked={Personal.military_status === 'waiting'}
+                                                onChange={() => updatePersonal('military_status', 'waiting')}
+                                            /> รอการเกณฑ์ทหาร
                                         </label>
                                     </div>
                                 </div>
@@ -357,35 +777,77 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>โรงเรียน/สถาบันการศึกษา</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={educational[0]?.school || ''}
+                                        onChange={e => updateEducational(0, 'school', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>ปีจบการศึกษา</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={educational[0]?.graduation || ''}
+                                        onChange={e => updateEducational(0, 'graduation', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>วุฒิการศึกษา</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={educational[0]?.educational_qualifications || ''}
+                                        onChange={e => updateEducational(0, 'educational_qualifications', e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>จังหวัด</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={educational[0]?.province || ''}
+                                        onChange={e => updateEducational(0, 'province', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>อำเภอ</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={educational[0]?.district || ''}
+                                        onChange={e => updateEducational(0, 'district', e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>สายการเรียน</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={educational[0]?.study_path || ''}
+                                        onChange={e => updateEducational(0, 'study_path', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>เกรดเฉลี่ย</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={String(educational[0]?.grade_average || '')}
+                                        onChange={e => updateEducational(0, 'grade_average', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>แนบใบ ปพ.</p>
@@ -416,7 +878,14 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <p>ทักษะความรู้ตามสาขาวิชา</p>
                             </div>
-                            <textarea className={styles["port-textarea"]} onClick={e => e.stopPropagation()} rows={4} style={{ resize: 'vertical' }} />
+                            <textarea
+                                className={styles["port-textarea"]}
+                                onClick={e => e.stopPropagation()}
+                                rows={4}
+                                style={{ resize: 'vertical' }}
+                                value={skillsAbilities.details || ''}
+                                onChange={e => updateSkills('details', e.target.value)}
+                            />
                             <div className={`${styles["personal-section"]} ${styles["add-education"]}`}>
                                 <p>ทักษะด้านภาษาต่างประเทศ</p>
                                 <button>เพิ่มภาษา</button>
@@ -424,42 +893,67 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>ภาษา</p>
-                                    <select className={styles["port-input"]} onClick={e => e.stopPropagation()} >
-                                        <option>อังกฤษ</option>
-                                        <option>จีน</option>
-                                        <option>ญี่ปุ่น</option>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={skillsAbilities.language_skills?.[0]?.language || ''}
+                                        onChange={e => updateLanguageSkill(0, 'language', e.target.value)}
+                                    >
+                                        <option value="อังกฤษ">อังกฤษ</option>
+                                        <option value="จีน">จีน</option>
+                                        <option value="ญี่ปุ่น">ญี่ปุ่น</option>
                                     </select>
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>การฟัง</p>
-                                    <select className={styles["port-input"]} onClick={e => e.stopPropagation()} >
-                                        <option>พอใช้</option>
-                                        <option>ดี</option>
-                                        <option>ดีมาก</option>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={skillsAbilities.language_skills?.[0]?.listening || ''}
+                                        onChange={e => updateLanguageSkill(0, 'listening', e.target.value)}
+                                    >
+                                        <option value="พอใช้">พอใช้</option>
+                                        <option value="ดี">ดี</option>
+                                        <option value="ดีมาก">ดีมาก</option>
                                     </select>
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>การพูด</p>
-                                    <select className={styles["port-input"]} onClick={e => e.stopPropagation()} >
-                                        <option>พอใช้</option>
-                                        <option>ดี</option>
-                                        <option>ดีมาก</option>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={skillsAbilities.language_skills?.[0]?.speaking || ''}
+                                        onChange={e => updateLanguageSkill(0, 'speaking', e.target.value)}
+                                    >
+                                        <option value="พอใช้">พอใช้</option>
+                                        <option value="ดี">ดี</option>
+                                        <option value="ดีมาก">ดีมาก</option>
                                     </select>
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>การอ่าน</p>
-                                    <select className={styles["port-input"]} onClick={e => e.stopPropagation()} >
-                                        <option>พอใช้</option>
-                                        <option>ดี</option>
-                                        <option>ดีมาก</option>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={skillsAbilities.language_skills?.[0]?.reading || ''}
+                                        onChange={e => updateLanguageSkill(0, 'reading', e.target.value)}
+                                    >
+                                        <option value="พอใช้">พอใช้</option>
+                                        <option value="ดี">ดี</option>
+                                        <option value="ดีมาก">ดีมาก</option>
                                     </select>
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>การเขียน</p>
-                                    <select className={styles["port-input"]} onClick={e => e.stopPropagation()} >
-                                        <option>พอใช้</option>
-                                        <option>ดี</option>
-                                        <option>ดีมาก</option>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={skillsAbilities.language_skills?.[0]?.writing || ''}
+                                        onChange={e => updateLanguageSkill(0, 'writing', e.target.value)}
+                                    >
+                                        <option value="พอใช้">พอใช้</option>
+                                        <option value="ดี">ดี</option>
+                                        <option value="ดีมาก">ดีมาก</option>
                                     </select>
                                 </div>
                             </div>
@@ -496,7 +990,13 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>ชื่อโครงการ/กิจกรรม</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={activitiesCertificates[0]?.name_project || ''}
+                                        onChange={e => updateActivity(0, 'name_project', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>ช่วงวันที่</p>
@@ -541,7 +1041,14 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]} style={{ width: '100%' }}>
                                     <p>ระบุรายละเอียด</p>
-                                    <textarea className={styles["port-textarea"]} onClick={e => e.stopPropagation()} rows={4} style={{ height: '150px', resize: 'vertical' }} />
+                                    <textarea
+                                        className={styles["port-textarea"]}
+                                        onClick={e => e.stopPropagation()}
+                                        rows={4}
+                                        style={{ height: '150px', resize: 'vertical' }}
+                                        value={activitiesCertificates[0]?.details || ''}
+                                        onChange={e => updateActivity(0, 'details', e.target.value)}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -568,21 +1075,46 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]}>
                                     <p>มหาวิทยาลัย</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={universityChoice[0]?.university || ''}
+                                        onChange={e => updateUniversity(0, 'university', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>คณะ</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={universityChoice[0]?.faculty || ''}
+                                        onChange={e => updateUniversity(0, 'faculty', e.target.value)}
+                                    />
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>สาขาวิชา</p>
-                                    <input type="text" className={styles["port-input"]} onClick={e => e.stopPropagation()} />
+                                    <input
+                                        type="text"
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={universityChoice[0]?.major || ''}
+                                        onChange={e => updateUniversity(0, 'major', e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]} style={{ width: '100%' }}>
                                     <p>เหตุผลที่สนใจมหาวิทยาลัยนี้</p>
-                                    <textarea className={styles["port-textarea"]} onClick={e => e.stopPropagation()} rows={4} style={{ height: '150px', resize: 'vertical' }} />
+                                    <textarea
+                                        className={styles["port-textarea"]}
+                                        onClick={e => e.stopPropagation()}
+                                        rows={4}
+                                        style={{ height: '150px', resize: 'vertical' }}
+                                        value={universityChoice[0]?.details || ''}
+                                        onChange={e => updateUniversity(0, 'details', e.target.value)}
+                                    />
                                 </div>
                             </div>
                         </div>
