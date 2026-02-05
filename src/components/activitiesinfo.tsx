@@ -1,4 +1,3 @@
-import { Weight } from "lucide-react";
 import "./css/activitiesinfo.css";
 import Nav from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
