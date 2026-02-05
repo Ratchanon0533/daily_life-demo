@@ -8,6 +8,7 @@ import {
     format,
 } from 'date-fns';
 import { th } from 'date-fns/locale';
+import { picture } from 'framer-motion/client';
 
 interface PersonalInfo {
     portfolio_name?: string | null;
@@ -96,7 +97,7 @@ interface CreatePortRequest {
 
 const Portfolio = () => {
 
-    
+
 
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         personal: false,
@@ -253,6 +254,9 @@ const Portfolio = () => {
         postal_code: ''
     });
 
+
+;
+
     // Keep the computed birth date in sync with day/month/year selectors
     useEffect(() => {
         try {
@@ -391,20 +395,58 @@ const Portfolio = () => {
         <div className={styles["portfolio-box"]}>
             <div className={styles["port-progress"]}>
                 <div className={styles["port-progress-content"]}>
-                    <div className={styles["port-progress-image"]}></div>
+                    <div className={styles["port-progress-image"]} style={{ overflow: 'hidden' }}>
+                        {Personal.image ? (
+                            Personal.image instanceof File ? (
+                                <img
+                                    className={styles["port-image"]}
+                                    src={URL.createObjectURL(Personal.image)}
+                                    alt="Portfolio"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                    onLoad={(e) => {
+                                        const src = (e.currentTarget as HTMLImageElement).src;
+                                        try { URL.revokeObjectURL(src); } catch { /* ignore */ }
+                                    }}
+                                />
+                            ) : (
+                                <img
+                                    className={styles["port-image"]}
+                                    src={String(Personal.image)}
+                                    alt="Portfolio"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                />
+                            )
+                        ) : (
+                            <div className={styles["port-image-placeholder"]}>ไม่มีรูปภาพ</div>
+                        )}
+                    </div>
                     <div className={styles["port-name"]}>UserName</div>
                     <div className={styles["port-btn-group"]}>
                         <div className={styles["upload-btn-group"]}>
-                            <button className={styles["port-upload-btn"]}>
-                                อัพโหลดรูปภาพ
-                            </button>
-                            <button className={styles["port-upload-btn"]}>
-                                แก้ไขรูปภาพ
+                            <>
+                                <input
+                                    id="port-image-upload1"
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onClick={e => e.stopPropagation()}
+                                    onChange={e => {
+                                        const file = (e.target as HTMLInputElement).files?.[0] || null;
+                                        updatePersonal('image', file);
+                                    }}
+                                />
+                                <label
+                                    htmlFor="port-image-upload1"
+                                    className={styles["port-upload-btn"]}
+                                    onClick={e => e.stopPropagation()}
+                                >
+                                    อัพโหลดรูปภาพ
+                                </label>
+                            </>
+                            <button className={styles["port-preview-btn"]}>
+                                ดูตัวอย่างแฟ้มสะสมผลงาน
                             </button>
                         </div>
-                        <button className={styles["port-preview-btn"]}>
-                            ดูตัวอย่างแฟ้มสะสมผลงาน
-                        </button>
                     </div>
                 </div>
                 <div className={styles["port-progress-group"]}>
@@ -422,14 +464,13 @@ const Portfolio = () => {
                     </div>
                     <div className={styles["progress-info-btn-group"]}>
                         <button className={styles["progress-info-btn"]} onClick={handleSavePort} disabled={saving}>
-                            {saving ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}
+                            {saving ? 'กำลังบันทึก...' : 'สร้างพอต'}
                         </button>
-                        <button className={styles["progress-info-btn"]}>เผยแพร่</button>
                     </div>
                     {saveMessage && (
                         <div style={{ marginTop: 8, color: saveMessage.startsWith('เกิดข้อผิดพลาด') ? 'crimson' : 'green' }}>{saveMessage}</div>
                     )}
-                    <p className={styles["progress-caution"]}>*หมายเหตุ :เมื่อกดปุ่มเผยแพร่ ระบบจะใช้เวลาประมวลผลภายใน 30 นาที ทางมหาวิทยาลัยจึงจะสามารถมองเห็นแฟ้มสะสมผลงานของคุณได้</p>
+                    {/* <p className={styles["progress-caution"]}>*หมายเหตุ :เมื่อกดปุ่มเผยแพร่ ระบบจะใช้เวลาประมวลผลภายใน 30 นาที ทางมหาวิทยาลัยจึงจะสามารถมองเห็นแฟ้มสะสมผลงานของคุณได้</p> */}
                 </div>
             </div>
 
@@ -850,7 +891,67 @@ const Portfolio = () => {
                                 </div>
                                 <div className={styles["name-group"]}>
                                     <p>แนบใบ ปพ.</p>
-                                    <button className={styles['edu-upload-btn']}>อัพโหลดไฟล์</button>
+                                    <input
+                                        id="edu-upload-0"
+                                        type="file"
+                                        accept="image/*,application/pdf"
+                                        style={{ display: 'none' }}
+                                        onClick={e => e.stopPropagation()}
+                                        onChange={async e => {
+                                            const f = (e.target as HTMLInputElement).files?.[0];
+                                            if (!f) return;
+                                            const toDataUrl = (file: File) =>
+                                                new Promise<string>((resolve, reject) => {
+                                                    const reader = new FileReader();
+                                                    reader.onload = () => resolve(String(reader.result));
+                                                    reader.onerror = reject;
+                                                    reader.readAsDataURL(file);
+                                                });
+                                            try {
+                                                const dataUrl = await toDataUrl(f);
+                                                updateEducational(0, 'study_results', dataUrl);
+                                            } catch (err) {
+                                                console.error(err);
+                                            }
+                                        }}
+                                    />
+                                    <label
+                                        htmlFor="edu-upload-0"
+                                    className={styles["port-upload-btn"]}
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        อัพโหลดไฟล์
+                                    </label>
+                                    {educational[0]?.study_results && (
+                                        <div className={styles['edu-file-preview']}>
+                                            {educational[0]?.study_results && (
+                                                educational[0].study_results.startsWith('data:image') ? (
+                                                    <img
+                                                        src={educational[0].study_results}
+                                                        alt="แนบ ปพ."
+                                                        style={{ maxWidth: '100%', maxHeight: 200, display: 'block' }}
+                                                        onClick={e => e.stopPropagation()}
+                                                    />
+                                                ) : educational[0].study_results.startsWith('data:application/pdf') ? (
+                                                    <object
+                                                        data={educational[0].study_results}
+                                                        type="application/pdf"
+                                                        width="100%"
+                                                        height="300"
+                                                        onClick={e => e.stopPropagation()}
+                                                    >
+                                                        <a href={educational[0].study_results} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                                                            ดูไฟล์/รูปที่แนบ
+                                                        </a>
+                                                    </object>
+                                                ) : (
+                                                    <a href={educational[0].study_results} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                                                        ดูไฟล์/รูปที่แนบ
+                                                    </a>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
