@@ -6,7 +6,6 @@ import { useState, useMemo, useEffect } from 'react';
 import {
     getDaysInMonth,
     format,
-    set,
 } from 'date-fns';
 import { th } from 'date-fns/locale';
 
@@ -86,13 +85,13 @@ interface CreatePortRequest {
     university_choice?: UniversityChoice[] | null;
 }
 
-interface User{
-    id: number;
-    firstname: string;
-    lastname: string;
-    email: string;
-    phone : string;
-}
+// interface User{
+//     id: number;
+//     firstname: string;
+//     lastname: string;
+//     email: string;
+//     phone : string;
+// }
 
 
 const Portfolio = () => {
