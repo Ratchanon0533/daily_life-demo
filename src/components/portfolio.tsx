@@ -97,7 +97,7 @@ interface CreatePortRequest {
 
 const Portfolio = () => {
 
-
+    const [showPopup, setShowPopup] = useState(false);
 
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         personal: false,
@@ -255,7 +255,7 @@ const Portfolio = () => {
     });
 
 
-;
+    ;
 
     // Keep the computed birth date in sync with day/month/year selectors
     useEffect(() => {
@@ -917,7 +917,7 @@ const Portfolio = () => {
                                     />
                                     <label
                                         htmlFor="edu-upload-0"
-                                    className={styles["port-upload-btn"]}
+                                        className={styles["port-upload-btn"]}
                                         onClick={e => e.stopPropagation()}
                                     >
                                         อัพโหลดไฟล์
@@ -1244,25 +1244,74 @@ const Portfolio = () => {
                     </div>
 
                     {port === "allport" && (
-                        <>
-                            <div className={`${styles["portfolio-data"]} ${styles["main-portfolio"]}`}
-                                onClick={() => toggleSection("personal")}
-                            >
-                                <div className={styles["port-data-wrapper"]} >
-                                    <div className={styles["portfolio-data-content"]}>ชื่อแฟ้มผลงาน</div>
-                                    <div className={styles["portfolio-data-content"]}>v</div>
-                                </div>
+                        <div className={styles["portfolio-box"]}>
+                            <div className={styles["all-port-box"]}>
+                                <div className={styles["all-port-content"]}>
+                                    <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                                        <thead>
+                                            <tr style={{ fontSize: "18px", borderBottom: "2px solid #ccc" }}>
+                                                <th style={{ paddingBottom: "20px" }}>ชื่อแฟ้มสะสมผลงาน</th>
+                                                <th style={{ paddingBottom: "20px" }}>วันที่สร้าง</th>
+                                                <th style={{ paddingBottom: "20px" }}>สถานะ</th>
+                                                <th style={{ paddingBottom: "20px" }}>การจัดการ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                                {showPersonal && (
-                                    <div
-                                        className={`${styles["portfolio-expand"]} ${openSections.personal ? styles["slide-down"] : styles["slide-up"]}`}
-                                        style={{ overflow: "hidden" }}
-                                    >
-                                        {renderPortfolioContent()}
-                                    </div>
-                                )}
+                                            {[
+                                                {
+                                                    name: "Portfolio1.pdf",
+                                                    created: "2026-02-07",
+                                                    status: "สมบูรณ์"
+                                                },
+                                                {
+                                                    name: "Portfolio2.pdf",
+                                                    created: "2026-23-05",
+                                                    status: "สมบูรณ์"
+                                                }
+
+                                            ].map((item, idx) => (
+                                                <tr key={idx}>
+                                                    <td style={{ paddingTop: "10px", width: "30%" }}>{item.name}</td>
+                                                    <td style={{ paddingTop: "10px", width: "20%" }}>{item.created}</td>
+                                                    <td style={{ paddingTop: "10px", width: "20%" }}>{item.status}</td>
+                                                    <td style={{ paddingTop: "10px", width: "20%" }}>
+                                                        <button
+                                                            style={{ backgroundColor: "#033E65", color: "white", border: "none", padding: "5px 14px", borderRadius: "4px", cursor: "pointer" }}
+                                                            onClick={() => setShowPopup(true)}
+                                                        >
+                                                            ดู
+                                                        </button>                                                        <button style={{ marginLeft: 8, backgroundColor: "#ff00009d", color: "white", border: "none", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>ลบ</button>
+                                                        <button style={{ marginLeft: 8, backgroundColor: "#FAC14B", color: "#033E65", border: "none", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>แก้ไข</button>
+                                                    </td>
+
+                                                </tr>
+
+                                            ))}
+                                        </tbody>
+
+                                    </table>
+                                </div>
                             </div>
-                        </>
+                            {showPopup && (
+                                <div className={styles["popup-overlay"]} onClick={() => setShowPopup(false)}>
+                                    <div className={styles["popup-content"]} onClick={e => e.stopPropagation()}>
+                                        
+                                        <img
+                                            src="/img/Template01.png"
+                                            alt="portfolio preview"
+                                            style={{ width: "1500px", maxWidth: "500px", borderRadius: "8px", marginTop: "16px" }}
+                                        />
+                                        <button
+                                            className={styles["popup-close-btn"]}
+                                            onClick={() => setShowPopup(false)}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     )}
 
                     {port === "create" && renderPortfolioContent()}
