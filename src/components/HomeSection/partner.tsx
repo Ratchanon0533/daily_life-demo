@@ -1,4 +1,4 @@
-import "./css/partner.css";
+import "../css/partner.css";
 
 const Partner = () => {
     // 15 items total (5 columns × 3 rows)

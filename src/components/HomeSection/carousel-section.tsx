@@ -1,4 +1,4 @@
-import './css/carousel.css';
+import '../css/carousel.css';
 
 
 const Carousel = () => {

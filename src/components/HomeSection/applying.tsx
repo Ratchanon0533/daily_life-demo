@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./css/applying.css";
+import "../css/applying.css";
 
 const Applying = () => {
     const [active, setActive] = useState<number | null>(null);

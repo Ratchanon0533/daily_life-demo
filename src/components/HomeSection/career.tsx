@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./css/career.css";
+import "../css/career.css";
 
 const PopularCareer = () => {
     const [current, setCurrent] = useState(0);

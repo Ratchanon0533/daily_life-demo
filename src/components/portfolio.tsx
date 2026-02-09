@@ -1,7 +1,7 @@
 import Nav from './nav-bar';
 import Navlogin from './nav-bar(login)';
 import styles from './css/portfolio.module.css';
-import Contact from './contact';
+import Contact from './HomeSection/contact';
 import { useState, useMemo, useEffect } from 'react';
 import {
     getDaysInMonth,

@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
-import './css/searchsection.css';
-import '../App.css';
+import '../css/searchsection.css';
+import '../../App.css';
 import { useState } from 'react';
 
 
@@ -89,10 +89,18 @@ const SearchSection = () => {
                 <div className='card-box p-5'>
 
                     <div className="card-title mb-4">
-                        <span style={{ fontSize: "1.5rem" }}>ค้นหามหาวิทยาลัย</span>
-                        <span style={{ fontSize: "1.25rem" }}> จากทั่วประเทศ</span>
+                        <div>
+                            <span style={{ fontSize: "1.5rem" }}>ค้นหามหาวิทยาลัย</span>
+                            <span style={{ fontSize: "1.25rem" }}> จากทั่วประเทศ</span>
+                        </div>
+
+                        <svg style={{ cursor: 'pointer', marginTop: "0.5rem" }} className="search-dropdown-button" width="25" height="25" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(0.68282 -0.730587 0.68282 0.730587 0 2.6377)" fill="#B8B8B8" />
+                            <rect width="3.53518" height="11.3126" rx="1.76759" transform="matrix(-0.68282 -0.730587 -0.68282 0.730587 15.5488 2.58252)" fill="#B8B8B8" />
+                        </svg>
+
                     </div>
-                  
+
 
                     <div className="search-box">
                         {/* ชื่อมหาวิทยาลัย (ไทย/อังกฤษ) */}
@@ -240,9 +248,12 @@ const SearchSection = () => {
                             รีเซ็ตการตั้งค่า
                         </button>
 
-
+                        <button className="search-button02" onClick={handlesearch}>
+                            ค้นหา
+                        </button>
 
                     </div>
+
 
                     <Link to="/quick_search" className="deep-search-button">
                         ค้นหาแบบละเอียด
