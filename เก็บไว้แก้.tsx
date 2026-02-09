@@ -8,7 +8,6 @@ import {
     format,
 } from 'date-fns';
 import { th } from 'date-fns/locale';
-import { useNavigate } from 'react-router-dom';
 
 interface PersonalInfo {
     portfolio_name?: string | null;
@@ -121,8 +120,6 @@ interface PortfolioItem {
 
 const Portfolio = () => {
     const [showPopup, setShowPopup] = useState(false);
-    const navigate = useNavigate();
-
 
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         personal: false,
@@ -298,7 +295,7 @@ const Portfolio = () => {
             if (!isNaN(d.getTime())) {
                 setPersonal(prev => ({ ...prev, date_birth: d.toISOString().slice(0, 10) }));
             }
-        } catch { }
+        } catch {}
     }, [day, month, year]);
 
     const updatePersonal = (field: keyof PersonalInfo, value: any) => {
@@ -396,7 +393,7 @@ const Portfolio = () => {
                                     style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                                     onLoad={(e) => {
                                         const src = (e.currentTarget as HTMLImageElement).src;
-                                        try { URL.revokeObjectURL(src); } catch { }
+                                        try { URL.revokeObjectURL(src); } catch {}
                                     }}
                                 />
                             ) : (
@@ -492,12 +489,7 @@ const Portfolio = () => {
                                                         <td style={{ paddingTop: "10px", width: "20%" }}>
                                                             <button
                                                                 style={{ backgroundColor: "#033E65", color: "white", border: "none", padding: "5px 14px", borderRadius: "4px", cursor: "pointer" }}
-                                                                onClick={
-                                                                    () => {
-                                                                        setShowPopup(true);
-                                                                        navigate('/Genport');
-                                                                    }
-                                                                }
+                                                                onClick={() => setShowPopup(true)}
                                                             >
                                                                 ดู
                                                             </button>

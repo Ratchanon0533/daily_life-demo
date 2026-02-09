@@ -12,6 +12,7 @@ import Activities from '../components/activities'
 import Activitiesinfo from '../components/activitiesinfo'
 import Portfolio from '../components/portfolio'
 import SelfDiscoveryQuiz from '../components/Quiz'
+import Genport from '../components/genport'
 
 const AppRoute = () => {
     return (
@@ -28,6 +29,7 @@ const AppRoute = () => {
             <Route path='/activities' element={<Activities/>}/>
             <Route path='/activities/:id' element={<Activitiesinfo/>}/>
             <Route path='/portfolio' element={<Portfolio/>}/>
+            <Route path='/genport' element={<Genport/>}/>
             <Route path='/quiz' element={<SelfDiscoveryQuiz/>}/>
         </Routes>
     )
