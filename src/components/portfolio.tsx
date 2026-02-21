@@ -3,11 +3,13 @@ import Navlogin from './nav-bar(login)';
 import styles from './css/portfolio.module.css';
 import Contact from './HomeSection/contact';
 import { useState, useMemo, useEffect } from 'react';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { PortfolioPDF } from './MyDocument';
+
 import {
     getDaysInMonth,
-    format,
+
 } from 'date-fns';
-import { th } from 'date-fns/locale';
 import { picture } from 'framer-motion/client';
 
 interface PersonalInfo {
@@ -16,7 +18,9 @@ interface PersonalInfo {
     prefix?: string | null;
     first_name?: string | null;
     last_name?: string | null;
-    date_birth?: string | null; // ISO date
+    day?: string;
+    month?: string;
+    year?: string;
     nationality?: string | null;
     national_id?: string | null;
     phone_number1?: string | null;
@@ -97,6 +101,7 @@ interface CreatePortRequest {
 
 const Portfolio = () => {
 
+
     const [showPopup, setShowPopup] = useState(false);
 
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
@@ -161,20 +166,13 @@ const Portfolio = () => {
 
 
     const [day, setDay] = useState<number>(1);
-    const [month, setMonth] = useState<number>(0);
+    const [month, setMonth] = useState<string>('');
     const [year, setYear] = useState<number>(new Date().getFullYear());
 
     const daysInMonth = useMemo(() => {
-        const date = new Date(year, month);
+        const date = new Date(year);
         return getDaysInMonth(date);
     }, [month, year]);
-
-    const thaiMonths = useMemo(() => {
-        return Array.from({ length: 12 }, (_, i) => ({
-            name: format(new Date(2024, i, 1), 'MMMM', { locale: th }),
-            value: i
-        }));
-    }, []);
 
 
     const [showEducation, setShowEducation] = useState(false);
@@ -232,16 +230,13 @@ const Portfolio = () => {
         }
     }, [openSections.personal]);
 
-    // const [users, setUsers] = useState<User[]>([]);
-    // setUsers(localStorage.getItem("users") ? JSON.parse(localStorage.getItem("users") || "") : []);
-    // ...existing code...
+
     const [Personal, setPersonal] = useState<PersonalInfo>({
         portfolio_name: '',
         introduce: '',
         prefix: '',
         first_name: '',
         last_name: '',
-        date_birth: '',
         nationality: '',
         national_id: '',
         phone_number1: '',
@@ -257,10 +252,9 @@ const Portfolio = () => {
 
     ;
 
-    // Keep the computed birth date in sync with day/month/year selectors
     useEffect(() => {
         try {
-            const d = new Date(year, month, day);
+            const d = new Date(year, day);
             if (!isNaN(d.getTime())) {
                 setPersonal(prev => ({ ...prev, date_birth: d.toISOString().slice(0, 10) } as PersonalInfo));
             }
@@ -384,7 +378,7 @@ const Portfolio = () => {
             setSaving(false);
         }
     };
-    // ...existing code...
+
 
 
     // const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -466,7 +460,60 @@ const Portfolio = () => {
                         <button className={styles["progress-info-btn"]} onClick={handleSavePort} disabled={saving}>
                             {saving ? 'กำลังบันทึก...' : 'สร้างพอต'}
                         </button>
+                        <PDFDownloadLink
+                            key={JSON.stringify(Personal)}
+                            document={<PortfolioPDF
+                                introduce={Personal.introduce ?? ''}
+                                first_name={Personal.first_name ?? ''}
+                                last_name={Personal.last_name ?? ''}
+                                prefix={Personal.prefix ?? ''}
+                                birth_day={day ?? ''}
+                                birth_month={month ?? ''}
+                                birth_year={year ?? ''}
+                                nationality={Personal.nationality ?? ''}
+                                id_card={Personal.national_id ?? ''}
+                                phonenumber1={Personal.phone_number1 ?? ''}
+                                phonenumber2={Personal.phone_number2 ?? ''}
+                                email={Personal.email ?? ''}
+                                address={Personal.address ?? ''}
+                                province={Personal.province ?? ''}
+                                district={Personal.district ?? ''}
+                                subdistrict={Personal.subdistrict ?? ''}
+                                postal_code={Personal.postal_code ?? ''}
+                                height={Personal.height ?? ''}
+                                weight={Personal.weight ?? ''}
+                                gender={Personal.gender ?? ''}
+                                marital_status={Personal.marital_status ?? ''}
+                                disability={Personal.disability ?? ''}
+                                military_status={Personal.military_status ?? ''}
+                                personal_image={Personal.image ? (Personal.image instanceof File ? URL.createObjectURL(Personal.image) : String(Personal.image)) : undefined}
+
+                            />}
+
+                            fileName={
+                                Personal.portfolio_name && Personal.portfolio_name.trim() !== ''
+                                    ? Personal.portfolio_name
+                                    : 'Portfolio.pdf'
+                            }
+                        >
+                            {({ loading }) => (
+                                <button
+                                    type="button"
+                                    style={{
+                                        padding: '8px 16px',
+                                        backgroundColor: loading ? '#ccc' : '#e67e22',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: loading ? 'not-allowed' : 'pointer'
+                                    }}
+                                >
+                                    {loading ? 'กำลังสร้าง PDF...' : 'Export to PDF'}
+                                </button>
+                            )}
+                        </PDFDownloadLink>
                     </div>
+
                     {saveMessage && (
                         <div style={{ marginTop: 8, color: saveMessage.startsWith('เกิดข้อผิดพลาด') ? 'crimson' : 'green' }}>{saveMessage}</div>
                     )}
@@ -502,9 +549,12 @@ const Portfolio = () => {
                                 className={styles["port-textarea"]}
                                 onClick={e => e.stopPropagation()}
                                 rows={4}
+                                style={{ minHeight: '100px', resize: 'vertical' }}
                                 value={Personal.introduce || ''}
                                 onChange={e => updatePersonal('introduce', e.target.value)}
                             />
+
+
 
                             <div className={styles["personal-section"]}>
                                 <div className={styles["custom-name-group"]}>
@@ -514,7 +564,9 @@ const Portfolio = () => {
                                         onClick={e => e.stopPropagation()}
                                         value={Personal.prefix || ''}
                                         onChange={e => updatePersonal('prefix', e.target.value)}
+
                                     >
+                                        <option value="">ไม่ระบุ</option>
                                         <option value="นาย">นาย</option>
                                         <option value="นางสาว">นางสาว</option>
                                     </select>
@@ -547,30 +599,42 @@ const Portfolio = () => {
                                     <div className={styles["date-group"]}>
                                         <select
                                             className={styles["port-input"]}
-                                            value={day}
+                                            value={Personal.day}
                                             onChange={(e) => setDay(Number(e.target.value))}
                                             onClick={e => e.stopPropagation()}
                                         >
+                                        
                                             {Array.from({ length: daysInMonth }, (_, i) => (
                                                 <option key={i + 1} value={i + 1}>{i + 1}</option>
                                             ))}
                                         </select>
                                         <select
                                             className={styles["port-input"]}
-                                            value={month}
-                                            onChange={(e) => setMonth(Number(e.target.value))}
+                                            value={Personal.month}
+                                            onChange={(e) => setMonth(e.target.value)}
                                             onClick={e => e.stopPropagation()}
                                         >
-                                            {thaiMonths.map((m) => (
-                                                <option key={m.value} value={m.value}>{m.name}</option>
-                                            ))}
+                                           
+                                            <option value="มกราคม">มกราคม</option>
+                                            <option value="กุมภาพันธ์">กุมภาพันธ์</option>
+                                            <option value="มีนาคม">มีนาคม</option>
+                                            <option value="เมษายน">เมษายน</option>
+                                            <option value="พฤษภาคม">พฤษภาคม</option>
+                                            <option value="มิถุนายน">มิถุนายน</option>
+                                            <option value="กรกฎาคม">กรกฎาคม</option>
+                                            <option value="สิงหาคม">สิงหาคม</option>
+                                            <option value="กันยายน">กันยายน</option>
+                                            <option value="ตุลาคม">ตุลาคม</option>
+                                            <option value="พฤศจิกายน">พฤศจิกายน</option>
+                                            <option value="ธันวาคม">ธันวาคม</option>
                                         </select>
                                         <select
                                             className={styles["port-input"]}
-                                            value={year}
+                                            value={Personal.year}
                                             onChange={(e) => setYear(Number(e.target.value))}
                                             onClick={e => e.stopPropagation()}
                                         >
+                                            
                                             {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((y) => (
                                                 <option key={y} value={y}>{y + 543}</option>
                                             ))}
@@ -637,7 +701,7 @@ const Portfolio = () => {
                                         className={styles["port-textarea"]}
                                         onClick={e => e.stopPropagation()}
                                         rows={4}
-                                        style={{ height: '150px', resize: 'vertical' }}
+                                        style={{ minHeight: '150px', resize: 'vertical' }}
                                         value={Personal.address || ''}
                                         onChange={e => updatePersonal('address', e.target.value)}
                                     />
@@ -714,6 +778,9 @@ const Portfolio = () => {
                                         value={Personal.gender || ''}
                                         onChange={e => updatePersonal('gender', e.target.value)}
                                     >
+                                        <option value="" disabled>
+                                            กรุณาเลือกเพศ
+                                        </option>
                                         <option value="ชาย">ชาย</option>
                                         <option value="หญิง">หญิง</option>
                                     </select>
@@ -726,6 +793,9 @@ const Portfolio = () => {
                                         value={Personal.marital_status || ''}
                                         onChange={e => updatePersonal('marital_status', e.target.value)}
                                     >
+                                        <option value="" disabled>
+                                            กรุณาเลือกสถานภาพสมรส
+                                        </option>
                                         <option value="โสด">โสด</option>
                                         <option value="สมรส">สมรส</option>
                                     </select>
@@ -734,58 +804,34 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <div className={styles["name-group"]} style={{ width: '30%' }}>
                                     <p>ความพิการ</p>
-                                    <div className={styles["radio-container"]} onClick={e => e.stopPropagation()}>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="disability"
-                                                value="none"
-                                                checked={Personal.disability !== 'have'}
-                                                onChange={() => updatePersonal('disability', 'none')}
-                                            /> ไม่มี
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="disability"
-                                                value="have"
-                                                checked={Personal.disability === 'have'}
-                                                onChange={() => updatePersonal('disability', 'have')}
-                                            /> มีความพิการ
-                                        </label>
-                                    </div>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.disability || ''}
+                                        onChange={e => updatePersonal('disability', e.target.value)}
+                                    >
+                                        <option value="" disabled>
+                                            กรุณาเลือกความพิการ
+                                        </option>
+                                        <option value="ไม่มี">ไม่มี</option>
+                                        <option value="มี">มีความพิการ</option>
+                                    </select>
                                 </div>
-                                <div className={styles["name-group"]} style={{ width: '65%' }}>
+                                <div className={styles["name-group"]} style={{ width: '30%' }}>
                                     <p>สถานภาพทางทหาร</p>
-                                    <div className={styles["radio-container"]} onClick={e => e.stopPropagation()}>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="militaryStatus"
-                                                value="exempt"
-                                                checked={Personal.military_status === 'exempt'}
-                                                onChange={() => updatePersonal('military_status', 'exempt')}
-                                            /> ได้รับการยกเว้น
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="militaryStatus"
-                                                value="completed"
-                                                checked={Personal.military_status === 'completed'}
-                                                onChange={() => updatePersonal('military_status', 'completed')}
-                                            /> ผ่านการเกณฑ์ทหารแล้ว
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="militaryStatus"
-                                                value="waiting"
-                                                checked={Personal.military_status === 'waiting'}
-                                                onChange={() => updatePersonal('military_status', 'waiting')}
-                                            /> รอการเกณฑ์ทหาร
-                                        </label>
-                                    </div>
+                                    <select
+                                        className={styles["port-input"]}
+                                        onClick={e => e.stopPropagation()}
+                                        value={Personal.military_status || ''}
+                                        onChange={e => updatePersonal('military_status', e.target.value)}
+                                    >
+                                        <option value="" disabled>
+                                            กรุณาเลือกสถานภาพทางทหาร
+                                        </option>
+                                        <option value="ได้รับการยกเว้น">ได้รับการยกเว้น</option>
+                                        <option value="รอการเกณฑ์ทหาร">รอการเกณฑ์ทหาร</option>\
+                                        <option value="ผ่านการเกณฑ์ทหารแล้ว">ผ่านการเกณฑ์ทหารแล้ว</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1114,12 +1160,22 @@ const Portfolio = () => {
                                         <select
                                             className={styles["port-input"]}
                                             value={month}
-                                            onChange={(e) => setMonth(Number(e.target.value))}
+                                            onChange={(e) => setMonth(e.target.value)}
                                             onClick={e => e.stopPropagation()}
                                         >
-                                            {thaiMonths.map((m) => (
-                                                <option key={m.value} value={m.value}>{m.name}</option>
-                                            ))}
+
+                                            <option value="มกราคม">มกราคม</option>
+                                            <option value="กุมภาพันธ์">กุมภาพันธ์</option>
+                                            <option value="มีนาคม">มีนาคม</option>
+                                            <option value="เมษายน">เมษายน</option>
+                                            <option value="พฤษภาคม">พฤษภาคม</option>
+                                            <option value="มิถุนายน">มิถุนายน</option>
+                                            <option value="กรกฎาคม">กรกฎาคม</option>
+                                            <option value="สิงหาคม">สิงหาคม</option>
+                                            <option value="กันยายน">กันยายน</option>
+                                            <option value="ตุลาคม">ตุลาคม</option>
+                                            <option value="พฤศจิกายน">พฤศจิกายน</option>
+                                            <option value="ธันวาคม">ธันวาคม</option>
                                         </select>
                                         <select
                                             className={styles["port-input"]}
@@ -1296,7 +1352,7 @@ const Portfolio = () => {
                             {showPopup && (
                                 <div className={styles["popup-overlay"]} onClick={() => setShowPopup(false)}>
                                     <div className={styles["popup-content"]} onClick={e => e.stopPropagation()}>
-                                        
+
                                         <img
                                             src="/img/Template01.png"
                                             alt="portfolio preview"
