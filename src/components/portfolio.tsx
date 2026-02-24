@@ -61,6 +61,7 @@ interface LanguageSkill {
 }
 
 interface SkillsAbilities {
+    others_skills?: string | null;
     details?: string | null;
     language_skills?: LanguageSkill[] | null;
 }
@@ -319,6 +320,7 @@ const Portfolio = () => {
 
     const [skillsAbilities, setSkillsAbilities] = useState<SkillsAbilities>({
         details: '',
+        others_skills: '',
         language_skills: [
             { language: '', listening: '', speaking: '', reading: '', writing: '' }
         ]
@@ -487,6 +489,27 @@ const Portfolio = () => {
                                 disability={Personal.disability ?? ''}
                                 military_status={Personal.military_status ?? ''}
                                 personal_image={Personal.image ? (Personal.image instanceof File ? URL.createObjectURL(Personal.image) : String(Personal.image)) : undefined}
+                                skills_details={skillsAbilities.details || ''}
+                                language_skill={skillsAbilities.language_skills?.[0]?.language || ''}
+                                listening_skill={skillsAbilities.language_skills?.[0]?.listening || ''}
+                                speaking_skill={skillsAbilities.language_skills?.[0]?.speaking || ''}
+                                reading_skill={skillsAbilities.language_skills?.[0]?.reading || ''}
+                                writing_skill={skillsAbilities.language_skills?.[0]?.writing || ''}
+                                others_skills={skillsAbilities.others_skills || ''}
+                                university={universityChoice[0]?.university || ''}
+                                faculty={universityChoice[0]?.faculty || ''}
+                                major={universityChoice[0]?.major || ''}
+                                reason={universityChoice[0]?.details || ''}
+
+                                school={educational[0]?.school || ''}
+                                graduation={educational[0]?.graduation || ''}
+                                educational_qualifications={educational[0]?.educational_qualifications || ''}
+                                province_edu={educational[0]?.province || ''}
+                                district_edu={educational[0]?.district || ''}
+                                study_path={educational[0]?.study_path || ''}
+                                grade_average={educational[0]?.grade_average || ''}
+                                study_results={educational[0]?.study_results || ''}
+                                
 
                             />}
 
@@ -517,7 +540,7 @@ const Portfolio = () => {
                     {saveMessage && (
                         <div style={{ marginTop: 8, color: saveMessage.startsWith('เกิดข้อผิดพลาด') ? 'crimson' : 'green' }}>{saveMessage}</div>
                     )}
-                    {/* <p className={styles["progress-caution"]}>*หมายเหตุ :เมื่อกดปุ่มเผยแพร่ ระบบจะใช้เวลาประมวลผลภายใน 30 นาที ทางมหาวิทยาลัยจึงจะสามารถมองเห็นแฟ้มสะสมผลงานของคุณได้</p> */}
+                    
                 </div>
             </div>
 
@@ -603,7 +626,7 @@ const Portfolio = () => {
                                             onChange={(e) => setDay(Number(e.target.value))}
                                             onClick={e => e.stopPropagation()}
                                         >
-                                        
+
                                             {Array.from({ length: daysInMonth }, (_, i) => (
                                                 <option key={i + 1} value={i + 1}>{i + 1}</option>
                                             ))}
@@ -614,7 +637,7 @@ const Portfolio = () => {
                                             onChange={(e) => setMonth(e.target.value)}
                                             onClick={e => e.stopPropagation()}
                                         >
-                                           
+
                                             <option value="มกราคม">มกราคม</option>
                                             <option value="กุมภาพันธ์">กุมภาพันธ์</option>
                                             <option value="มีนาคม">มีนาคม</option>
@@ -634,7 +657,7 @@ const Portfolio = () => {
                                             onChange={(e) => setYear(Number(e.target.value))}
                                             onClick={e => e.stopPropagation()}
                                         >
-                                            
+
                                             {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((y) => (
                                                 <option key={y} value={y}>{y + 543}</option>
                                             ))}
@@ -1045,6 +1068,9 @@ const Portfolio = () => {
                                         value={skillsAbilities.language_skills?.[0]?.language || ''}
                                         onChange={e => updateLanguageSkill(0, 'language', e.target.value)}
                                     >
+                                        <option value="" disabled>
+                                            กรุณาเลือกภาษา
+                                        </option>
                                         <option value="อังกฤษ">อังกฤษ</option>
                                         <option value="จีน">จีน</option>
                                         <option value="ญี่ปุ่น">ญี่ปุ่น</option>
@@ -1058,6 +1084,9 @@ const Portfolio = () => {
                                         value={skillsAbilities.language_skills?.[0]?.listening || ''}
                                         onChange={e => updateLanguageSkill(0, 'listening', e.target.value)}
                                     >
+                                        <option value="" disabled>
+                                            กรุณาเลือกระดับ
+                                        </option>
                                         <option value="พอใช้">พอใช้</option>
                                         <option value="ดี">ดี</option>
                                         <option value="ดีมาก">ดีมาก</option>
@@ -1071,6 +1100,9 @@ const Portfolio = () => {
                                         value={skillsAbilities.language_skills?.[0]?.speaking || ''}
                                         onChange={e => updateLanguageSkill(0, 'speaking', e.target.value)}
                                     >
+                                        <option value="" disabled>
+                                            กรุณาเลือกระดับ
+                                        </option>
                                         <option value="พอใช้">พอใช้</option>
                                         <option value="ดี">ดี</option>
                                         <option value="ดีมาก">ดีมาก</option>
@@ -1084,6 +1116,9 @@ const Portfolio = () => {
                                         value={skillsAbilities.language_skills?.[0]?.reading || ''}
                                         onChange={e => updateLanguageSkill(0, 'reading', e.target.value)}
                                     >
+                                        <option value="" disabled>
+                                            กรุณาเลือกระดับ
+                                        </option>
                                         <option value="พอใช้">พอใช้</option>
                                         <option value="ดี">ดี</option>
                                         <option value="ดีมาก">ดีมาก</option>
@@ -1097,6 +1132,9 @@ const Portfolio = () => {
                                         value={skillsAbilities.language_skills?.[0]?.writing || ''}
                                         onChange={e => updateLanguageSkill(0, 'writing', e.target.value)}
                                     >
+                                        <option value="" disabled>
+                                            กรุณาเลือกระดับ
+                                        </option>
                                         <option value="พอใช้">พอใช้</option>
                                         <option value="ดี">ดี</option>
                                         <option value="ดีมาก">ดีมาก</option>
@@ -1106,7 +1144,14 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <p>ทักษะอื่นๆ</p>
                             </div>
-                            <textarea className={styles["port-textarea"]} onClick={e => e.stopPropagation()} rows={4} style={{ resize: 'vertical' }} />
+                            <textarea
+                                className={styles["port-textarea"]}
+                                onClick={e => e.stopPropagation()}
+                                rows={4}
+                                style={{ resize: 'vertical' }}
+                                value={skillsAbilities.others_skills || ''}
+                                onChange={e => updateSkills('others_skills', e.target.value)}
+                            />
                         </div>
                     </div>
                 )}
@@ -1261,7 +1306,7 @@ const Portfolio = () => {
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
-                                <div className={styles["name-group"]} style={{ width: '100%' }}>
+                                <div className={styles["name-group"]}>
                                     <p>เหตุผลที่สนใจมหาวิทยาลัยนี้</p>
                                     <textarea
                                         className={styles["port-textarea"]}
