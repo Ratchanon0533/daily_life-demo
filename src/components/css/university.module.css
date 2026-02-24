@@ -3,10 +3,16 @@
     background-color: transparent;
     display: flex;
     justify-content: center;
+    width: 100%;
+    max-width: 1380px;
+    margin: 0 auto;
+    overflow-x: hidden;
 }
-.university-content{
-    position: relative;   /* establish a containing block */
-    overflow: hidden;  
+
+.university-content {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
 }
 
 .university-header {
@@ -32,7 +38,7 @@
     flex-wrap: wrap;
 }
 
-.four-box-item .image-box img{
+.four-box-item .image-box img {
     height: 23.125rem;
     width: 18.75rem;
     background: #f8f9fa;
@@ -46,7 +52,7 @@
     transition: 0.3s ease;
     cursor: pointer;
     object-fit: cover;
-    
+
 }
 
 
@@ -66,8 +72,9 @@
 .uni-slideshow {
     position: relative;
     width: 100%;
-    min-height: 24rem; /* Ensures boxes are visible */
-    overflow: hidden; 
+    min-height: 24rem;
+    /* Ensures boxes are visible */
+    overflow: hidden;
 }
 
 
@@ -94,6 +101,7 @@
         transform: translateX(10%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -105,6 +113,7 @@
         transform: translateX(-10%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -133,5 +142,10 @@
     opacity: 1;
 }
 
-.prev { left: 10px; }
-.next { right: 10px; }
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}

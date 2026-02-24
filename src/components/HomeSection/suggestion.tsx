@@ -1,4 +1,4 @@
-import style from "./css/suggestion.module.css";
+import style from "../css/suggestion.module.css";
 
 const Suggestion = () => {
     // 15 items total (5 columns × 3 rows)

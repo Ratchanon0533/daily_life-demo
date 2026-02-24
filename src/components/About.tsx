@@ -5,7 +5,7 @@ import Navnologin from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
 import AboutCarousel from "./about-carousel";
 import Aboutmain from "./about-main";
-import Contact from "./contact";
+import Contact from "./HomeSection/contact";
 
 const About = () => {
 
