@@ -3,18 +3,11 @@ import Navlogin from './nav-bar(login)';
 import styles from './css/portfolio.module.css';
 import Contact from './HomeSection/contact';
 import { useState, useMemo, useEffect } from 'react';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { PortfolioPDF } from './MyDocument';
-
 import {
     getDaysInMonth,
-
+    format,
 } from 'date-fns';
-<<<<<<< HEAD
 import { th } from 'date-fns/locale';
-=======
-import { picture } from 'framer-motion/client';
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
 
 interface PersonalInfo {
     portfolio_name?: string | null;
@@ -22,13 +15,7 @@ interface PersonalInfo {
     prefix?: string | null;
     first_name?: string | null;
     last_name?: string | null;
-<<<<<<< HEAD
     date_birth?: string | null;
-=======
-    day?: string;
-    month?: string;
-    year?: string;
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
     nationality?: string | null;
     national_id?: string | null;
     phone_number1?: string | null;
@@ -68,7 +55,6 @@ interface LanguageSkill {
 }
 
 interface SkillsAbilities {
-    others_skills?: string | null;
     details?: string | null;
     language_skills?: LanguageSkill[] | null;
 }
@@ -93,14 +79,7 @@ interface UniversityChoice {
 }
 
 const Portfolio = () => {
-<<<<<<< HEAD
     // ===== State for UI =====
-=======
-
-
-    const [showPopup, setShowPopup] = useState(false);
-
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         personal: false,
         education: false,
@@ -123,81 +102,17 @@ const Portfolio = () => {
 
     // ===== State for date picker (birth date) =====
     const [day, setDay] = useState<number>(1);
-    const [month, setMonth] = useState<string>('');
+    const [month, setMonth] = useState<number>(0);
     const [year, setYear] = useState<number>(new Date().getFullYear());
 
-<<<<<<< HEAD
     // ===== State for form data =====
-=======
-    const daysInMonth = useMemo(() => {
-        const date = new Date(year);
-        return getDaysInMonth(date);
-    }, [month, year]);
-
-
-    const [showEducation, setShowEducation] = useState(false);
-
-    useEffect(() => {
-        if (openSections.education) {
-            setShowEducation(true);
-        } else if (showEducation) {
-            const timeout = setTimeout(() => setShowEducation(false), 400);
-            return () => clearTimeout(timeout);
-        }
-    }, [openSections.education]);
-
-    const [showTalent, setShowTalent] = useState(false);
-
-    useEffect(() => {
-        if (openSections.talent) {
-            setShowTalent(true);
-        } else if (showTalent) {
-            const timeout = setTimeout(() => setShowTalent(false), 400);
-            return () => clearTimeout(timeout);
-        }
-    }, [openSections.talent]);
-
-    const [showCertificate, setShowCertificate] = useState(false);
-
-    useEffect(() => {
-        if (openSections.certificate) {
-            setShowCertificate(true);
-        } else if (showCertificate) {
-            const timeout = setTimeout(() => setShowCertificate(false), 400);
-            return () => clearTimeout(timeout);
-        }
-    }, [openSections.certificate]);
-
-    const [showUniversity, setShowUniversity] = useState(false);
-
-    useEffect(() => {
-        if (openSections.university) {
-            setShowUniversity(true);
-        } else if (showUniversity) {
-            const timeout = setTimeout(() => setShowUniversity(false), 400);
-            return () => clearTimeout(timeout);
-        }
-    }, [openSections.university]);
-
-    const [showPersonal, setShowPersonal] = useState(false);
-
-    useEffect(() => {
-        if (openSections.personal) {
-            setShowPersonal(true);
-        } else if (showPersonal) {
-            const timeout = setTimeout(() => setShowPersonal(false), 400);
-            return () => clearTimeout(timeout);
-        }
-    }, [openSections.personal]);
-
-
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
     const [Personal, setPersonal] = useState<PersonalInfo>({
         portfolio_name: '',
         introduce: '',
         prefix: '',
         first_name: '',
         last_name: '',
+        date_birth: '',
         nationality: '',
         national_id: '',
         phone_number1: '',
@@ -210,64 +125,7 @@ const Portfolio = () => {
         postal_code: ''
     });
 
-<<<<<<< HEAD
     const [profileImage, setProfileImage] = useState<File | null>(null);
-=======
-
-    ;
-
-    useEffect(() => {
-        try {
-            const d = new Date(year, day);
-            if (!isNaN(d.getTime())) {
-                setPersonal(prev => ({ ...prev, date_birth: d.toISOString().slice(0, 10) } as PersonalInfo));
-            }
-        } catch (e) {
-            // ignore
-        }
-    }, [day, month, year]);
-
-    const updatePersonal = (field: keyof PersonalInfo, value: any) => {
-        setPersonal(prev => ({ ...prev, [field]: value } as PersonalInfo));
-    };
-
-    const updateEducational = (index: number, field: keyof EducationalItem, value: any) => {
-        setEducational(prev => {
-            const copy = [...prev];
-            copy[index] = { ...(copy[index] || {}), [field]: value } as EducationalItem;
-            return copy;
-        });
-    };
-
-    const updateSkills = (field: keyof SkillsAbilities, value: any) => {
-        setSkillsAbilities(prev => ({ ...(prev || {}), [field]: value } as SkillsAbilities));
-    };
-
-    const updateLanguageSkill = (index: number, field: keyof LanguageSkill, value: any) => {
-        setSkillsAbilities(prev => {
-            const ls = prev?.language_skills ? [...prev.language_skills] : [] as LanguageSkill[];
-            ls[index] = { ...(ls[index] || {}), [field]: value } as LanguageSkill;
-            return { ...(prev || {}), language_skills: ls } as SkillsAbilities;
-        });
-    };
-
-    const updateActivity = (index: number, field: keyof ActivityCertificate, value: any) => {
-        setActivitiesCertificates(prev => {
-            const copy = [...prev];
-            copy[index] = { ...(copy[index] || {}), [field]: value } as ActivityCertificate;
-            return copy;
-        });
-    };
-
-    const updateUniversity = (index: number, field: keyof UniversityChoice, value: any) => {
-        setUniversityChoice(prev => {
-            const copy = [...prev];
-            copy[index] = { ...(copy[index] || {}), [field]: value } as UniversityChoice;
-            return copy;
-        });
-    };
-
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
     const [educational, setEducational] = useState<EducationalItem[]>([
         {
             number: 1,
@@ -284,7 +142,6 @@ const Portfolio = () => {
 
     const [skillsAbilities, setSkillsAbilities] = useState<SkillsAbilities>({
         details: '',
-        others_skills: '',
         language_skills: [
             { language: '', listening: '', speaking: '', reading: '', writing: '' }
         ]
@@ -602,10 +459,6 @@ const Portfolio = () => {
             setSaving(false);
         }
     };
-<<<<<<< HEAD
-=======
-
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
 
     // ===== Render functions =====
     const renderLanguageSkills = () => {
@@ -897,81 +750,7 @@ const Portfolio = () => {
                         >
                             {saving ? 'กำลังบันทึก...' : 'สร้างพอต'}
                         </button>
-                        <PDFDownloadLink
-                            key={JSON.stringify(Personal)}
-                            document={<PortfolioPDF
-                                introduce={Personal.introduce ?? ''}
-                                first_name={Personal.first_name ?? ''}
-                                last_name={Personal.last_name ?? ''}
-                                prefix={Personal.prefix ?? ''}
-                                birth_day={day ?? ''}
-                                birth_month={month ?? ''}
-                                birth_year={year ?? ''}
-                                nationality={Personal.nationality ?? ''}
-                                id_card={Personal.national_id ?? ''}
-                                phonenumber1={Personal.phone_number1 ?? ''}
-                                phonenumber2={Personal.phone_number2 ?? ''}
-                                email={Personal.email ?? ''}
-                                address={Personal.address ?? ''}
-                                province={Personal.province ?? ''}
-                                district={Personal.district ?? ''}
-                                subdistrict={Personal.subdistrict ?? ''}
-                                postal_code={Personal.postal_code ?? ''}
-                                height={Personal.height ?? ''}
-                                weight={Personal.weight ?? ''}
-                                gender={Personal.gender ?? ''}
-                                marital_status={Personal.marital_status ?? ''}
-                                disability={Personal.disability ?? ''}
-                                military_status={Personal.military_status ?? ''}
-                                personal_image={Personal.image ? (Personal.image instanceof File ? URL.createObjectURL(Personal.image) : String(Personal.image)) : undefined}
-                                skills_details={skillsAbilities.details || ''}
-                                language_skill={skillsAbilities.language_skills?.[0]?.language || ''}
-                                listening_skill={skillsAbilities.language_skills?.[0]?.listening || ''}
-                                speaking_skill={skillsAbilities.language_skills?.[0]?.speaking || ''}
-                                reading_skill={skillsAbilities.language_skills?.[0]?.reading || ''}
-                                writing_skill={skillsAbilities.language_skills?.[0]?.writing || ''}
-                                others_skills={skillsAbilities.others_skills || ''}
-                                university={universityChoice[0]?.university || ''}
-                                faculty={universityChoice[0]?.faculty || ''}
-                                major={universityChoice[0]?.major || ''}
-                                reason={universityChoice[0]?.details || ''}
-
-                                school={educational[0]?.school || ''}
-                                graduation={educational[0]?.graduation || ''}
-                                educational_qualifications={educational[0]?.educational_qualifications || ''}
-                                province_edu={educational[0]?.province || ''}
-                                district_edu={educational[0]?.district || ''}
-                                study_path={educational[0]?.study_path || ''}
-                                grade_average={educational[0]?.grade_average || ''}
-                                study_results={educational[0]?.study_results || ''}
-                                
-
-                            />}
-
-                            fileName={
-                                Personal.portfolio_name && Personal.portfolio_name.trim() !== ''
-                                    ? Personal.portfolio_name
-                                    : 'Portfolio.pdf'
-                            }
-                        >
-                            {({ loading }) => (
-                                <button
-                                    type="button"
-                                    style={{
-                                        padding: '8px 16px',
-                                        backgroundColor: loading ? '#ccc' : '#e67e22',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: loading ? 'not-allowed' : 'pointer'
-                                    }}
-                                >
-                                    {loading ? 'กำลังสร้าง PDF...' : 'Export to PDF'}
-                                </button>
-                            )}
-                        </PDFDownloadLink>
                     </div>
-
                     {saveMessage && (
                         <div style={{ 
                             marginTop: 8, 
@@ -983,10 +762,6 @@ const Portfolio = () => {
                             {saveMessage}
                         </div>
                     )}
-<<<<<<< HEAD
-=======
-                    
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
                 </div>
             </div>
 
@@ -1019,12 +794,9 @@ const Portfolio = () => {
                             <textarea
                                 className={styles["port-textarea"]}
                                 rows={4}
-                                style={{ minHeight: '100px', resize: 'vertical' }}
                                 value={Personal.introduce || ''}
                                 onChange={e => updatePersonal('introduce', e.target.value)}
                             />
-
-
 
                             <div className={styles["personal-section"]}>
                                 <div className={styles["custom-name-group"]}>
@@ -1033,13 +805,8 @@ const Portfolio = () => {
                                         className={styles["port-input"]}
                                         value={Personal.prefix || ''}
                                         onChange={e => updatePersonal('prefix', e.target.value)}
-
                                     >
-<<<<<<< HEAD
                                         <option value="">เลือก</option>
-=======
-                                        <option value="">ไม่ระบุ</option>
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
                                         <option value="นาย">นาย</option>
                                         <option value="นางสาว">นางสาว</option>
                                         <option value="นาง">นาง</option>
@@ -1071,45 +838,27 @@ const Portfolio = () => {
                                     <div className={styles["date-group"]}>
                                         <select
                                             className={styles["port-input"]}
-                                            value={Personal.day}
+                                            value={day}
                                             onChange={(e) => setDay(Number(e.target.value))}
                                         >
-
                                             {Array.from({ length: daysInMonth }, (_, i) => (
                                                 <option key={i + 1} value={i + 1}>{i + 1}</option>
                                             ))}
                                         </select>
                                         <select
                                             className={styles["port-input"]}
-<<<<<<< HEAD
                                             value={month}
                                             onChange={(e) => setMonth(Number(e.target.value))}
-=======
-                                            value={Personal.month}
-                                            onChange={(e) => setMonth(e.target.value)}
-                                            onClick={e => e.stopPropagation()}
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
                                         >
-
-                                            <option value="มกราคม">มกราคม</option>
-                                            <option value="กุมภาพันธ์">กุมภาพันธ์</option>
-                                            <option value="มีนาคม">มีนาคม</option>
-                                            <option value="เมษายน">เมษายน</option>
-                                            <option value="พฤษภาคม">พฤษภาคม</option>
-                                            <option value="มิถุนายน">มิถุนายน</option>
-                                            <option value="กรกฎาคม">กรกฎาคม</option>
-                                            <option value="สิงหาคม">สิงหาคม</option>
-                                            <option value="กันยายน">กันยายน</option>
-                                            <option value="ตุลาคม">ตุลาคม</option>
-                                            <option value="พฤศจิกายน">พฤศจิกายน</option>
-                                            <option value="ธันวาคม">ธันวาคม</option>
+                                            {thaiMonths.map((m) => (
+                                                <option key={m.value} value={m.value}>{m.name}</option>
+                                            ))}
                                         </select>
                                         <select
                                             className={styles["port-input"]}
-                                            value={Personal.year}
+                                            value={year}
                                             onChange={(e) => setYear(Number(e.target.value))}
                                         >
-
                                             {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((y) => (
                                                 <option key={y} value={y}>{y + 543}</option>
                                             ))}
@@ -1172,7 +921,7 @@ const Portfolio = () => {
                                     <textarea
                                         className={styles["port-textarea"]}
                                         rows={4}
-                                        style={{ minHeight: '150px', resize: 'vertical' }}
+                                        style={{ height: '150px', resize: 'vertical' }}
                                         value={Personal.address || ''}
                                         onChange={e => updatePersonal('address', e.target.value)}
                                     />
@@ -1215,148 +964,6 @@ const Portfolio = () => {
                                         value={Personal.postal_code || ''}
                                         onChange={e => updatePersonal('postal_code', e.target.value)}
                                     />
-                                </div>
-                            </div>
-
-                            <div className={styles["personal-section"]}>
-                                <div className={styles["name-group"]}>
-                                    <p>ส่วนสูง (ซม.)</p>
-                                    <input
-                                        type="text"
-                                        className={styles["port-input"]}
-                                        value={Personal.height || ''}
-                                        onChange={e => updatePersonal('height', e.target.value)}
-                                    />
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>น้ำหนัก (กก.)</p>
-                                    <input
-                                        type="text"
-                                        className={styles["port-input"]}
-                                        value={Personal.weight || ''}
-                                        onChange={e => updatePersonal('weight', e.target.value)}
-                                    />
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>เพศ</p>
-                                    <select
-                                        className={styles["port-input"]}
-                                        value={Personal.gender || ''}
-                                        onChange={e => updatePersonal('gender', e.target.value)}
-                                    >
-<<<<<<< HEAD
-                                        <option value="">เลือก</option>
-=======
-                                        <option value="" disabled>
-                                            กรุณาเลือกเพศ
-                                        </option>
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
-                                        <option value="ชาย">ชาย</option>
-                                        <option value="หญิง">หญิง</option>
-                                    </select>
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>สถานภาพสมรส</p>
-                                    <select
-                                        className={styles["port-input"]}
-                                        value={Personal.marital_status || ''}
-                                        onChange={e => updatePersonal('marital_status', e.target.value)}
-                                    >
-<<<<<<< HEAD
-                                        <option value="">เลือก</option>
-=======
-                                        <option value="" disabled>
-                                            กรุณาเลือกสถานภาพสมรส
-                                        </option>
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
-                                        <option value="โสด">โสด</option>
-                                        <option value="สมรส">สมรส</option>
-                                        <option value="หย่า">หย่า</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className={styles["personal-section"]}>
-                                <div className={styles["name-group"]}>
-                                    <p>ความพิการ</p>
-<<<<<<< HEAD
-                                    <div className={styles["radio-container"]}>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="disability"
-                                                checked={Personal.disability !== 'have'}
-                                                onChange={() => updatePersonal('disability', 'none')}
-                                            /> ไม่มี
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="disability"
-                                                checked={Personal.disability === 'have'}
-                                                onChange={() => updatePersonal('disability', 'have')}
-                                            /> มีความพิการ
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>สถานภาพทางทหาร</p>
-                                    <div className={styles["radio-container"]}>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="militaryStatus"
-                                                checked={Personal.military_status === 'exempt'}
-                                                onChange={() => updatePersonal('military_status', 'exempt')}
-                                            /> ได้รับการยกเว้น
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="militaryStatus"
-                                                checked={Personal.military_status === 'completed'}
-                                                onChange={() => updatePersonal('military_status', 'completed')}
-                                            /> ผ่านการเกณฑ์ทหารแล้ว
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="militaryStatus"
-                                                checked={Personal.military_status === 'waiting'}
-                                                onChange={() => updatePersonal('military_status', 'waiting')}
-                                            /> รอการเกณฑ์ทหาร
-                                        </label>
-                                    </div>
-=======
-                                    <select
-                                        className={styles["port-input"]}
-                                        onClick={e => e.stopPropagation()}
-                                        value={Personal.disability || ''}
-                                        onChange={e => updatePersonal('disability', e.target.value)}
-                                    >
-                                        <option value="" disabled>
-                                            กรุณาเลือกความพิการ
-                                        </option>
-                                        <option value="ไม่มี">ไม่มี</option>
-                                        <option value="มี">มีความพิการ</option>
-                                    </select>
-                                </div>
-                                <div className={styles["name-group"]} style={{ width: '30%' }}>
-                                    <p>สถานภาพทางทหาร</p>
-                                    <select
-                                        className={styles["port-input"]}
-                                        onClick={e => e.stopPropagation()}
-                                        value={Personal.military_status || ''}
-                                        onChange={e => updatePersonal('military_status', e.target.value)}
-                                    >
-                                        <option value="" disabled>
-                                            กรุณาเลือกสถานภาพทางทหาร
-                                        </option>
-                                        <option value="ได้รับการยกเว้น">ได้รับการยกเว้น</option>
-                                        <option value="รอการเกณฑ์ทหาร">รอการเกณฑ์ทหาร</option>\
-                                        <option value="ผ่านการเกณฑ์ทหารแล้ว">ผ่านการเกณฑ์ทหารแล้ว</option>
-                                    </select>
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
                                 </div>
                             </div>
                         </div>
@@ -1508,7 +1115,6 @@ const Portfolio = () => {
                                 value={skillsAbilities.details || ''}
                                 onChange={e => updateSkills('details', e.target.value)}
                             />
-<<<<<<< HEAD
 
                             <div className={`${styles["personal-section"]} ${styles["add-education"]}`} style={{ marginBottom: '20px' }}>
                                 <h3>ทักษะด้านภาษาต่างประเทศ</h3>
@@ -1518,93 +1124,6 @@ const Portfolio = () => {
                                 >
                                     + เพิ่มภาษา
                                 </button>
-=======
-                            <div className={`${styles["personal-section"]} ${styles["add-education"]}`}>
-                                <p>ทักษะด้านภาษาต่างประเทศ</p>
-                                <button>เพิ่มภาษา</button>
-                            </div>
-                            <div className={styles["personal-section"]}>
-                                <div className={styles["name-group"]}>
-                                    <p>ภาษา</p>
-                                    <select
-                                        className={styles["port-input"]}
-                                        onClick={e => e.stopPropagation()}
-                                        value={skillsAbilities.language_skills?.[0]?.language || ''}
-                                        onChange={e => updateLanguageSkill(0, 'language', e.target.value)}
-                                    >
-                                        <option value="" disabled>
-                                            กรุณาเลือกภาษา
-                                        </option>
-                                        <option value="อังกฤษ">อังกฤษ</option>
-                                        <option value="จีน">จีน</option>
-                                        <option value="ญี่ปุ่น">ญี่ปุ่น</option>
-                                    </select>
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>การฟัง</p>
-                                    <select
-                                        className={styles["port-input"]}
-                                        onClick={e => e.stopPropagation()}
-                                        value={skillsAbilities.language_skills?.[0]?.listening || ''}
-                                        onChange={e => updateLanguageSkill(0, 'listening', e.target.value)}
-                                    >
-                                        <option value="" disabled>
-                                            กรุณาเลือกระดับ
-                                        </option>
-                                        <option value="พอใช้">พอใช้</option>
-                                        <option value="ดี">ดี</option>
-                                        <option value="ดีมาก">ดีมาก</option>
-                                    </select>
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>การพูด</p>
-                                    <select
-                                        className={styles["port-input"]}
-                                        onClick={e => e.stopPropagation()}
-                                        value={skillsAbilities.language_skills?.[0]?.speaking || ''}
-                                        onChange={e => updateLanguageSkill(0, 'speaking', e.target.value)}
-                                    >
-                                        <option value="" disabled>
-                                            กรุณาเลือกระดับ
-                                        </option>
-                                        <option value="พอใช้">พอใช้</option>
-                                        <option value="ดี">ดี</option>
-                                        <option value="ดีมาก">ดีมาก</option>
-                                    </select>
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>การอ่าน</p>
-                                    <select
-                                        className={styles["port-input"]}
-                                        onClick={e => e.stopPropagation()}
-                                        value={skillsAbilities.language_skills?.[0]?.reading || ''}
-                                        onChange={e => updateLanguageSkill(0, 'reading', e.target.value)}
-                                    >
-                                        <option value="" disabled>
-                                            กรุณาเลือกระดับ
-                                        </option>
-                                        <option value="พอใช้">พอใช้</option>
-                                        <option value="ดี">ดี</option>
-                                        <option value="ดีมาก">ดีมาก</option>
-                                    </select>
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>การเขียน</p>
-                                    <select
-                                        className={styles["port-input"]}
-                                        onClick={e => e.stopPropagation()}
-                                        value={skillsAbilities.language_skills?.[0]?.writing || ''}
-                                        onChange={e => updateLanguageSkill(0, 'writing', e.target.value)}
-                                    >
-                                        <option value="" disabled>
-                                            กรุณาเลือกระดับ
-                                        </option>
-                                        <option value="พอใช้">พอใช้</option>
-                                        <option value="ดี">ดี</option>
-                                        <option value="ดีมาก">ดีมาก</option>
-                                    </select>
-                                </div>
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
                             </div>
 
                             {renderLanguageSkills()}
@@ -1612,21 +1131,11 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <p>ทักษะอื่นๆ</p>
                             </div>
-<<<<<<< HEAD
                             <textarea 
                                 className={styles["port-textarea"]} 
                                 rows={4} 
                                 style={{ resize: 'vertical' }}
                                 placeholder="ระบุทักษะอื่นๆ เช่น การใช้คอมพิวเตอร์, ทักษะการสื่อสาร, ฯลฯ"
-=======
-                            <textarea
-                                className={styles["port-textarea"]}
-                                onClick={e => e.stopPropagation()}
-                                rows={4}
-                                style={{ resize: 'vertical' }}
-                                value={skillsAbilities.others_skills || ''}
-                                onChange={e => updateSkills('others_skills', e.target.value)}
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
                             />
                         </div>
                     </div>
@@ -1662,84 +1171,7 @@ const Portfolio = () => {
                                 </button>
                             </div>
 
-<<<<<<< HEAD
                             {renderActivities()}
-=======
-                            <div className={styles["personal-section"]}>
-                                <div className={styles["name-group"]}>
-                                    <p>ชื่อโครงการ/กิจกรรม</p>
-                                    <input
-                                        type="text"
-                                        className={styles["port-input"]}
-                                        onClick={e => e.stopPropagation()}
-                                        value={activitiesCertificates[0]?.name_project || ''}
-                                        onChange={e => updateActivity(0, 'name_project', e.target.value)}
-                                    />
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>ช่วงวันที่</p>
-                                    <div className={styles["date-group"]}>
-                                        <select
-                                            className={styles["port-input"]}
-                                            value={day}
-                                            onChange={(e) => setDay(Number(e.target.value))}
-                                            onClick={e => e.stopPropagation()}
-                                        >
-                                            {Array.from({ length: daysInMonth }, (_, i) => (
-                                                <option key={i + 1} value={i + 1}>{i + 1}</option>
-                                            ))}
-                                        </select>
-                                        <select
-                                            className={styles["port-input"]}
-                                            value={month}
-                                            onChange={(e) => setMonth(e.target.value)}
-                                            onClick={e => e.stopPropagation()}
-                                        >
-
-                                            <option value="มกราคม">มกราคม</option>
-                                            <option value="กุมภาพันธ์">กุมภาพันธ์</option>
-                                            <option value="มีนาคม">มีนาคม</option>
-                                            <option value="เมษายน">เมษายน</option>
-                                            <option value="พฤษภาคม">พฤษภาคม</option>
-                                            <option value="มิถุนายน">มิถุนายน</option>
-                                            <option value="กรกฎาคม">กรกฎาคม</option>
-                                            <option value="สิงหาคม">สิงหาคม</option>
-                                            <option value="กันยายน">กันยายน</option>
-                                            <option value="ตุลาคม">ตุลาคม</option>
-                                            <option value="พฤศจิกายน">พฤศจิกายน</option>
-                                            <option value="ธันวาคม">ธันวาคม</option>
-                                        </select>
-                                        <select
-                                            className={styles["port-input"]}
-                                            value={year}
-                                            onChange={(e) => setYear(Number(e.target.value))}
-                                            onClick={e => e.stopPropagation()}
-                                        >
-                                            {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((y) => (
-                                                <option key={y} value={y}>{y + 543}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className={styles["name-group"]}>
-                                    <p>แนบรูปภาพกิจกรรม/เกียรติบัตร</p>
-                                    <button className={styles['edu-upload-btn']}>อัพโหลดไฟล์</button>
-                                </div>
-                            </div>
-                            <div className={styles["personal-section"]}>
-                                <div className={styles["name-group"]} style={{ width: '100%' }}>
-                                    <p>ระบุรายละเอียด</p>
-                                    <textarea
-                                        className={styles["port-textarea"]}
-                                        onClick={e => e.stopPropagation()}
-                                        rows={4}
-                                        style={{ height: '150px', resize: 'vertical' }}
-                                        value={activitiesCertificates[0]?.details || ''}
-                                        onChange={e => updateActivity(0, 'details', e.target.value)}
-                                    />
-                                </div>
-                            </div>
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
                         </div>
                     </div>
                 )}
@@ -1794,7 +1226,7 @@ const Portfolio = () => {
                                 </div>
                             </div>
                             <div className={styles["personal-section"]}>
-                                <div className={styles["name-group"]}>
+                                <div className={styles["name-group"]} style={{ width: '100%' }}>
                                     <p>เหตุผลที่สนใจมหาวิทยาลัยนี้</p>
                                     <textarea
                                         className={styles["port-textarea"]}
@@ -1855,7 +1287,6 @@ const Portfolio = () => {
                                     <div className={styles["portfolio-data-content"]}>ชื่อแฟ้มผลงาน</div>
                                     <div className={styles["portfolio-data-content"]}>v</div>
                                 </div>
-<<<<<<< HEAD
 
                                 {showPersonal && (
                                     <div
@@ -1863,24 +1294,6 @@ const Portfolio = () => {
                                         style={{ overflow: "hidden" }}
                                     >
                                         {renderPortfolioContent()}
-=======
-                            </div>
-                            {showPopup && (
-                                <div className={styles["popup-overlay"]} onClick={() => setShowPopup(false)}>
-                                    <div className={styles["popup-content"]} onClick={e => e.stopPropagation()}>
-
-                                        <img
-                                            src="/img/Template01.png"
-                                            alt="portfolio preview"
-                                            style={{ width: "1500px", maxWidth: "500px", borderRadius: "8px", marginTop: "16px" }}
-                                        />
-                                        <button
-                                            className={styles["popup-close-btn"]}
-                                            onClick={() => setShowPopup(false)}
-                                        >
-                                            ×
-                                        </button>
->>>>>>> 9ca4102539cde9c8b0523ed15f5065a82cd6fc48
                                     </div>
                                 )}
                             </div>
