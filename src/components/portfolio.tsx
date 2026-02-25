@@ -2,7 +2,7 @@ import Nav from './nav-bar';
 import Navlogin from './nav-bar(login)';
 import styles from './css/portfolio.module.css';
 import Contact from './HomeSection/contact';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, } from 'react';
 import {
     getDaysInMonth,
     format,
@@ -78,7 +78,18 @@ interface UniversityChoice {
     details?: string | null;
 }
 
+interface Userdata {
+    id: number | string;
+    username: string;
+    firstname: string; // เพิ่มตัวนี้
+    lastname: string;  // เพิ่มตัวนี้
+}
+
 const Portfolio = () => {
+
+    // ===== User data state =====
+    const [userData, setUserData] = useState<Userdata>();
+
     // ===== State for UI =====
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         personal: false,
@@ -148,11 +159,11 @@ const Portfolio = () => {
     });
 
     const [activitiesCertificates, setActivitiesCertificates] = useState<ActivityCertificate[]>([
-        { 
-            number: 1, 
-            name_project: '', 
-            date: '', 
-            photo: null, 
+        {
+            number: 1,
+            name_project: '',
+            date: '',
+            photo: null,
             details: '',
             day: 1,
             month: 0,
@@ -219,9 +230,18 @@ const Portfolio = () => {
             }
         }
 
+
+
         if (!portId) {
-            const seed = localStorage.getItem('user_id') || localStorage.getItem('userId') || 'anon';
-            setPortId(`port_${seed}_${Date.now()}`);
+            const storedUserData = localStorage.getItem("user");
+            if (storedUserData) {
+                const parsed = JSON.parse(storedUserData);
+                setUserData(parsed);
+                // ✅ ใช้จากตัวแปร parsed โดยตรง ไม่ต้องรอ State
+                const seed = parsed.username || 'anon';
+                const id = parsed.id || 'anon';
+                setPortId(`port_${seed}_${id}`);
+            }
         }
     }, []);
 
@@ -230,9 +250,9 @@ const Portfolio = () => {
         try {
             const d = new Date(year, month, day);
             if (!isNaN(d.getTime())) {
-                setPersonal(prev => ({ 
-                    ...prev, 
-                    date_birth: d.toISOString().slice(0, 10) 
+                setPersonal(prev => ({
+                    ...prev,
+                    date_birth: d.toISOString().slice(0, 10)
                 }));
             }
         } catch (e) {
@@ -345,11 +365,11 @@ const Portfolio = () => {
     const addActivity = () => {
         setActivitiesCertificates(prev => [
             ...prev,
-            { 
-                number: prev.length + 1, 
-                name_project: '', 
-                date: '', 
-                photo: null, 
+            {
+                number: prev.length + 1,
+                name_project: '',
+                date: '',
+                photo: null,
                 details: '',
                 day: 1,
                 month: 0,
@@ -362,11 +382,11 @@ const Portfolio = () => {
         setActivitiesCertificates(prev => {
             const copy = [...prev];
             copy.splice(index, 1);
-            return copy.length > 0 ? copy : [{ 
-                number: 1, 
-                name_project: '', 
-                date: '', 
-                photo: null, 
+            return copy.length > 0 ? copy : [{
+                number: 1,
+                name_project: '',
+                date: '',
+                photo: null,
                 details: '',
                 day: 1,
                 month: 0,
@@ -449,9 +469,8 @@ const Portfolio = () => {
                 throw new Error(text || `HTTP ${res.status}`);
             }
 
-            const data = await res.json();
             setSaveMessage('บันทึกสำเร็จ!');
-            console.log('createport response', data);
+            location.reload();
         } catch (err: any) {
             console.error(err);
             setSaveMessage(`เกิดข้อผิดพลาด: ${err.message || err}`);
@@ -489,8 +508,6 @@ const Portfolio = () => {
                                     <option value="อังกฤษ">อังกฤษ</option>
                                     <option value="จีน">จีน</option>
                                     <option value="ญี่ปุ่น">ญี่ปุ่น</option>
-                                    <option value="เกาหลี">เกาหลี</option>
-                                    <option value="ไทย">ไทย</option>
                                 </select>
                             </div>
                             <div className={styles["name-group"]}>
@@ -557,7 +574,7 @@ const Portfolio = () => {
             <>
                 {activitiesCertificates.map((activity, idx) => {
                     const daysInCertificateMonth = getDaysInCertMonth(activity.month || 0, activity.year || new Date().getFullYear());
-                    
+
                     return (
                         <div key={idx} style={{ marginBottom: '30px', padding: '15px', border: '1px solid #ddd', borderRadius: '8px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
@@ -743,17 +760,17 @@ const Portfolio = () => {
                         ข้อมูลครบถ้วน
                     </div>
                     <div className={styles["progress-info-btn-group"]}>
-                        <button 
-                            className={styles["progress-info-btn"]} 
-                            onClick={handleSavePort} 
+                        <button
+                            className={styles["progress-info-btn"]}
+                            onClick={handleSavePort}
                             disabled={saving}
                         >
                             {saving ? 'กำลังบันทึก...' : 'สร้างพอต'}
                         </button>
                     </div>
                     {saveMessage && (
-                        <div style={{ 
-                            marginTop: 8, 
+                        <div style={{
+                            marginTop: 8,
                             color: saveMessage.startsWith('เกิดข้อผิดพลาด') ? 'crimson' : 'green',
                             padding: '10px',
                             backgroundColor: saveMessage.startsWith('เกิดข้อผิดพลาด') ? '#ffe0e0' : '#e0ffe0',
@@ -1131,9 +1148,9 @@ const Portfolio = () => {
                             <div className={styles["personal-section"]}>
                                 <p>ทักษะอื่นๆ</p>
                             </div>
-                            <textarea 
-                                className={styles["port-textarea"]} 
-                                rows={4} 
+                            <textarea
+                                className={styles["port-textarea"]}
+                                rows={4}
                                 style={{ resize: 'vertical' }}
                                 placeholder="ระบุทักษะอื่นๆ เช่น การใช้คอมพิวเตอร์, ทักษะการสื่อสาร, ฯลฯ"
                             />
@@ -1260,15 +1277,15 @@ const Portfolio = () => {
                     <Navlogin />
                     <div className={styles["portfolio-wrapper"]}>
                         <div className={styles["portfolio-btn-group"]}>
-                            <button 
-                                className={styles["port-btn"]} 
+                            <button
+                                className={styles["port-btn"]}
                                 onClick={() => setAllport("allport")}
                                 style={{ backgroundColor: port === "allport" ? '#007bff' : '#6c757d' }}
                             >
                                 จัดการแฟ้มสะสมผลงานทั้งหมด
                             </button>
-                            <button 
-                                className={styles["port-btn"]} 
+                            <button
+                                className={styles["port-btn"]}
                                 onClick={() => setAllport("create")}
                                 style={{ backgroundColor: port === "create" ? '#007bff' : '#6c757d' }}
                             >
@@ -1279,24 +1296,7 @@ const Portfolio = () => {
 
                     {port === "allport" && (
                         <>
-                            <div 
-                                className={`${styles["portfolio-data"]} ${styles["main-portfolio"]}`}
-                                onClick={() => toggleSection("personal")}
-                            >
-                                <div className={styles["port-data-wrapper"]}>
-                                    <div className={styles["portfolio-data-content"]}>ชื่อแฟ้มผลงาน</div>
-                                    <div className={styles["portfolio-data-content"]}>v</div>
-                                </div>
 
-                                {showPersonal && (
-                                    <div
-                                        className={`${styles["portfolio-expand"]} ${openSections.personal ? styles["slide-down"] : styles["slide-up"]}`}
-                                        style={{ overflow: "hidden" }}
-                                    >
-                                        {renderPortfolioContent()}
-                                    </div>
-                                )}
-                            </div>
                         </>
                     )}
 
