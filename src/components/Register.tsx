@@ -48,7 +48,7 @@ const Reg = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("https://daily-life-backend.vercel.app/api/login", {
+            const response = await fetch("http://localhost:5000/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -65,8 +65,8 @@ const Reg = () => {
                 setMessage("Admin Login successful!");
                 setAlertType("success");
                 localStorage.setItem("user", JSON.stringify(data.user));
-                navigatory("/HOME");
                 localStorage.setItem("token", data.token);
+                navigatory("/HOME");
             }
             else {
                 setMessage(data.message || "Login failed");
@@ -199,14 +199,6 @@ const Reg = () => {
         }
     };
 
-    const token = localStorage.getItem("token");
-    console.log("Token from localStorage:", token);
-    if(token === null){
-        console.log("No token found, user not logged in.");
-    }else{
-        console.log("Token found, user might be logged in.");
-        navigatory("/HOME");
-    }
 
     return (
         <div className="google-page">

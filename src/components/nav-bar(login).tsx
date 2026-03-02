@@ -3,15 +3,11 @@ import './css/navbar.css'
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type UserProfile = {
+interface UserProfile {
     firstname?: string;
     lastname?: string;
     username?: string;
-    email?: string;
-    phone?: string;
-    level?: number;
-    recent?: string[];
-    profile_image?: string;
+    profile?: string; // เปลี่ยนจาก profile_image เป็น profile ให้ตรงกับ JSON
 };
 
 
@@ -20,9 +16,6 @@ const Navlogin = () => {
     const [profile, setProfile] = useState<UserProfile>({});
 
 
-    const storedUserString = localStorage.getItem("user");
-    const storedUser = storedUserString ? JSON.parse(storedUserString) : null;
-
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -30,17 +23,15 @@ const Navlogin = () => {
             return;
         }
 
-        if (storedUser) {
-            setProfile({
-                firstname: storedUser.firstname || "",
-                lastname: storedUser.lastname || "",
-                username: storedUser.username || "",
-                email: storedUser.email || "",
-                phone: storedUser.phone || "",
-                level: storedUser.level || 1,
-                recent: ["Logged in successfully"],
-                profile_image: storedUser.profile_image || ''
-            });
+        const storedUserString = localStorage.getItem("user");
+        if (storedUserString) {
+            try{
+                const userData = JSON.parse(storedUserString);
+                setProfile(userData);
+                console.log("Profile Image URL:", userData.profile);
+            }catch (error) {
+            console.error("Parse error:", error);
+        }
         }
     }, [navigate]);
 
@@ -99,7 +90,7 @@ const Navlogin = () => {
 
                             <li className="nav-item dropdown">
                                 <img
-                                    src={profile.profile_image || "./img/5987424.png"}
+                                    src={profile.profile || "./img/5987424.png"}
                                     alt="menu" className="dropdown-toggle proflieimg"
                                     data-bs-toggle="dropdown" aria-expanded="false" />
                                 <ul className="dropdown-menu">

@@ -8,6 +8,9 @@ import {
     format,
 } from 'date-fns';
 import { th } from 'date-fns/locale';
+import { useNavigate } from "react-router-dom";
+// removed unused import of Genport (local navigation function used below)
+
 
 interface PersonalInfo {
     portfolio_name?: string | null;
@@ -43,7 +46,7 @@ interface EducationalItem {
     district?: string | null;
     study_path?: string | null;
     grade_average?: string | number | null;
-    study_results?: string | null;
+    study_results?: string | File | null;
 }
 
 interface LanguageSkill {
@@ -87,8 +90,18 @@ interface Userdata {
 
 const Portfolio = () => {
 
+    const navigatory = useNavigate();
+
     // ===== User data state =====
-    const [userData, setUserData] = useState<Userdata>();
+    const [userData, setUserData] = useState<Userdata | undefined>();
+
+    // mark userData as read to avoid TS "declared but never read" (used for debug/side-effects)
+    useEffect(() => {
+        if (userData) {
+            // intentional no-op to mark as read
+            // console.log(userData);
+        }
+    }, [userData]);
 
     // ===== State for UI =====
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
@@ -432,7 +445,7 @@ const Portfolio = () => {
         }
 
         // Add education files
-        educational.forEach((edu, index) => {
+        educational.forEach((edu) => {
             if (edu.study_results instanceof File) {
                 formData.append('transcript', edu.study_results);
             }
@@ -1089,13 +1102,13 @@ const Portfolio = () => {
                                         className={styles["port-upload-btn"]}
                                         style={{ cursor: 'pointer' }}
                                     >
-                                        {educational[0]?.study_results instanceof File ? '✓ เลือกไฟล์แล้ว' : 'เลือกไฟล์'}
+                                                {educational[0]?.study_results instanceof File ? '✓ เลือกไฟล์แล้ว' : 'เลือกไฟล์'}
                                     </label>
-                                    {educational[0]?.study_results instanceof File && (
-                                        <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-                                            {(educational[0].study_results as File).name}
-                                        </p>
-                                    )}
+                                            {educational[0]?.study_results instanceof File && (
+                                                <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                                                    {(educational[0].study_results as File).name}
+                                                </p>
+                                            )}
                                 </div>
                             </div>
                         </div>
@@ -1261,6 +1274,19 @@ const Portfolio = () => {
         </div>
     );
 
+    const TEMPLATES = [
+        { id: 'classic', name: 'Classic Portfolio', desc: 'เน้นความเรียบหรู ดูสะอาดตา' },
+        { id: 'modern', name: 'Modern Dark', desc: 'โทนสีมืด ทันสมัย เหมาะกับสาย Tech' },
+        { id: 'minimal', name: 'Minimalist', desc: 'น้อยแต่มาก เน้นเนื้อหาเป็นหลัก' },
+    ];
+
+    const [selectedTempl, setSelectedTempl] = useState<string>('classic');
+
+    const goToGenport = () => {
+        localStorage.setItem('userid', String(userId));
+        navigatory('/genport')
+    }
+
     return (
         <>
             {mode === "no-login" && (
@@ -1294,10 +1320,47 @@ const Portfolio = () => {
                         </div>
                     </div>
 
-                    {port === "allport" && (
-                        <>
 
-                        </>
+                    {port === "allport" && (
+                        <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                            <h3 className="text-lg font-bold mb-4 text-gray-800">เลือกรูปแบบ (Template)</h3>
+
+                            {/* ส่วนการเลือก Template */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {TEMPLATES.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        onClick={() => setSelectedTempl(item.id)}
+                                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 ${selectedTempl === item.id
+                                                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                                                : 'border-gray-100 hover:border-gray-300 bg-white'
+                                            }`}
+                                    >
+                                        <div className="flex flex-col h-full">
+                                            <span className={`text-sm font-semibold ${selectedTempl === item.id ? 'text-blue-600' : 'text-gray-500'}`}>
+                                                {item.id.toUpperCase()}
+                                            </span>
+                                            <h4 className="text-md font-bold text-gray-900 mt-1">{item.name}</h4>
+                                            <p className="text-xs text-gray-500 mt-2">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-6 pt-4 border-t border-gray-100 flex flex-col items-center">
+                                <p className="mb-4 text-sm text-gray-500">
+                                    คุณกำลังเลือกใช้: <span className="font-bold text-blue-600">{selectedTempl}</span>
+                                </p>
+
+                                {/* แยกปุ่ม Confirm ออกมาต่างหาก เพื่อให้ User มั่นใจก่อนไปหน้าถัดไป */}
+                                <button
+                                    onClick={() => goToGenport()}
+                                    className="w-full md:w-auto px-8 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md"
+                                >
+                                    ใช้รูปแบบนี้และสร้าง Portfolio
+                                </button>
+                            </div>
+                        </div>
                     )}
 
                     {port === "create" && renderPortfolioContent()}

@@ -33,27 +33,6 @@ interface PDFProps {
   military_status?: string;
   personal_image?: string | null;
 
-  skills_details?: string | null;
-  language_skill?: string;
-  listening_skill?: string;
-  speaking_skill?: string;
-  reading_skill?: string;
-  writing_skill?: string;
-  others_skills?: string | null;
-
-  university?: string;
-  faculty?: string;
-  major?: string;
-  reason?: string | null;
-
-  school?: string;
-  graduation?: string;
-  educational_qualifications?: string;
-  province_edu?: string;
-  district_edu?: string;
-  study_path?: string;
-  grade_average?: string | number;
-  study_results?: string;
 }
 
 const styles = StyleSheet.create({
@@ -66,6 +45,7 @@ const styles = StyleSheet.create({
     height: '100%'
   },
 
+  /* Sidebar */
   sidebar: {
     width: '35%',
     backgroundColor: '#2f3e75',
@@ -74,8 +54,8 @@ const styles = StyleSheet.create({
   },
 
   profileImage: {
-    width: 160,
-    height: 180,
+    width: 120,
+    height: 140,
     marginBottom: 20,
     alignSelf: 'center'
   },
@@ -126,79 +106,9 @@ const styles = StyleSheet.create({
   },
 
   paragraph: {
-    fontSize: 10,
-    lineHeight: 1.8
-  },
-
-  // education
-  modernHeader: {
-    marginBottom: 10,
-  },
-
-  divider: {
-    height: 2,
-    backgroundColor: "#222",
-    marginTop: 4,
-    width: "40%",
-  },
-
-  educationCard: {
-    padding: 15,
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 8,
-  },
-
-  schoolName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-
-  educationLevel: {
-    fontSize: 12,
-    color: "#555",
-    marginBottom: 6,
-  },
-
-  studyPath: {
-    fontSize: 11,
-    marginBottom: 4,
-  },
-
-  location: {
-    fontSize: 11,
-    color: "#777",
-    marginBottom: 10,
-  },
-
-  gpaContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-
-  gpaLabel: {
-    fontSize: 11,
-    marginRight: 6,
-    color: "#444",
-  },
-
-  gpaValue: {
     fontSize: 14,
-    fontWeight: "bold",
-  },
-
-  highlightBox: {
-    backgroundColor: "#f5f5f5",
-    padding: 8,
-    borderRadius: 5,
-    marginTop: 6,
-  },
-
-  highlightText: {
-    fontSize: 11,
-  },
+    lineHeight: 1.8
+  }
 });
 
 export const PortfolioPDF: React.FC<PDFProps> = ({
@@ -225,30 +135,7 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
   marital_status,
   disability,
   military_status,
-  personal_image,
-
-  skills_details,
-  language_skill,
-  listening_skill,
-  speaking_skill,
-  reading_skill,
-  writing_skill,
-  others_skills,
-
-  university,
-  faculty,
-  major,
-  reason,
-
-  school,
-  graduation,
-  educational_qualifications,
-  province_edu,
-  district_edu,
-  study_path,
-  grade_average,
-  study_results
-
+  personal_image
 }) => (
   <Document>
     <Page size="A4" style={styles.page}>
@@ -294,82 +181,14 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
           </Text>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>แนะนำตัวว</Text>
+            <Text style={styles.sectionTitle}>Introduction</Text>
             <Text style={styles.paragraph}>{introduce}</Text>
           </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>ทักษะความรู้ตามสาขาวิชา</Text>
-            <Text style={styles.paragraph}>{skills_details}</Text>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>ทักษะด้านภาษา</Text>
-            <Text style={styles.paragraph}>ภาษา{language_skill}</Text>
-            <Text style={styles.paragraph}>การฟัง (Listening): {listening_skill}</Text>
-            <Text style={styles.paragraph}>การพูด (Speaking): {speaking_skill}</Text>
-            <Text style={styles.paragraph}>การอ่าน (Reading): {reading_skill}</Text>
-            <Text style={styles.paragraph}>การเขียน (Writing): {writing_skill}</Text>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>ทักษะอื่นๆ</Text>
-            <Text style={styles.paragraph}>{others_skills}</Text>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>อยากเรียนต่อที่ไหน</Text>
-            <Text style={styles.paragraph}>มหาวิทยาลัย: {university}</Text>
-            <Text style={styles.paragraph}>คณะ: {faculty}</Text>
-            <Text style={styles.paragraph}>สาขา: {major}</Text>
-            <Text style={styles.paragraph}>{reason}</Text>
-          </View>
-
-        </View>
-      </View>
-    </Page>
-
-    <Page size="A4" style={styles.page}>
-      <View style={styles.mainContent}>
-
-        {/* SECTION TITLE */}
-        <View style={styles.modernHeader}>
-          <Text style={styles.sectionTitle}>ประวัติการศึกษา</Text>
-          <View style={styles.divider} />
-        </View>
-
-        {/* EDUCATION CARD */}
-        <View style={styles.educationCard}>
-
-          <Text style={styles.schoolName}>{school}</Text>
-
-          <Text style={styles.educationLevel}>
-            {educational_qualifications} • {graduation}
-          </Text>
-
-          <Text style={styles.studyPath}>
-            แผนการเรียน: {study_path}
-          </Text>
-
-          <Text style={styles.location}>
-            {district_edu}, {province_edu}
-          </Text>
-
-          <View style={styles.gpaContainer}>
-            <Text style={styles.gpaLabel}>GPA</Text>
-            <Text style={styles.gpaValue}>{grade_average}</Text>
-          </View>
-
-          {study_results && (
-            <View style={styles.highlightBox}>
-              <Text style={styles.highlightText}>
-                {study_results}
-              </Text>
-            </View>
-          )}
 
         </View>
 
       </View>
+
     </Page>
   </Document>
 );
