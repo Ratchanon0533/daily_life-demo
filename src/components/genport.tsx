@@ -66,7 +66,7 @@ const Genport = () => {
     const fetchAllData = async () => {
       try {
         // Step 1: ดึงข้อมูล Port หลัก
-        const portRes = await fetch(`http://localhost:5000/getport/${userId}`, {
+        const portRes = await fetch(`https://daily-life-backend.vercel.app/getport/${userId}`, {
           headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
         });
         const portResult = await portRes.json();
@@ -76,11 +76,11 @@ const Genport = () => {
 
           // Step 2: ดึงข้อมูลส่วนอื่นๆ พร้อมกัน
           const [personalRes, eduRes, skillRes, activityRes, uniRes] = await Promise.all([
-            fetch(`http://localhost:5000/getpersonal_info/${portId}`),
-            fetch(`http://localhost:5000/geteducational/${portId}`),
-            fetch(`http://localhost:5000/getskills_abilities/${portId}`),
-            fetch(`http://localhost:5000/getactivities_certificates/${portId}`),
-            fetch(`http://localhost:5000/getuniversity_choice/${portId}`)
+            fetch(`https://daily-life-backend.vercel.app/getpersonal_info/${portId}`),
+            fetch(`https://daily-life-backend.vercel.app/geteducational/${portId}`),
+            fetch(`https://daily-life-backend.vercel.app/getskills_abilities/${portId}`),
+            fetch(`https://daily-life-backend.vercel.app/getactivities_certificates/${portId}`),
+            fetch(`https://daily-life-backend.vercel.app/getuniversity_choice/${portId}`)
           ]);
 
           const results = await Promise.all([

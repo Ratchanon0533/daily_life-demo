@@ -191,7 +191,7 @@ const Portfolio = () => {
             setFetchError(null);
 
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:5000/getport/${userId}`, {
+            const res = await fetch(`https://daily-life-backend.vercel.app/getport/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -353,7 +353,7 @@ const Portfolio = () => {
             const payload = buildCreatePortPayload();
             const token = localStorage.getItem('token');
 
-            const res = await fetch('http://localhost:5000/createport', {
+            const res = await fetch('https://daily-life-backend.vercel.app/createport', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

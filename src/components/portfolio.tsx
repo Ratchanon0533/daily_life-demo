@@ -469,7 +469,7 @@ const Portfolio = () => {
             const payload = buildCreatePortPayload();
             const token = localStorage.getItem('token');
 
-            const res = await fetch('http://localhost:5000/createport', {
+            const res = await fetch('https://daily-life-backend.vercel.app/createport', {
                 method: 'POST',
                 headers: {
                     ...(token ? { Authorization: `Bearer ${token}` } : {})
