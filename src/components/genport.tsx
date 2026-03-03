@@ -135,8 +135,7 @@ const Genport = () => {
   if (!data.personal) return <div className="p-10 text-center">ไม่พบข้อมูลส่วนตัว</div>;
 
   // Destructure ข้อมูลมาใช้ (ใช้ Optional Chaining ป้องกัน Error)
-  const { personal, education, skills, activities, port, university } = data;
-  // alert(data.port.profile_url);
+  const { personal, education, skills, activities,  university } = data;
 
   // รองรับชื่อฟิลด์สรุปที่อาจต่างกันในฐานข้อมูล
   const summary = personal?.summary || personal?.about || personal?.objective || personal?.profile_summary || personal?.portfolio_summary || personal?.introduce || null;
