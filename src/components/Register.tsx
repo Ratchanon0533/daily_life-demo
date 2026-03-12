@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./css/login-register.css"
+import styles from "./css/login-register.module.css";
 import { useNavigate } from "react-router-dom";
 
 const Reg = () => {
@@ -61,7 +61,7 @@ const Reg = () => {
 
             const data = await response.json();
 
-             if (data.message === "Login Success") {
+            if (data.message === "Login Success") {
                 setMessage("Admin Login successful!");
                 setAlertType("success");
                 localStorage.setItem("user", JSON.stringify(data.user));
@@ -201,141 +201,164 @@ const Reg = () => {
 
 
     return (
-        <div className="google-page">
+        <div className={styles["google-page"]}>
+            <div className={styles["login-container"]}>
+                <div className={styles["login-banner"]}>
+                    <img src="public\img\messageImage_1764229058872.jpg" alt="banner" className={styles["banner-img"]} />
+                </div>
 
-            <div className="google-card">
+                <div className={styles["google-card"]}>
 
-                {/* Logo */}
-                <img
-                    className="google-logo"
-                    src="img/daily_life.png"
-                    alt="daily_life logo"
-                />
 
-                <h2 className="google-title">
-                    {mode === "login" ? "Sign in" : "Create your account"}
-                </h2>
+                    {/* Logo */}
+                    <img
+                        className={styles["google-logo"]}
+                        src="img/daily_life.png"
+                        alt="daily_life logo"
+                    />
 
-                <p className="google-sub">
-                    {mode === "login" ? "to continue" : "Continue to our system"}
-                </p>
+                    <h2 className={styles["google-title"]}>
+                        {mode === "login" ? "Sign in" : "Create your account"}
+                    </h2>
 
-                {/* Switch text */}
-                <p className="google-switch">
-                    {mode === "login" ? (
-                        <>
-                            หากท่านยังไม่มีบัญชี
-                            <button className="google-switch-btn" onClick={() => setMode("register")}>
-                                สมัครสมาชิก
-                            </button>
-                        </>
+                    <p className={styles["google-sub"]}>
+                        {mode === "login" ? "to continue" : "Continue to our system"}
+                    </p>
 
-                    ) : (
-                        <>
-                            หากท่านมีบัญชีอยู่แล้ว
-                            <button className="google-switch-btn" onClick={() => setMode("login")}>
-                                เข้าสู่ระบบ
-                            </button>
-                        </>
-                    )}
-                </p>
+                    {/* Switch text */}
+                    <p className={styles["google-switch"]}>
+                        {mode === "login" ? (
+                            <>
+                                หากท่านยังไม่มีบัญชี
+                                <button className={styles["google-switch-btn"]} onClick={() => setMode("register")}>
+                                    สมัครสมาชิก
+                                </button>
+                            </>
 
-                {/* ================= LOGIN ================= */}
-                {mode === "login" && (
-                    <div className="google-input-group-column">
-                        <input
-                            className="google-input"
-                            placeholder="Username"
-                            value={loginUsername}
-                            onChange={(e) => setLoginUsername(e.target.value)}
-                        />
+                        ) : (
+                            <>
+                                หากท่านมีบัญชีอยู่แล้ว
+                                <button className={styles["google-switch-btn"]} onClick={() => setMode("login")}>
+                                    เข้าสู่ระบบ
+                                </button>
+                            </>
+                        )}
+                    </p>
 
-                        <input
-                            className="google-input"
-                            placeholder="Password"
-                            type="password"
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                        />
-
-                        <button
-                            className="google-btn"
-                            onClick={handleLogin}
-                            disabled={loading}
-                        >
-                            {loading ? "Signing in..." : "Sign in"}
-                        </button>
-                    </div>
-                )}
-
-                {/* ================= REGISTER ================= */}
-                {mode === "register" && (
-                    <>
-                        <div className="google-input-group">
+                    {/* ================= LOGIN ================= */}
+                    {mode === "login" && (
+                        <div className={styles["google-input-group-column"]}>
                             <input
-                                className="google-input"
-                                placeholder="First name"
-                                value={firstname}
-                                onChange={(e) => setFirstname(e.target.value)}
-                            />
-                            <input
-                                className="google-input"
-                                placeholder="Last name"
-                                value={lastname}
-                                onChange={(e) => setLastname(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="google-input-group-column">
-                            <input
-                                className="google-input"
-                                placeholder="Email"
-                                type="email"
-                                style={{ marginTop: '0.7rem' }}
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-
-                            <input
-                                className="google-input"
-                                placeholder="Phone number"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                            />
-
-                            <input
-                                className="google-input"
+                                className={styles["google-input"]}
                                 placeholder="Username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={loginUsername}
+                                onChange={(e) => setLoginUsername(e.target.value)}
                             />
 
                             <input
-                                className="google-input"
-                                placeholder="Password (min 6 characters)"
+                                className={styles["google-input"]}
+                                placeholder="Password"
                                 type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={loginPassword}
+                                onChange={(e) => setLoginPassword(e.target.value)}
                             />
 
                             <button
-                                className="google-btn"
-                                onClick={handleRegister}
+                                className={styles["google-btn"]}
+                                onClick={handleLogin}
                                 disabled={loading}
                             >
-                                {loading ? "Creating account..." : "Create account"}
+                                {loading ? "Signing in..." : "Sign in"}
                             </button>
                         </div>
-                    </>
-                )}
+                    )}
 
-                {/* ALERT */}
-                {message && (
-                    <div className={`alert alert-${alertType} mt-3`} role="alert">
-                        {message}
-                    </div>
-                )}
+                    {/* ================= REGISTER ================= */}
+                    {mode === "register" && (
+                        <>
+                            <div className={styles["google-input-group"]}>
 
+                                <input
+                                    className={styles["google-input"]}
+                                    placeholder="First name"
+                                    value={firstname}
+                                    onChange={(e) => setFirstname(e.target.value)}
+                                />
+                                <input
+                                    className={styles["google-input"]}
+                                    placeholder="Last name"
+                                    value={lastname}
+                                    onChange={(e) => setLastname(e.target.value)}
+
+                                />
+                            </div>
+
+                            <div className={styles["google-input-group-column"]}>
+                                <input
+                                    className={styles["google-input"]}
+                                    placeholder="Email"
+                                    type="email"
+                                    style={{ marginTop: '0.7rem' }}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+
+                                <input
+                                    className={styles["google-input"]}
+                                    placeholder="Phone number"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+
+                                <input
+                                    className={styles["google-input"]}
+                                    placeholder="Username"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
+
+                                <input
+                                    className={styles["google-input"]}
+                                    placeholder="Password (min 6 characters)"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+
+                                <button
+                                    className={styles["google-btn"]}
+                                    onClick={handleRegister}
+                                    disabled={loading}
+                                >
+                                    {loading ? "Creating account..." : "Create account"}
+                                </button>
+                            </div>
+                        </>
+                    )}
+
+                    {/* ALERT */}
+                    {message && (
+                        <div className={`alert alert-${alertType} mt-3`} role="alert">
+                            {message}
+                        </div>
+                    )}
+                    <a href="/" className={styles["back-button-modern"]}>
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        <span>Go back home</span>
+                    </a>
+                </div>
             </div>
         </div>
     );

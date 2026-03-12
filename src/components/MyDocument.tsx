@@ -4,36 +4,60 @@ import { Page, Text, View, Document, StyleSheet, Font, Image } from '@react-pdf/
 // Required for Thai language support
 Font.register({
   family: 'Kanit',
-  src: 'https://cdn.jsdelivr.net/gh/google/fonts@master/ofl/kanit/Kanit-Regular.ttf',
+  src: 'https://fonts.gstatic.com/s/kanit/v15/nKKU-Go6G5tXcr4uPhWnVaE.woff2'
 });
 
 interface PDFProps {
   introduce: string;
+
   first_name?: string;
   last_name?: string;
   prefix?: string;
+
   birth_day?: number;
   birth_month?: string;
   birth_year?: number;
+
   nationality?: string;
   id_card?: string;
+
   phonenumber1?: string;
   phonenumber2?: string;
   email?: string;
+
   address?: string;
   province?: string;
   district?: string;
   subdistrict?: string;
   postal_code?: string;
+
   height?: string;
   weight?: string;
   gender?: string;
-  marital_status?: string;
-  disability?: string;
-  military_status?: string;
+
   personal_image?: string | null;
 
+  /* Skills */
+  language_skill?: string;
+  listening_skill?: string;
+  speaking_skill?: string;
+  reading_skill?: string;
+  writing_skill?: string;
+
+  /* University */
+  university?: string;
+  faculty?: string;
+  major?: string;
+  reason?: string;
+
+  /* Education */
+  school?: string;
+  graduation?: string;
+  educational_qualifications?: string;
+  study_path?: string;
+  grade_average?: string | number;
 }
+
 
 const styles = StyleSheet.create({
   page: {
@@ -132,9 +156,7 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
   height,
   weight,
   gender,
-  marital_status,
-  disability,
-  military_status,
+
   personal_image
 }) => (
   <Document>
@@ -163,9 +185,7 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
           <Text style={styles.sidebarText}>เพศ: {gender}</Text>
           <Text style={styles.sidebarText}>ส่วนสูง: {height} ซม.</Text>
           <Text style={styles.sidebarText}>น้ำหนัก: {weight} กก.</Text>
-          <Text style={styles.sidebarText}>สถานภาพ: {marital_status}</Text>
-          <Text style={styles.sidebarText}>ความพิการ: {disability}</Text>
-          <Text style={styles.sidebarText}>สถานะทหาร: {military_status}</Text>
+
 
         </View>
 

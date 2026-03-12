@@ -32,9 +32,7 @@ interface PersonalInfo {
     height?: string | null;
     weight?: string | null;
     gender?: string | null;
-    marital_status?: string | null;
-    disability?: string | null;
-    military_status?: string | null;
+
 }
 
 interface EducationalItem {
@@ -429,7 +427,7 @@ const Portfolio = () => {
 
         const data = {
             user_id: userId,
-            port_id: portId,
+            // port_id: portId,
             personal_info: Personal,
             educational,
             skills_abilities: skillsAbilities,
@@ -463,6 +461,7 @@ const Portfolio = () => {
 
     // ===== Handle save =====
     const handleSavePort = async () => {
+
         setSaveMessage(null);
         setSaving(true);
         try {
@@ -477,9 +476,14 @@ const Portfolio = () => {
                 body: payload
             });
 
+            // if (!res.ok) {
+            //     const text = await res.text();
+            //     throw new Error(text || `HTTP ${res.status}`);
+            // }
             if (!res.ok) {
                 const text = await res.text();
-                throw new Error(text || `HTTP ${res.status}`);
+                console.log("❌ Backend error:", text);
+                throw new Error(`HTTP ${res.status}: ${text}`);
             }
 
             setSaveMessage('บันทึกสำเร็จ!');
@@ -1102,13 +1106,13 @@ const Portfolio = () => {
                                         className={styles["port-upload-btn"]}
                                         style={{ cursor: 'pointer' }}
                                     >
-                                                {educational[0]?.study_results instanceof File ? '✓ เลือกไฟล์แล้ว' : 'เลือกไฟล์'}
+                                        {educational[0]?.study_results instanceof File ? '✓ เลือกไฟล์แล้ว' : 'เลือกไฟล์'}
                                     </label>
-                                            {educational[0]?.study_results instanceof File && (
-                                                <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-                                                    {(educational[0].study_results as File).name}
-                                                </p>
-                                            )}
+                                    {educational[0]?.study_results instanceof File && (
+                                        <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                                            {(educational[0].study_results as File).name}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -1322,47 +1326,69 @@ const Portfolio = () => {
 
 
                     {port === "allport" && (
-                        <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-                            <h3 className="text-lg font-bold mb-4 text-gray-800">เลือกรูปแบบ (Template)</h3>
+                        <div style={{ padding: "40px" }}>
 
-                            {/* ส่วนการเลือก Template */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <h3 style={{ textAlign: "center", marginBottom: "30px" }}>
+                                เลือกรูปแบบ (Template)
+                            </h3>
+
+                            <div
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(3, 1fr)",
+                                    gap: "20px",
+                                    maxWidth: "900px",
+                                    margin: "0 auto"
+                                }}
+                            >
                                 {TEMPLATES.map((item) => (
                                     <div
                                         key={item.id}
                                         onClick={() => setSelectedTempl(item.id)}
-                                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 ${selectedTempl === item.id
-                                                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                                                : 'border-gray-100 hover:border-gray-300 bg-white'
-                                            }`}
+                                        style={{
+                                            border: selectedTempl === item.id ? "2px solid #3b82f6" : "2px solid #ddd",
+                                            borderRadius: "10px",
+                                            padding: "20px",
+                                            cursor: "pointer",
+                                            background: selectedTempl === item.id ? "#eff6ff" : "white"
+                                        }}
                                     >
-                                        <div className="flex flex-col h-full">
-                                            <span className={`text-sm font-semibold ${selectedTempl === item.id ? 'text-blue-600' : 'text-gray-500'}`}>
-                                                {item.id.toUpperCase()}
-                                            </span>
-                                            <h4 className="text-md font-bold text-gray-900 mt-1">{item.name}</h4>
-                                            <p className="text-xs text-gray-500 mt-2">{item.desc}</p>
-                                        </div>
+                                        <p style={{ fontSize: "12px", color: "#888" }}>
+                                            {item.id.toUpperCase()}
+                                        </p>
+
+                                        <h4>{item.name}</h4>
+
+                                        <p style={{ fontSize: "14px", color: "#666" }}>
+                                            {item.desc}
+                                        </p>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="mt-6 pt-4 border-t border-gray-100 flex flex-col items-center">
-                                <p className="mb-4 text-sm text-gray-500">
-                                    คุณกำลังเลือกใช้: <span className="font-bold text-blue-600">{selectedTempl}</span>
+                            <div style={{ textAlign: "center", marginTop: "40px" }}>
+                                <p>
+                                    คุณกำลังเลือกใช้: <b>{selectedTempl}</b>
                                 </p>
 
-                                {/* แยกปุ่ม Confirm ออกมาต่างหาก เพื่อให้ User มั่นใจก่อนไปหน้าถัดไป */}
                                 <button
-                                    onClick={() => goToGenport()}
-                                    className="w-full md:w-auto px-8 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md"
+                                    onClick={goToGenport}
+                                    style={{
+                                        marginTop: "10px",
+                                        padding: "10px 30px",
+                                        background: "#2563eb",
+                                        color: "white",
+                                        borderRadius: "6px",
+                                        border: "none",
+                                        cursor: "pointer"
+                                    }}
                                 >
-                                    ใช้รูปแบบนี้และสร้าง Portfolio
+                                    ใช้ Template นี้
                                 </button>
                             </div>
+
                         </div>
                     )}
-
                     {port === "create" && renderPortfolioContent()}
                 </>
             )}
