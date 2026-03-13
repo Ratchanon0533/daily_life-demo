@@ -427,7 +427,7 @@ const Portfolio = () => {
 
         const data = {
             user_id: userId,
-            // port_id: portId,
+            port_id: portId,
             personal_info: Personal,
             educational,
             skills_abilities: skillsAbilities,
