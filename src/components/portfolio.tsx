@@ -80,7 +80,7 @@ interface UniversityChoice {
 }
 
 interface Userdata {
-    id: number | string;
+    id: string;
     username: string;
     firstname: string; // เพิ่มตัวนี้
     lastname: string;  // เพิ่มตัวนี้
@@ -230,7 +230,7 @@ const Portfolio = () => {
         const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
         if (raw) {
             try {
-                const maybeObj = JSON.parse(raw);
+                const maybeObj = userData || JSON.parse(raw);
                 if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
                     setUserId(maybeObj.id || maybeObj.user_id);
                 } else if (typeof raw === 'string') {
@@ -1287,7 +1287,7 @@ const Portfolio = () => {
     const [selectedTempl, setSelectedTempl] = useState<string>('classic');
 
     const goToGenport = () => {
-        localStorage.setItem('userid', String(userId));
+        localStorage.setItem('userid', userData?.id || '');
         navigatory('/genport')
     }
 
