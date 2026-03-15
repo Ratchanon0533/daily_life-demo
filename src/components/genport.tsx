@@ -1,45 +1,181 @@
-// Genport.tsx
+// src/pages/Genport.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { PortfolioPDF } from "./MyDocument";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
-// import type definitions
-import type {
-  GenData,
-  Port,
-  Personal,
-  Education,
-  Skill,
-  Activity,
-  University,
-} from "../types/types";
+import { PortfolioPDF } from "../components/MyDocument";
+import type { PDFProps } from "../components/MyDocument";
 
-// import mapper utils (หรือคัดลอกฟังก์ชันมาที่นี่)
-import {
-  mapPersonal,
-  mapEducation,
-  mapSkill,
-  mapActivity,
-  mapUniversity,
-} from "../utils/mappers";
+/* ---------- Types ---------- */
+type Personal = {
+  prefix?: string;
+  first_name?: string;
+  last_name?: string;
+  portfolio_name?: string;
+  phone_number1?: string;
+  phone_number2?: string;
+  email?: string;
+  province?: string;
+  district?: string;
+  subdistrict?: string;
+  postal_code?: string;
+  address?: string;
+  date_birth?: string;
+  nationality?: string;
+  national_id?: string;
+  introduce?: string;
+};
 
+type Port = { port_id: string; profile_url?: string; user_id?: string };
+
+type Education = {
+  school?: string;
+  educational_qualifications?: string;
+  graduation?: string;
+  study_path?: string;
+  grade_average?: string | number;
+};
+
+type Skill = {
+  language?: string;
+  listening?: string;
+  speaking?: string;
+  reading?: string;
+  writing?: string;
+};
+
+type Activity = {
+  photo?: string;
+  name_project?: string;
+  date?: string;
+};
+
+type University = {
+  university?: string;
+  faculty?: string;
+  major?: string;
+  details?: string;
+};
+
+type GenData = {
+  port: Port;
+  personal: Personal | null;
+  education: Education[];
+  skills: Skill[];
+  activities: Activity[];
+  university: University | null;
+};
+
+const emptyGenData: GenData = {
+  port: { port_id: "", profile_url: "" },
+  personal: null,
+  education: [],
+  skills: [],
+  activities: [],
+  university: null,
+};
+
+/* ---------- Helper: แปลงวันเป็น พ.ศ. ---------- */
+const toThaiDate = (iso?: string) => {
+  if (!iso) return { day: "", month: "", year: "" };
+  const d = new Date(iso);
+  const day = d.getDate();
+  const month = d.toLocaleString("th-TH", { month: "long" });
+  const year = d.getFullYear() + 543;
+  return { day, month, year };
+};
+
+/* ---------- Helper: แปลง JSON ของรูปกิจกรรมเป็น string[] ---------- */
+const parsePhotos = (json?: string): string[] => {
+  try {
+    if (!json) return [];
+    const arr = JSON.parse(json);
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+};
+
+/* ---------- Mapping (API → PDFProps) ---------- */
+const mapGenDataToPdfProps = (data: GenData): PDFProps => {
+  const { personal, port, education, skills, activities, university } = data;
+
+  const {
+    prefix = "",
+    first_name = "",
+    last_name = "",
+    email = "",
+    phone_number1 = "",
+    phone_number2 = "",
+    address = "",
+    province = "",
+    district = "",
+    subdistrict = "",
+    postal_code = "",
+    introduce = "",
+    date_birth,
+    nationality = "",
+    national_id = "",
+  } = personal ?? {};
+
+  const { day: birth_day, month: birth_month, year: birth_year } =
+    toThaiDate(date_birth);
+
+  const firstEdu = education[0] ?? {};
+  const firstSkill = skills[0] ?? {};
+
+  const activityPhotos = activities
+    .flatMap((act) => parsePhotos(act.photo))
+    .filter(Boolean);
+
+  return {
+    introduce,
+    prefix,
+    first_name,
+    last_name,
+    birth_day,
+    birth_month,
+    birth_year,
+    nationality,
+    id_card: national_id,
+    phonenumber1: phone_number1,
+    phonenumber2: phone_number2,
+    email,
+    address,
+    province,
+    district,
+    subdistrict,
+    postal_code,
+
+    personal_image: port?.profile_url ?? null,
+
+    language_skill: firstSkill.language ?? "",
+    listening_skill: firstSkill.listening ?? "",
+    speaking_skill: firstSkill.speaking ?? "",
+    reading_skill: firstSkill.reading ?? "",
+    writing_skill: firstSkill.writing ?? "",
+
+    university: university?.university ?? "",
+    faculty: university?.faculty ?? "",
+    major: university?.major ?? "",
+    reason: university?.details ?? "",
+
+    school: firstEdu.school ?? "",
+    graduation: firstEdu.graduation ?? "",
+    educational_qualifications: firstEdu.educational_qualifications ?? "",
+    study_path: firstEdu.study_path ?? "",
+    grade_average: firstEdu.grade_average ?? "",
+
+    activity_photos: activityPhotos,
+  };
+};
+
+/* ---------- Component ---------- */
 const Genport = () => {
-  const [data, setData] = useState<GenData>({
-    port: { port_id: "", profile_url: "", user_id: "" },
-    personal: null,
-    education: [],
-    skills: [],
-    activities: [],
-    university: null,
-  });
-
+  const [data, setData] = useState<GenData>(emptyGenData);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // -------------------------------------------------
-  // 1️⃣ ดึงข้อมูลทั้งหมดพร้อม map
-  // -------------------------------------------------
   useEffect(() => {
     const userId = localStorage.getItem("userid");
     const token = localStorage.getItem("token");
@@ -51,254 +187,117 @@ const Genport = () => {
 
     const fetchAllData = async () => {
       try {
-        // ----- ดึงพอร์ต (port) -----
         const portRes = await fetch(
           `https://daily-life-backend.vercel.app/getport/${userId}`,
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          }
+          { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
-        const portJson = await portRes.json();
+        const portResult = await portRes.json();
 
-        if (!portJson.success || !portJson.data?.length) {
-          throw new Error("ไม่พบพอร์ตของผู้ใช้");
+        if (portResult.success && portResult.data?.length) {
+          const portId = portResult.data[0].port_id;
+
+          const [
+            personalRes,
+            eduRes,
+            skillRes,
+            activityRes,
+            uniRes,
+          ] = await Promise.all([
+            fetch(`https://daily-life-backend.vercel.app/getpersonal_info/${portId}`),
+            fetch(`https://daily-life-backend.vercel.app/geteducational/${portId}`),
+            fetch(`https://daily-life-backend.vercel.app/getskills_abilities/${portId}`),
+            fetch(`https://daily-life-backend.vercel.app/getactivities_certificates/${portId}`),
+            fetch(`https://daily-life-backend.vercel.app/getuniversity_choice/${portId}`),
+          ]);
+
+          const [
+            personalJson,
+            eduJson,
+            skillJson,
+            activityJson,
+            uniJson,
+          ] = await Promise.all([
+            personalRes.json(),
+            eduRes.json(),
+            skillRes.json(),
+            activityRes.json(),
+            uniRes.json(),
+          ]);
+
+          setData({
+            port: portResult.data[0],
+            personal: personalJson.success ? personalJson.data[0] : null,
+            education: eduJson.success ? eduJson.data : [],
+            skills: skillJson.success ? skillJson.data : [],
+            activities: activityJson.success ? activityJson.data : [],
+            university: uniJson.success ? uniJson.data[0] : null,
+          });
         }
-
-        const portId = portJson.data[0].port_id;
-
-        // ----- ดึงข้อมูลอื่น ๆ พร้อมกัน (Promise.all) -----
-        const [
-          personalRes,
-          educationRes,
-          skillRes,
-          activityRes,
-          universityRes,
-        ] = await Promise.all([
-          fetch(
-            `https://daily-life-backend.vercel.app/getpersonal_info/${portId}`
-          ),
-          fetch(
-            `https://daily-life-backend.vercel.app/geteducational/${portId}`
-          ),
-          fetch(
-            `https://daily-life-backend.vercel.app/getskills_abilities/${portId}`
-          ),
-          fetch(
-            `https://daily-life-backend.vercel.app/getactivities_certificates/${portId}`
-          ),
-          fetch(
-            `https://daily-life-backend.vercel.app/getuniversity_choice/${portId}`
-          ),
-        ]);
-
-        // ----- แปลง JSON เป็น object raw -----
-        const [
-          personalRaw,
-          educationRaw,
-          skillRaw,
-          activityRaw,
-          universityRaw,
-        ] = await Promise.all([
-          personalRes.json(),
-          educationRes.json(),
-          skillRes.json(),
-          activityRes.json(),
-          universityRes.json(),
-        ]);
-
-        // ----- ทำการ map (แปลง) -----
-        const mappedData: GenData = {
-          port: {
-            port_id: portJson.data[0].port_id,
-            profile_url: portJson.data[0].profile_url,
-            user_id: userId,
-          },
-          personal:
-            personalRaw.success && personalRaw.data?.length
-              ? mapPersonal(personalRaw.data[0])
-              : null,
-          education:
-            educationRaw.success && educationRaw.data?.length
-              ? (educationRaw.data as any[]).map(mapEducation)
-              : [],
-          skills:
-            skillRaw.success && skillRaw.data?.length
-              ? (skillRaw.data as any[]).map(mapSkill)
-              : [],
-          activities:
-            activityRaw.success && activityRaw.data?.length
-              ? (activityRaw.data as any[]).map(mapActivity)
-              : [],
-          university:
-            universityRaw.success && universityRaw.data?.length
-              ? mapUniversity(universityRaw.data[0])
-              : null,
-        };
-
-        setData(mappedData);
-      } catch (err) {
-        console.error("❌ เกิดข้อผิดพลาดขณะดึงข้อมูล :", err);
-        // หากต้องการให้ผู้ใช้เห็น error สามารถตั้ง state เพื่อนำไปแสดง UI ได้
+      } catch (e) {
+        console.error("❌ Fetch error:", e);
       } finally {
         setLoading(false);
       }
     };
 
     fetchAllData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
-  // -------------------------------------------------
-  // 2️⃣ UI ระหว่างโหลด / ไม่พบข้อมูล
-  // -------------------------------------------------
-  if (loading) {
+  /* ---------- Loading / Empty ---------- */
+  if (loading)
     return (
-      <div className="p-10 text-center font-bold">
+      <div className="p-10 text-center font-bold text-lg">
         กำลังโหลดข้อมูล...
       </div>
     );
-  }
 
-  if (!data.personal) {
+  if (!data.personal)
     return (
-      <div className="p-10 text-center">
+      <div className="p-10 text-center text-red-500">
         ไม่พบข้อมูลส่วนตัว
       </div>
     );
-  }
 
-  // -------------------------------------------------
-  // 3️⃣ แยกค่าที่ต้องใช้ใน PDF
-  // -------------------------------------------------
-  const { personal, port, education, skills, activities, university } = data;
+  /* ---------- Map data ---------- */
+  const pdfProps: PDFProps = mapGenDataToPdfProps(data);
 
-  // ตัวอย่างชื่อไฟล์ PDF
-  const pdfFileName =
-    personal?.portfolio_name?.trim()
-      ? `${personal.portfolio_name}.pdf`
-      : "Portfolio.pdf";
+  const fileName = data.personal?.portfolio_name?.trim()
+    ? `${data.personal.portfolio_name}.pdf`
+    : "Portfolio.pdf";
 
-  // -------------------------------------------------
-  // 4️⃣ Render UI (ปุ่มย้อนกลับ + ดาวน์โหลด PDF)
-  // -------------------------------------------------
+  /* ---------- UI ---------- */
   return (
-    <div className="p-10 bg-zinc-100 min-h-screen flex flex-col items-center">
-      {/* --- ปุ่มควบคุมด้านบน --- */}
-      <div className="flex gap-4 mb-6 w-full max-w-4xl justify-start">
+    <div className="p-6 bg-zinc-100 min-h-screen flex flex-col items-center">
+
+      {/* ปุ่มควบคุม */}
+      <div className="flex gap-4 mb-6">
         <button
           onClick={() => navigate(-1)}
-          className="px-6 py-2 bg-gray-200 rounded shadow hover:bg-gray-300"
+          className="px-6 py-2 bg-gray-200 rounded shadow hover:bg-gray-300 transition"
         >
           ย้อนกลับ
         </button>
 
         <PDFDownloadLink
-          document={
-            <PortfolioPDF
-              // ---------- Personal ----------
-              prefix={personal.prefix ?? ""}
-              first_name={personal.first_name ?? ""}
-              last_name={personal.last_name ?? ""}
-              introduce={personal.introduce ?? ""}
-              phonenumber1={personal.phone_number1 ?? ""}
-              email={personal.email ?? ""}
-              province={personal.province ?? ""}
-              postal_code={personal.postal_code ?? ""}
-
-              // ---------- Image ----------
-              personal_image={port.profile_url ?? ""}
-
-              // ---------- Skills ----------
-              skills={skills} // ส่ง array ทั้งหมด – PDF จะ loop เอง
-
-              // ---------- Education ----------
-              education={education} // ส่ง array ทั้งหมด
-
-              // ---------- University ----------
-              university={university?.university ?? ""}
-              faculty={university?.faculty ?? ""}
-              major={university?.major ?? ""}
-              reason={university?.details ?? ""}
-
-              // ---------- Activities ----------
-              activities={activities} // ส่ง array ทั้งหมด
-            />
-          }
-          fileName={pdfFileName}
-          className="px-6 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
+          document={<PortfolioPDF {...pdfProps} />}
+          fileName={fileName}
+          className="px-6 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition"
         >
-          {({ loading }) => (loading ? "กำลังสร้าง PDF..." : "Download PDF")}
+          {({ loading }) =>
+            loading ? "กำลังสร้าง PDF…" : "⬇ ดาวน์โหลด PDF"
+          }
         </PDFDownloadLink>
       </div>
 
-      {/* ------------------------------------------------------------------- */}
-      {/*   แสดงตัวอย่างข้อมูลบนหน้า (ไม่บังคับ – เพียงเพื่อให้เห็นว่ามีหลายรายการ */}
-      {/* ------------------------------------------------------------------- */}
-      <div className="w-full max-w-4xl space-y-8">
-        {/* Education List */}
-        <section>
-          <h2 className="text-xl font-semibold mb-2">ประวัติการศึกษา</h2>
-          <ul className="list-disc pl-6">
-            {education.map((ed, idx) => (
-              <li key={idx}>
-                <strong>{ed.school}</strong> – {ed.graduation} (เกรดเฉลี่ย: {ed.grade_average})
-              </li>
-            ))}
-          </ul>
-        </section>
+      {/* Preview PDF */}
+      <PDFViewer
+        width="100%"
+        height={900}
+        style={{ border: "none", borderRadius: 8 }}
+      >
+        <PortfolioPDF {...pdfProps} />
+      </PDFViewer>
 
-        {/* Skills List */}
-        <section>
-          <h2 className="text-xl font-semibold mb-2">ทักษะ / ความสามารถ</h2>
-          <ul className="list-disc pl-6">
-            {skills.map((sk, idx) => (
-              <li key={idx}>
-                {sk.language}: อ่าน({sk.reading}) พูด({sk.speaking}) ฟัง({sk.listening}) เขียน({sk.writing})
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Activities / Projects */}
-        <section>
-          <h2 className="text-xl font-semibold mb-2">ผลงาน / กิจกรรม</h2>
-          <ul className="list-disc pl-6 space-y-2">
-            {activities.map((act, idx) => (
-              <li key={idx}>
-                <strong>{act.name_project}</strong> ({act.date})
-                {act.photo && (
-                  <div className="mt-1">
-                    <img
-                      src={act.photo}
-                      alt={act.name_project}
-                      className="max-w-xs rounded shadow"
-                    />
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* University Choice */}
-        {university && (
-          <section>
-            <h2 className="text-xl font-semibold mb-2">มหาวิทยาลัยที่สมัคร</h2>
-            <p>
-              <strong>มหาวิทยาลัย:</strong> {university.university}
-            </p>
-            <p>
-              <strong>คณะ:</strong> {university.faculty}
-            </p>
-            <p>
-              <strong>สาขา:</strong> {university.major}
-            </p>
-            <p>
-              <strong>เหตุผล:</strong> {university.details}
-            </p>
-          </section>
-        )}
-      </div>
     </div>
   );
 };
