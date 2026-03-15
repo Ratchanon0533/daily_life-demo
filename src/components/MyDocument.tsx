@@ -9,28 +9,34 @@ import {
   Image,
 } from "@react-pdf/renderer";
 
-/* ---------- Font (Thai) — ใช้ไฟล์ local เท่านั้น ---------- */
 Font.register({
   family: "Kanit",
   fonts: [
-    {
-      src: "/fonts/Kanit-Regular.ttf",   // ✅ local file
-      fontWeight: 400,
-    },
-    {
-      src: "/fonts/Kanit-Bold.ttf",      // ✅ local file
-      fontWeight: 700,
-    },
+    { src: "/fonts/Kanit-Regular.ttf", fontWeight: 400 },
+    { src: "/fonts/Kanit-Bold.ttf", fontWeight: 700 },
   ],
 });
 
-/* ---------- PDF Props ---------- */
+export interface SkillItem {
+  language?: string;
+  listening?: string;
+  speaking?: string;
+  reading?: string;
+  writing?: string;
+}
+
+export interface ActivityItem {
+  photos: string[];
+  name_project?: string;
+  date?: string;
+  description?: string;   // ✅ เพิ่ม
+}
+
 export interface PDFProps {
   introduce: string;
   prefix?: string;
   first_name?: string;
   last_name?: string;
-
   birth_day?: number | string;
   birth_month?: string;
   birth_year?: number | string;
@@ -39,7 +45,6 @@ export interface PDFProps {
   phonenumber1?: string;
   phonenumber2?: string;
   email?: string;
-
   address?: string;
   province?: string;
   district?: string;
@@ -48,274 +53,461 @@ export interface PDFProps {
   gender?: string;
   height?: string;
   weight?: string;
-
   personal_image?: string | null;
-
-  language_skill?: string;
-  listening_skill?: string;
-  speaking_skill?: string;
-  reading_skill?: string;
-  writing_skill?: string;
-
+  skills?: SkillItem[];
+  activities?: ActivityItem[];
   university?: string;
   faculty?: string;
   major?: string;
   reason?: string;
-
   school?: string;
   graduation?: string;
   educational_qualifications?: string;
   study_path?: string;
   grade_average?: string | number;
-
-  activity_photos?: string[];
+  study_results?: string;
 }
 
-/* ---------- Styles ---------- */
+const C = {
+  navy:      "#1B2A4A",
+  navyLight: "#2C3E6B",
+  accent:    "#C9A84C",
+  white:     "#FFFFFF",
+  offWhite:  "#F7F8FA",
+  text:      "#2D2D2D",
+  muted:     "#6B7280",
+  line:      "#E5E7EB",
+  sideText:  "#D1D9EC",
+  tag:       "#EEF2FF",
+  tagText:   "#3B4E8C",
+};
+
 const styles = StyleSheet.create({
-  page: { fontFamily: "Kanit" },
+  page: { fontFamily: "Kanit", backgroundColor: C.white },
+  row:  { flexDirection: "row", minHeight: 841 },
 
-  container: { flexDirection: "row", height: "100%" },
-
+  /* ── Sidebar ── */
   sidebar: {
-    width: "35%",
-    backgroundColor: "#2f3e75",
-    padding: 20,
-    color: "#fff",
+    width: 190,
+    backgroundColor: C.navy,
+    paddingBottom: 30,
   },
-  profileImage: {
-    width: 120,
-    height: 140,
-    marginBottom: 20,
-    alignSelf: "center",
+  photoWrap: {
+    width: 190,
+    height: 200,
+    backgroundColor: C.navyLight,
+    marginBottom: 16,
+    overflow: "hidden",
   },
-  sidebarTitle: {
-    fontSize: 14,
-    fontWeight: 700,
-    marginTop: 15,
-    marginBottom: 8,
-    color: "#fff",
-  },
-  sidebarText: { fontSize: 12, marginBottom: 4, color: "#fff" },
+  profileImage: { width: 190, height: 200, objectFit: "cover" as any },
 
-  mainContent: { width: "65%", padding: 30 },
-  name: { fontSize: 26, fontWeight: "bold", marginBottom: 10 },
-  address: { fontSize: 12, marginBottom: 20, color: "#666" },
+  sidePad: { paddingHorizontal: 16 },
 
-  section: { marginTop: 10 },
-  sectionTitle: {
-    fontSize: 16,
+  /* ✅ ลบ letterSpacing ออก — ทำให้ภาษาไทยตกหล่น */
+  sideHeader: {
+    fontSize: 10,
     fontWeight: 700,
-    marginBottom: 10,
+    color: C.accent,
+    marginTop: 16,
+    marginBottom: 6,
+    paddingBottom: 4,
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    paddingBottom: 5,
+    borderBottomColor: "#ffffff25",
   },
-  paragraph: { fontSize: 14, lineHeight: 1.8 },
 
-  photoGrid: {
-    display: "flex",
+  sideLabel: { fontSize: 9, color: "#8899BB", marginBottom: 1 },
+  sideText:  { fontSize: 10.5, color: C.sideText, marginBottom: 5, lineHeight: 1.5 },
+
+  skillBlock: { marginBottom: 8 },
+  skillLang: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.white,
+    marginBottom: 4,
+    backgroundColor: "#ffffff18",
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+    borderRadius: 3,
+  },
+  skillRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 2,
+  },
+  skillKey: { fontSize: 9.5, color: "#AABBDD" },
+  skillVal: { fontSize: 9.5, color: C.white },
+  sideDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#ffffff15",
+    marginVertical: 6,
+  },
+
+  /* ── Main ── */
+  main: { flex: 1, backgroundColor: C.white },
+
+  headerBand: {
+    backgroundColor: C.offWhite,
+    borderBottomWidth: 3,
+    borderBottomColor: C.accent,
+    paddingTop: 26,
+    paddingBottom: 16,
+    paddingHorizontal: 26,
+  },
+  name: { fontSize: 24, fontWeight: 700, color: C.navy, lineHeight: 1.3 },
+  addressLine: { fontSize: 10, color: C.muted, marginTop: 4 },
+
+  body: { paddingHorizontal: 26, paddingTop: 16, paddingBottom: 24 },
+
+  section: { marginBottom: 14 },
+  sectionHeader: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  sectionBar: {
+    width: 3,
+    height: 14,
+    backgroundColor: C.accent,
+    marginRight: 7,
+    borderRadius: 2,
+  },
+  sectionTitle: { fontSize: 13, fontWeight: 700, color: C.navy },
+
+  para: { fontSize: 11, color: C.text, lineHeight: 1.7 },
+
+  infoGrid:  { flexDirection: "row", flexWrap: "wrap" },
+  infoCell:  { width: "50%", marginBottom: 6 },
+  infoLabel: { fontSize: 9, color: C.muted, marginBottom: 1 },
+  infoVal:   { fontSize: 10.5, color: C.text, fontWeight: 700 },
+
+  gradeBadge: {
+    backgroundColor: C.tag,
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 7,
+    alignSelf: "flex-start",
+    marginTop: 4,
+  },
+  gradeText: { fontSize: 11, color: C.tagText, fontWeight: 700 },
+
+  transcriptImg: { width: "100%", marginTop: 6, borderRadius: 4 },
+
+  /* ── Activity card ── */
+  actCard: {
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: C.line,
+    borderRadius: 6,
+    overflow: "hidden",
+  },
+  actHeader: {
+    backgroundColor: C.offWhite,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: C.line,
+  },
+  actName: { fontSize: 11, fontWeight: 700, color: C.navy, flex: 1 },
+  actDate: { fontSize: 9, color: C.muted, marginLeft: 8 },
+
+  /* ✅ คำอธิบายกิจกรรม */
+  actDesc: {
+    fontSize: 10.5,
+    color: C.text,
+    lineHeight: 1.6,
+    paddingHorizontal: 10,
+    paddingTop: 6,
+    paddingBottom: 4,
+  },
+
+  /* ✅ Photos แยกของแต่ละกิจกรรม */
+  actPhotos: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 5,
+    padding: 6,
+    backgroundColor: C.white,
   },
-  photoItem: {
-    width: 120,
-    height: 80,
-    margin: 2,
+  actPhoto: {
+    width: 100,
+    height: 70,
+    margin: 3,
+    borderRadius: 3,
     objectFit: "cover" as any,
   },
 });
 
-/* ---------- PDF Component ---------- */
+/* ── Helpers ── */
+const formatThaiDate = (raw?: string) => {
+  if (!raw) return "";
+  try {
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString("th-TH", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch {
+    return raw;
+  }
+};
+
+const SectionTitle = ({ label }: { label: string }) => (
+  <View style={styles.sectionHeader}>
+    <View style={styles.sectionBar} />
+    <Text style={styles.sectionTitle}>{label}</Text>
+  </View>
+);
+
+const InfoCell = ({ label, value }: { label: string; value?: string | number }) =>
+  value ? (
+    <View style={styles.infoCell}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoVal}>{String(value)}</Text>
+    </View>
+  ) : null;
+
+/* ══════════════ PDF Component ══════════════ */
 export const PortfolioPDF: React.FC<PDFProps> = ({
   introduce,
-  prefix,
-  first_name,
-  last_name,
-  birth_day,
-  birth_month,
-  birth_year,
-  nationality,
-  id_card,
-  phonenumber1,
-  phonenumber2,
-  email,
-  address,
-  province,
-  district,
-  subdistrict,
-  postal_code,
-  gender,
-  height,
-  weight,
+  prefix, first_name, last_name,
+  birth_day, birth_month, birth_year,
+  nationality, id_card,
+  phonenumber1, phonenumber2, email,
+  address, province, district, subdistrict, postal_code,
+  gender, height, weight,
   personal_image,
-  language_skill,
-  listening_skill,
-  speaking_skill,
-  reading_skill,
-  writing_skill,
-  university,
-  faculty,
-  major,
-  reason,
-  school,
-  graduation,
-  educational_qualifications,
-  study_path,
-  grade_average,
-  activity_photos,
-}) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.container}>
+  skills = [],
+  activities = [],
+  university, faculty, major, reason,
+  school, graduation, educational_qualifications,
+  study_path, grade_average, study_results,
+}) => {
+  const fullName    = [prefix, first_name, last_name].filter(Boolean).join(" ");
+  const fullAddress = [address, subdistrict, district, province, postal_code]
+    .filter(Boolean).join(" ");
+  const hasEdu = !!(school || graduation || educational_qualifications ||
+    study_path || grade_average || study_results);
+  const hasUni = !!(university || faculty || major);
 
-        {/* ---------- LEFT SIDEBAR ---------- */}
-        <View style={styles.sidebar}>
-          {personal_image && (
-            <Image src={personal_image} style={styles.profileImage} />
-          )}
+  return (
+    <Document>
+      <Page size="A4" style={styles.page} wrap>
+        <View style={styles.row}>
 
-          <Text style={styles.sidebarTitle}>ข้อมูลติดต่อ</Text>
-          {email && <Text style={styles.sidebarText}>{email}</Text>}
-          {phonenumber1 && (
-            <Text style={styles.sidebarText}>{phonenumber1}</Text>
-          )}
-          {phonenumber2 && (
-            <Text style={styles.sidebarText}>{phonenumber2}</Text>
-          )}
+          {/* ════════ SIDEBAR ════════ */}
+          <View style={styles.sidebar}>
 
-          <Text style={styles.sidebarTitle}>ข้อมูลส่วนตัว</Text>
-          {(birth_day || birth_month || birth_year) && (
-            <Text style={styles.sidebarText}>
-              วันเกิด: {birth_day} {birth_month} {birth_year}
-            </Text>
-          )}
-          {nationality && (
-            <Text style={styles.sidebarText}>สัญชาติ: {nationality}</Text>
-          )}
-          {id_card && (
-            <Text style={styles.sidebarText}>เลขบัตร: {id_card}</Text>
-          )}
-          {gender && (
-            <Text style={styles.sidebarText}>เพศ: {gender}</Text>
-          )}
-          {height && (
-            <Text style={styles.sidebarText}>ส่วนสูง: {height} ซม.</Text>
-          )}
-          {weight && (
-            <Text style={styles.sidebarText}>น้ำหนัก: {weight} กก.</Text>
-          )}
+            {/* รูปโปรไฟล์ */}
+            <View style={styles.photoWrap}>
+              {personal_image
+                ? <Image src={personal_image} style={styles.profileImage} />
+                : <View style={{ width: 190, height: 200, backgroundColor: C.navyLight }} />
+              }
+            </View>
 
-          {(language_skill ||
-            listening_skill ||
-            speaking_skill ||
-            reading_skill ||
-            writing_skill) && (
-            <>
-              <Text style={styles.sidebarTitle}>ทักษะภาษา</Text>
-              {language_skill && (
-                <Text style={styles.sidebarText}>ภาษา: {language_skill}</Text>
+            <View style={styles.sidePad}>
+
+              {/* ติดต่อ */}
+              {(email || phonenumber1 || phonenumber2) && (
+                <>
+                  <Text style={styles.sideHeader}>ติดต่อ</Text>
+                  {email      && <Text style={styles.sideText}>{email}</Text>}
+                  {phonenumber1 && <Text style={styles.sideText}>{phonenumber1}</Text>}
+                  {phonenumber2 && <Text style={styles.sideText}>{phonenumber2}</Text>}
+                </>
               )}
-              {listening_skill && (
-                <Text style={styles.sidebarText}>การฟัง: {listening_skill}</Text>
-              )}
-              {speaking_skill && (
-                <Text style={styles.sidebarText}>การพูด: {speaking_skill}</Text>
-              )}
-              {reading_skill && (
-                <Text style={styles.sidebarText}>การอ่าน: {reading_skill}</Text>
-              )}
-              {writing_skill && (
-                <Text style={styles.sidebarText}>การเขียน: {writing_skill}</Text>
-              )}
-            </>
-          )}
-        </View>
 
-        {/* ---------- RIGHT MAIN CONTENT ---------- */}
-        <View style={styles.mainContent}>
-          <Text style={styles.name}>
-            {prefix} {first_name} {last_name}
-          </Text>
+              {/* ข้อมูลส่วนตัว */}
+              {(birth_day || nationality || id_card || gender || height || weight) && (
+                <>
+                  <Text style={styles.sideHeader}>ข้อมูลส่วนตัว</Text>
+                  {(birth_day || birth_month || birth_year) && (
+                    <>
+                      <Text style={styles.sideLabel}>วันเกิด</Text>
+                      <Text style={styles.sideText}>
+                        {birth_day} {birth_month} {birth_year}
+                      </Text>
+                    </>
+                  )}
+                  {nationality && (
+                    <>
+                      <Text style={styles.sideLabel}>สัญชาติ</Text>
+                      <Text style={styles.sideText}>{nationality}</Text>
+                    </>
+                  )}
+                  {id_card && (
+                    <>
+                      <Text style={styles.sideLabel}>เลขบัตรประชาชน</Text>
+                      <Text style={styles.sideText}>{id_card}</Text>
+                    </>
+                  )}
+                  {gender && (
+                    <>
+                      <Text style={styles.sideLabel}>เพศ</Text>
+                      <Text style={styles.sideText}>{gender}</Text>
+                    </>
+                  )}
+                  {(height || weight) && (
+                    <Text style={styles.sideText}>
+                      {height ? `${height} ซม.` : ""}
+                      {height && weight ? "  /  " : ""}
+                      {weight ? `${weight} กก.` : ""}
+                    </Text>
+                  )}
+                </>
+              )}
 
-          <Text style={styles.address}>
-            {address} {subdistrict} {district} {province} {postal_code}
-          </Text>
+              {/* ทักษะภาษา */}
+              {skills.length > 0 && (
+                <>
+                  <Text style={styles.sideHeader}>ทักษะภาษา</Text>
+                  {skills.map((sk, i) => (
+                    <View key={i} style={styles.skillBlock}>
+                      {sk.language && (
+                        <Text style={styles.skillLang}>{sk.language}</Text>
+                      )}
+                      {(
+                        [
+                          ["การฟัง",   sk.listening],
+                          ["การพูด",   sk.speaking],
+                          ["การอ่าน",  sk.reading],
+                          ["การเขียน", sk.writing],
+                        ] as [string, string | undefined][]
+                      )
+                        .filter(([, v]) => v)
+                        .map(([k, v], j) => (
+                          <View key={j} style={styles.skillRow}>
+                            <Text style={styles.skillKey}>{k}</Text>
+                            <Text style={styles.skillVal}>{v}</Text>
+                          </View>
+                        ))}
+                      {i < skills.length - 1 && (
+                        <View style={styles.sideDivider} />
+                      )}
+                    </View>
+                  ))}
+                </>
+              )}
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Introduction</Text>
-            <Text style={styles.paragraph}>{introduce}</Text>
+            </View>
           </View>
 
-          {(school ||
-            graduation ||
-            educational_qualifications ||
-            study_path ||
-            grade_average) && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>การศึกษา</Text>
-              {school && (
-                <Text style={styles.paragraph}>สถาบัน: {school}</Text>
-              )}
-              {graduation && (
-                <Text style={styles.paragraph}>
-                  สำเร็จการศึกษา: {graduation}
-                </Text>
-              )}
-              {educational_qualifications && (
-                <Text style={styles.paragraph}>
-                  วุฒิการศึกษา: {educational_qualifications}
-                </Text>
-              )}
-              {study_path && (
-                <Text style={styles.paragraph}>เส้นทาง: {study_path}</Text>
-              )}
-              {grade_average && (
-                <Text style={styles.paragraph}>
-                  เกรดเฉลี่ย: {grade_average}
-                </Text>
-              )}
-            </View>
-          )}
+          {/* ════════ MAIN CONTENT ════════ */}
+          <View style={styles.main}>
 
-          {(university || faculty || major) && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>มหาวิทยาลัยที่สนใจ</Text>
-              {university && (
-                <Text style={styles.paragraph}>
-                  มหาวิทยาลัย: {university}
-                </Text>
-              )}
-              {faculty && (
-                <Text style={styles.paragraph}>คณะ: {faculty}</Text>
-              )}
-              {major && (
-                <Text style={styles.paragraph}>สาขา: {major}</Text>
-              )}
-              {reason && (
-                <Text style={styles.paragraph}>เหตุผล: {reason}</Text>
+            {/* Header */}
+            <View style={styles.headerBand}>
+              <Text style={styles.name}>{fullName}</Text>
+              {fullAddress && (
+                <Text style={styles.addressLine}>{fullAddress}</Text>
               )}
             </View>
-          )}
 
-          {activity_photos && activity_photos.length > 0 && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>กิจกรรม / ใบรับรอง</Text>
-              <View style={styles.photoGrid}>
-                {activity_photos.map((url, i) => (
-                  <Image
-                    key={i}
-                    src={url}
-                    style={styles.photoItem}
-                    cache={true}
-                  />
-                ))}
-              </View>
+            <View style={styles.body}>
+
+              {/* แนะนำตัว */}
+              {introduce && (
+                <View style={styles.section}>
+                  <SectionTitle label="แนะนำตัว" />
+                  <Text style={styles.para}>{introduce}</Text>
+                </View>
+              )}
+
+              {/* การศึกษา */}
+              {hasEdu && (
+                <View style={styles.section}>
+                  <SectionTitle label="การศึกษา" />
+                  <View style={styles.infoGrid}>
+                    <InfoCell label="สถาบัน"          value={school} />
+                    <InfoCell label="วุฒิการศึกษา"     value={educational_qualifications} />
+                    <InfoCell label="สำเร็จการศึกษา"   value={graduation} />
+                    <InfoCell label="แผนการเรียน"      value={study_path} />
+                  </View>
+                  {grade_average && (
+                    <View style={styles.gradeBadge}>
+                      <Text style={styles.gradeText}>GPA {grade_average}</Text>
+                    </View>
+                  )}
+                  {study_results && (
+                    <>
+                      <Text style={[styles.infoLabel, { marginTop: 8 }]}>
+                        เอกสารผลการเรียน
+                      </Text>
+                      <Image
+                        src={study_results}
+                        style={styles.transcriptImg}
+                        cache={true}
+                      />
+                    </>
+                  )}
+                </View>
+              )}
+
+              {/* มหาวิทยาลัย */}
+              {hasUni && (
+                <View style={styles.section}>
+                  <SectionTitle label="มหาวิทยาลัยที่สนใจ" />
+                  <View style={styles.infoGrid}>
+                    <InfoCell label="มหาวิทยาลัย" value={university} />
+                    <InfoCell label="คณะ"          value={faculty} />
+                    <InfoCell label="สาขา"         value={major} />
+                  </View>
+                  {reason && (
+                    <Text style={[styles.para, { marginTop: 4 }]}>
+                      เหตุผล: {reason}
+                    </Text>
+                  )}
+                </View>
+              )}
+
+              {/* ✅ กิจกรรม — แต่ละ card มีรูปของตัวเองแยกกัน */}
+              {activities.length > 0 && (
+                <View style={styles.section}>
+                  <SectionTitle label="กิจกรรม / ใบรับรอง" />
+
+                  {activities.map((act, i) => (
+                    <View key={i} style={styles.actCard} wrap={false}>
+
+                      {/* Header: ชื่อ + วันที่ */}
+                      <View style={styles.actHeader}>
+                        <Text style={styles.actName}>
+                          {act.name_project || `กิจกรรมที่ ${i + 1}`}
+                        </Text>
+                        {act.date && (
+                          <Text style={styles.actDate}>
+                            {formatThaiDate(act.date)}
+                          </Text>
+                        )}
+                      </View>
+
+                      {/* ✅ คำอธิบายกิจกรรม */}
+                      {act.description && (
+                        <Text style={styles.actDesc}>{act.description}</Text>
+                      )}
+
+                      {/* ✅ รูปของกิจกรรมนี้เท่านั้น */}
+                      {act.photos.length > 0 && (
+                        <View style={styles.actPhotos}>
+                          {act.photos.map((url, j) => (
+                            <Image
+                              key={`act-${i}-photo-${j}`}
+                              src={url}
+                              style={styles.actPhoto}
+                              cache={true}
+                            />
+                          ))}
+                        </View>
+                      )}
+
+                    </View>
+                  ))}
+                </View>
+              )}
+
             </View>
-          )}
+          </View>
         </View>
-      </View>
-    </Page>
-  </Document>
-);
+      </Page>
+    </Document>
+  );
+};

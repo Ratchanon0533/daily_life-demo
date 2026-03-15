@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
 import { PortfolioPDF } from "../components/MyDocument";
-import type { PDFProps } from "../components/MyDocument";
+import type { PDFProps, SkillItem, ActivityItem } from "../components/MyDocument";
 
-/* ---------- Types ---------- */
+/* ── Types ── */
 type Personal = {
   prefix?: string;
   first_name?: string;
@@ -34,6 +34,7 @@ type Education = {
   graduation?: string;
   study_path?: string;
   grade_average?: string | number;
+  study_results?: string;
 };
 
 type Skill = {
@@ -48,6 +49,7 @@ type Activity = {
   photo?: string;
   name_project?: string;
   date?: string;
+  details?: string;   // ✅ เปลี่ยนจาก description → details ให้ตรงกับ API
 };
 
 type University = {
@@ -75,17 +77,17 @@ const emptyGenData: GenData = {
   university: null,
 };
 
-/* ---------- Helper: แปลงวันเป็น พ.ศ. ---------- */
+/* ── Helpers ── */
 const toThaiDate = (iso?: string) => {
   if (!iso) return { day: "", month: "", year: "" };
   const d = new Date(iso);
-  const day = d.getDate();
-  const month = d.toLocaleString("th-TH", { month: "long" });
-  const year = d.getFullYear() + 543;
-  return { day, month, year };
+  return {
+    day:   d.getDate(),
+    month: d.toLocaleString("th-TH", { month: "long" }),
+    year:  d.getFullYear() + 543,
+  };
 };
 
-/* ---------- Helper: แปลง JSON ของรูปกิจกรรมเป็น string[] ---------- */
 const parsePhotos = (json?: string): string[] => {
   try {
     if (!json) return [];
@@ -96,98 +98,86 @@ const parsePhotos = (json?: string): string[] => {
   }
 };
 
-/* ---------- Mapping (API → PDFProps) ---------- */
+/* ── Mapping ── */
 const mapGenDataToPdfProps = (data: GenData): PDFProps => {
   const { personal, port, education, skills, activities, university } = data;
 
   const {
-    prefix = "",
-    first_name = "",
-    last_name = "",
-    email = "",
-    phone_number1 = "",
-    phone_number2 = "",
-    address = "",
-    province = "",
-    district = "",
-    subdistrict = "",
-    postal_code = "",
-    introduce = "",
-    date_birth,
-    nationality = "",
-    national_id = "",
+    prefix = "", first_name = "", last_name = "",
+    email = "", phone_number1 = "", phone_number2 = "",
+    address = "", province = "", district = "",
+    subdistrict = "", postal_code = "",
+    introduce = "", date_birth,
+    nationality = "", national_id = "",
   } = personal ?? {};
 
   const { day: birth_day, month: birth_month, year: birth_year } =
     toThaiDate(date_birth);
 
   const firstEdu = education[0] ?? {};
-  const firstSkill = skills[0] ?? {};
 
-  const activityPhotos = activities
-    .flatMap((act) => parsePhotos(act.photo))
-    .filter(Boolean);
+  /* ✅ map ทุก skill */
+  const mappedSkills: SkillItem[] = skills.map((s) => ({
+    language:  s.language,
+    listening: s.listening,
+    speaking:  s.speaking,
+    reading:   s.reading,
+    writing:   s.writing,
+  }));
+
+  /* ✅ map ทุก activity แยก photos ของตัวเอง + description */
+const mappedActivities: ActivityItem[] = activities.map((act) => ({
+  name_project: act.name_project,
+  date:         act.date,
+  description:  act.details,        // ✅ map details → description
+  photos:       parsePhotos(act.photo),
+}));
 
   return {
     introduce,
-    prefix,
-    first_name,
-    last_name,
-    birth_day,
-    birth_month,
-    birth_year,
+    prefix, first_name, last_name,
+    birth_day, birth_month, birth_year,
     nationality,
-    id_card: national_id,
+    id_card:     national_id,
     phonenumber1: phone_number1,
     phonenumber2: phone_number2,
     email,
-    address,
-    province,
-    district,
-    subdistrict,
-    postal_code,
+    address, province, district, subdistrict, postal_code,
 
     personal_image: port?.profile_url ?? null,
 
-    language_skill: firstSkill.language ?? "",
-    listening_skill: firstSkill.listening ?? "",
-    speaking_skill: firstSkill.speaking ?? "",
-    reading_skill: firstSkill.reading ?? "",
-    writing_skill: firstSkill.writing ?? "",
+    skills:     mappedSkills,
+    activities: mappedActivities,
 
     university: university?.university ?? "",
-    faculty: university?.faculty ?? "",
-    major: university?.major ?? "",
-    reason: university?.details ?? "",
+    faculty:    university?.faculty    ?? "",
+    major:      university?.major      ?? "",
+    reason:     university?.details    ?? "",
 
-    school: firstEdu.school ?? "",
-    graduation: firstEdu.graduation ?? "",
+    school:                    firstEdu.school                    ?? "",
+    graduation:                firstEdu.graduation                ?? "",
     educational_qualifications: firstEdu.educational_qualifications ?? "",
-    study_path: firstEdu.study_path ?? "",
-    grade_average: firstEdu.grade_average ?? "",
-
-    activity_photos: activityPhotos,
+    study_path:                firstEdu.study_path                ?? "",
+    grade_average:             firstEdu.grade_average             ?? "",
+    study_results:             firstEdu.study_results             ?? "",
   };
 };
 
-/* ---------- Component ---------- */
+/* ── Component ── */
 const Genport = () => {
-  const [data, setData] = useState<GenData>(emptyGenData);
+  const [data, setData]       = useState<GenData>(emptyGenData);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const navigate              = useNavigate();
 
   useEffect(() => {
     const userId = localStorage.getItem("userid");
-    const token = localStorage.getItem("token");
+    const token  = localStorage.getItem("token");
 
-    if (!userId) {
-      navigate("/login");
-      return;
-    }
+    if (!userId) { navigate("/login"); return; }
 
     const fetchAllData = async () => {
       try {
-        const portRes = await fetch(
+        const portRes    = await fetch(
           `https://daily-life-backend.vercel.app/getport/${userId}`,
           { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
@@ -196,41 +186,28 @@ const Genport = () => {
         if (portResult.success && portResult.data?.length) {
           const portId = portResult.data[0].port_id;
 
-          const [
-            personalRes,
-            eduRes,
-            skillRes,
-            activityRes,
-            uniRes,
-          ] = await Promise.all([
-            fetch(`https://daily-life-backend.vercel.app/getpersonal_info/${portId}`),
-            fetch(`https://daily-life-backend.vercel.app/geteducational/${portId}`),
-            fetch(`https://daily-life-backend.vercel.app/getskills_abilities/${portId}`),
-            fetch(`https://daily-life-backend.vercel.app/getactivities_certificates/${portId}`),
-            fetch(`https://daily-life-backend.vercel.app/getuniversity_choice/${portId}`),
-          ]);
+          const [personalRes, eduRes, skillRes, activityRes, uniRes] =
+            await Promise.all([
+              fetch(`https://daily-life-backend.vercel.app/getpersonal_info/${portId}`),
+              fetch(`https://daily-life-backend.vercel.app/geteducational/${portId}`),
+              fetch(`https://daily-life-backend.vercel.app/getskills_abilities/${portId}`),
+              fetch(`https://daily-life-backend.vercel.app/getactivities_certificates/${portId}`),
+              fetch(`https://daily-life-backend.vercel.app/getuniversity_choice/${portId}`),
+            ]);
 
-          const [
-            personalJson,
-            eduJson,
-            skillJson,
-            activityJson,
-            uniJson,
-          ] = await Promise.all([
-            personalRes.json(),
-            eduRes.json(),
-            skillRes.json(),
-            activityRes.json(),
-            uniRes.json(),
-          ]);
+          const [personalJson, eduJson, skillJson, activityJson, uniJson] =
+            await Promise.all([
+              personalRes.json(), eduRes.json(),  skillRes.json(),
+              activityRes.json(), uniRes.json(),
+            ]);
 
           setData({
-            port: portResult.data[0],
-            personal: personalJson.success ? personalJson.data[0] : null,
-            education: eduJson.success ? eduJson.data : [],
-            skills: skillJson.success ? skillJson.data : [],
-            activities: activityJson.success ? activityJson.data : [],
-            university: uniJson.success ? uniJson.data[0] : null,
+            port:       portResult.data[0],
+            personal:   personalJson.success  ? personalJson.data[0]  : null,
+            education:  eduJson.success       ? eduJson.data          : [],
+            skills:     skillJson.success     ? skillJson.data        : [],
+            activities: activityJson.success  ? activityJson.data     : [],
+            university: uniJson.success       ? uniJson.data[0]       : null,
           });
         }
       } catch (e) {
@@ -243,7 +220,6 @@ const Genport = () => {
     fetchAllData();
   }, [navigate]);
 
-  /* ---------- Loading / Empty ---------- */
   if (loading)
     return (
       <div className="p-10 text-center font-bold text-lg">
@@ -258,18 +234,13 @@ const Genport = () => {
       </div>
     );
 
-  /* ---------- Map data ---------- */
   const pdfProps: PDFProps = mapGenDataToPdfProps(data);
-
   const fileName = data.personal?.portfolio_name?.trim()
     ? `${data.personal.portfolio_name}.pdf`
     : "Portfolio.pdf";
 
-  /* ---------- UI ---------- */
   return (
     <div className="p-6 bg-zinc-100 min-h-screen flex flex-col items-center">
-
-      {/* ปุ่มควบคุม */}
       <div className="flex gap-4 mb-6">
         <button
           onClick={() => navigate(-1)}
@@ -289,7 +260,6 @@ const Genport = () => {
         </PDFDownloadLink>
       </div>
 
-      {/* Preview PDF */}
       <PDFViewer
         width="100%"
         height={900}
@@ -297,7 +267,6 @@ const Genport = () => {
       >
         <PortfolioPDF {...pdfProps} />
       </PDFViewer>
-
     </div>
   );
 };
