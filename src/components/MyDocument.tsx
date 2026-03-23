@@ -18,18 +18,18 @@ Font.register({
 });
 
 export interface SkillItem {
-  language?: string;
-  listening?: string;
-  speaking?: string;
-  reading?: string;
-  writing?: string;
+  language?: string | null;
+  listening?: string | null;
+  speaking?: string | null;
+  reading?: string | null;
+  writing?: string | null;
 }
 
 export interface ActivityItem {
   photos: string[];
-  name_project?: string;
-  date?: string;
-  description?: string;   // ✅ เพิ่ม
+  name_project?: string | null;
+  date?: string | null;
+  description?: string | null;
 }
 
 export interface PDFProps {
@@ -65,26 +65,31 @@ export interface PDFProps {
   educational_qualifications?: string;
   study_path?: string;
   grade_average?: string | number;
-  study_results?: string;
+  study_results: File | string | null;
+  province_edu?: string;
+  district_edu?: string;
+  skills_details?: string;
+  others_skills?: string;
 }
 
+
 const C = {
-  navy:      "#1B2A4A",
+  navy: "#1B2A4A",
   navyLight: "#2C3E6B",
-  accent:    "#C9A84C",
-  white:     "#FFFFFF",
-  offWhite:  "#F7F8FA",
-  text:      "#2D2D2D",
-  muted:     "#6B7280",
-  line:      "#E5E7EB",
-  sideText:  "#D1D9EC",
-  tag:       "#EEF2FF",
-  tagText:   "#3B4E8C",
+  accent: "#C9A84C",
+  white: "#FFFFFF",
+  offWhite: "#F7F8FA",
+  text: "#2D2D2D",
+  muted: "#6B7280",
+  line: "#E5E7EB",
+  sideText: "#D1D9EC",
+  tag: "#EEF2FF",
+  tagText: "#3B4E8C",
 };
 
 const styles = StyleSheet.create({
   page: { fontFamily: "Kanit", backgroundColor: C.white },
-  row:  { flexDirection: "row", minHeight: 841 },
+  row: { flexDirection: "row", minHeight: 841 },
 
   /* ── Sidebar ── */
   sidebar: {
@@ -95,11 +100,11 @@ const styles = StyleSheet.create({
   photoWrap: {
     width: 190,
     height: 200,
-    backgroundColor: C.navyLight,
+    backgroundColor: C.navy,
     marginBottom: 16,
     overflow: "hidden",
   },
-  profileImage: { width: 190, height: 200, objectFit: "cover" as any },
+  profileImage: { width: 170, height: 200, objectFit: "cover" as any, margin: "0 auto", marginTop: 10 },
 
   sidePad: { paddingHorizontal: 16 },
 
@@ -116,7 +121,7 @@ const styles = StyleSheet.create({
   },
 
   sideLabel: { fontSize: 9, color: "#8899BB", marginBottom: 1 },
-  sideText:  { fontSize: 10.5, color: C.sideText, marginBottom: 5, lineHeight: 1.5 },
+  sideText: { fontSize: 10.5, color: C.sideText, marginBottom: 5, lineHeight: 1.5 },
 
   skillBlock: { marginBottom: 8 },
   skillLang: {
@@ -171,10 +176,10 @@ const styles = StyleSheet.create({
 
   para: { fontSize: 11, color: C.text, lineHeight: 1.7 },
 
-  infoGrid:  { flexDirection: "row", flexWrap: "wrap" },
-  infoCell:  { width: "50%", marginBottom: 6 },
+  infoGrid: { flexDirection: "row", flexWrap: "wrap" },
+  infoCell: { width: "50%", marginBottom: 6 },
   infoLabel: { fontSize: 9, color: C.muted, marginBottom: 1 },
-  infoVal:   { fontSize: 10.5, color: C.text, fontWeight: 700 },
+  infoVal: { fontSize: 10.5, color: C.text, fontWeight: 700 },
 
   gradeBadge: {
     backgroundColor: C.tag,
@@ -227,11 +232,13 @@ const styles = StyleSheet.create({
     backgroundColor: C.white,
   },
   actPhoto: {
-    width: 100,
-    height: 70,
-    margin: 3,
+    width: "75%",
+    height: "75%",
+    margin: "3 auto",
     borderRadius: 3,
     objectFit: "cover" as any,
+
+
   },
 });
 
@@ -280,9 +287,9 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
   activities = [],
   university, faculty, major, reason,
   school, graduation, educational_qualifications,
-  study_path, grade_average, study_results,
+  study_path, grade_average, study_results, province_edu, district_edu, skills_details, others_skills,
 }) => {
-  const fullName    = [prefix, first_name, last_name].filter(Boolean).join(" ");
+  const fullName = [prefix, first_name, last_name].filter(Boolean).join(" ");
   const fullAddress = [address, subdistrict, district, province, postal_code]
     .filter(Boolean).join(" ");
   const hasEdu = !!(school || graduation || educational_qualifications ||
@@ -311,7 +318,7 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
               {(email || phonenumber1 || phonenumber2) && (
                 <>
                   <Text style={styles.sideHeader}>ติดต่อ</Text>
-                  {email      && <Text style={styles.sideText}>{email}</Text>}
+                  {email && <Text style={styles.sideText}>{email}</Text>}
                   {phonenumber1 && <Text style={styles.sideText}>{phonenumber1}</Text>}
                   {phonenumber2 && <Text style={styles.sideText}>{phonenumber2}</Text>}
                 </>
@@ -368,9 +375,9 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
                       )}
                       {(
                         [
-                          ["การฟัง",   sk.listening],
-                          ["การพูด",   sk.speaking],
-                          ["การอ่าน",  sk.reading],
+                          ["การฟัง", sk.listening],
+                          ["การพูด", sk.speaking],
+                          ["การอ่าน", sk.reading],
                           ["การเขียน", sk.writing],
                         ] as [string, string | undefined][]
                       )
@@ -408,38 +415,42 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
               {/* แนะนำตัว */}
               {introduce && (
                 <View style={styles.section}>
-                  <SectionTitle label="แนะนำตัว" />
+                  <SectionTitle label="แนะนำตัวว" />
                   <Text style={styles.para}>{introduce}</Text>
                 </View>
               )}
-
+              {/* ✅ ทักษะและความสามารถ (Simple Text Version) */}
+              {skills_details && (
+                <View style={styles.section}>
+                  <SectionTitle label="ทักษะและความสามารถ" />
+                  <Text style={styles.para}>{skills_details}</Text>
+                </View>
+              )}
+              {others_skills && (
+                <View style={styles.section}>
+                  <SectionTitle label="ทักษะอื่นๆ" />
+                  <Text style={styles.para}>{others_skills}</Text>
+                </View>
+              )}
               {/* การศึกษา */}
               {hasEdu && (
                 <View style={styles.section}>
                   <SectionTitle label="การศึกษา" />
                   <View style={styles.infoGrid}>
-                    <InfoCell label="สถาบัน"          value={school} />
-                    <InfoCell label="วุฒิการศึกษา"     value={educational_qualifications} />
-                    <InfoCell label="สำเร็จการศึกษา"   value={graduation} />
-                    <InfoCell label="แผนการเรียน"      value={study_path} />
+                    <InfoCell label="โรงเรียน/สถาบันการศึกษา" value={school} />
+                    <InfoCell label="วุฒิการศึกษา" value={educational_qualifications} />
+                    <InfoCell label="สำเร็จการศึกษา" value={graduation} />
+                    <InfoCell label="แผนการเรียน" value={study_path} />
+                    <InfoCell label="จังหวัด" value={province_edu} />
+                    <InfoCell label="เขต/อำเภอ" value={district_edu} />
+
                   </View>
                   {grade_average && (
                     <View style={styles.gradeBadge}>
                       <Text style={styles.gradeText}>GPA {grade_average}</Text>
                     </View>
                   )}
-                  {study_results && (
-                    <>
-                      <Text style={[styles.infoLabel, { marginTop: 8 }]}>
-                        เอกสารผลการเรียน
-                      </Text>
-                      <Image
-                        src={study_results}
-                        style={styles.transcriptImg}
-                        cache={true}
-                      />
-                    </>
-                  )}
+
                 </View>
               )}
 
@@ -449,8 +460,8 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
                   <SectionTitle label="มหาวิทยาลัยที่สนใจ" />
                   <View style={styles.infoGrid}>
                     <InfoCell label="มหาวิทยาลัย" value={university} />
-                    <InfoCell label="คณะ"          value={faculty} />
-                    <InfoCell label="สาขา"         value={major} />
+                    <InfoCell label="คณะ" value={faculty} />
+                    <InfoCell label="สาขา" value={major} />
                   </View>
                   {reason && (
                     <Text style={[styles.para, { marginTop: 4 }]}>
@@ -461,53 +472,79 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
               )}
 
               {/* ✅ กิจกรรม — แต่ละ card มีรูปของตัวเองแยกกัน */}
-              {activities.length > 0 && (
-                <View style={styles.section}>
-                  <SectionTitle label="กิจกรรม / ใบรับรอง" />
 
-                  {activities.map((act, i) => (
-                    <View key={i} style={styles.actCard} wrap={false}>
-
-                      {/* Header: ชื่อ + วันที่ */}
-                      <View style={styles.actHeader}>
-                        <Text style={styles.actName}>
-                          {act.name_project || `กิจกรรมที่ ${i + 1}`}
-                        </Text>
-                        {act.date && (
-                          <Text style={styles.actDate}>
-                            {formatThaiDate(act.date)}
-                          </Text>
-                        )}
-                      </View>
-
-                      {/* ✅ คำอธิบายกิจกรรม */}
-                      {act.description && (
-                        <Text style={styles.actDesc}>{act.description}</Text>
-                      )}
-
-                      {/* ✅ รูปของกิจกรรมนี้เท่านั้น */}
-                      {act.photos.length > 0 && (
-                        <View style={styles.actPhotos}>
-                          {act.photos.map((url, j) => (
-                            <Image
-                              key={`act-${i}-photo-${j}`}
-                              src={url}
-                              style={styles.actPhoto}
-                              cache={true}
-                            />
-                          ))}
-                        </View>
-                      )}
-
-                    </View>
-                  ))}
-                </View>
-              )}
 
             </View>
           </View>
         </View>
       </Page>
+
+      <Page size="A4" style={styles.page} wrap>
+
+        {activities.length > 0 && (
+          <View style={[styles.section, { marginTop: 26, paddingHorizontal: 26 }]}>
+            <SectionTitle label="กิจกรรม / ใบรับรอง" />
+
+            {activities.map((act, i) => (
+              <View key={i} style={styles.actCard} wrap={false}>
+
+                {/* Header: ชื่อ + วันที่ */}
+                <View style={styles.actHeader}>
+                  <Text style={styles.actName}>
+                    {act.name_project || `กิจกรรมที่ ${i + 1}`}
+                  </Text>
+                  {act.date && (
+                    <Text style={styles.actDate}>
+                      {formatThaiDate(act.date)}
+                    </Text>
+                  )}
+                </View>
+
+                {/* ✅ คำอธิบายกิจกรรม */}
+                {act.description && (
+                  <Text style={styles.actDesc}>{act.description}</Text>
+                )}
+
+                {/* ✅ รูปของกิจกรรมนี้เท่านั้น */}
+                {act.photos.length > 0 && (
+                  <View style={styles.actPhotos}>
+                    {act.photos.map((url, j) => (
+                      <Image
+                        key={`act-${i}-photo-${j}`}
+                        src={url}
+                        style={styles.actPhoto}
+                        cache={true}
+                      />
+                    ))}
+                  </View>
+                )}
+
+              </View>
+            ))}
+          </View>
+        )}
+
+      </Page>
+
+      <Page size="A4" style={styles.page} wrap>
+        {study_results && (
+          <View style={[styles.section, { marginTop: 26, paddingHorizontal: 26 }]}>
+            <SectionTitle label="เอกสารผลการเรียน" />
+
+            <Image
+              src={study_results} 
+              style={{
+                width: '100%',
+                height: 'auto',
+                borderRadius: 4,
+                border: '1pt solid #eeeeee'
+              }}
+            />
+
+          </View>
+        )}
+      </Page>
+
     </Document>
   );
 };

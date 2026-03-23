@@ -9,7 +9,8 @@ import {
 } from 'date-fns';
 import { th } from 'date-fns/locale';
 import { useNavigate } from "react-router-dom";
-// removed unused import of Genport (local navigation function used below)
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { PortfolioPDF } from "./MyDocument";
 
 
 interface PersonalInfo {
@@ -57,6 +58,7 @@ interface LanguageSkill {
 
 interface SkillsAbilities {
     details?: string | null;
+    others?: string | null;
     language_skills?: LanguageSkill[] | null;
 }
 
@@ -148,6 +150,7 @@ const Portfolio = () => {
     });
 
     const [profileImage, setProfileImage] = useState<File | null>(null);
+
     const [educational, setEducational] = useState<EducationalItem[]>([
         {
             number: 1,
@@ -316,6 +319,8 @@ const Portfolio = () => {
             return () => clearTimeout(timeout);
         }
     }, [openSections.personal]);
+
+
 
     // ===== Update functions =====
     const toggleSection = (key: string) => {
@@ -501,7 +506,7 @@ const Portfolio = () => {
         return (
             <>
                 {skillsAbilities.language_skills?.map((lang, idx) => (
-                    <div key={idx} className={styles["personal-section"]}>
+                    <div key={idx} style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ddd', borderRadius: '8px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                             <h4>ภาษาที่ {idx + 1}</h4>
                             {skillsAbilities.language_skills && skillsAbilities.language_skills.length > 1 && (
@@ -521,7 +526,7 @@ const Portfolio = () => {
                                     value={lang.language || ''}
                                     onChange={e => updateLanguageSkill(idx, 'language', e.target.value)}
                                 >
-                                    <option value="">เลือกภาษา</option>
+                                    <option value="" disabled selected hidden>เลือกภาษา</option>
                                     <option value="อังกฤษ">อังกฤษ</option>
                                     <option value="จีน">จีน</option>
                                     <option value="ญี่ปุ่น">ญี่ปุ่น</option>
@@ -534,7 +539,7 @@ const Portfolio = () => {
                                     value={lang.listening || ''}
                                     onChange={e => updateLanguageSkill(idx, 'listening', e.target.value)}
                                 >
-                                    <option value="">เลือก</option>
+                                    <option value="" disabled selected hidden>เลือกระดับ</option>
                                     <option value="พอใช้">พอใช้</option>
                                     <option value="ดี">ดี</option>
                                     <option value="ดีมาก">ดีมาก</option>
@@ -547,7 +552,7 @@ const Portfolio = () => {
                                     value={lang.speaking || ''}
                                     onChange={e => updateLanguageSkill(idx, 'speaking', e.target.value)}
                                 >
-                                    <option value="">เลือก</option>
+                                    <option value="" disabled selected hidden>เลือกระดับ</option>
                                     <option value="พอใช้">พอใช้</option>
                                     <option value="ดี">ดี</option>
                                     <option value="ดีมาก">ดีมาก</option>
@@ -560,7 +565,7 @@ const Portfolio = () => {
                                     value={lang.reading || ''}
                                     onChange={e => updateLanguageSkill(idx, 'reading', e.target.value)}
                                 >
-                                    <option value="">เลือก</option>
+                                    <option value="" disabled selected hidden>เลือกระดับ</option>
                                     <option value="พอใช้">พอใช้</option>
                                     <option value="ดี">ดี</option>
                                     <option value="ดีมาก">ดีมาก</option>
@@ -573,7 +578,7 @@ const Portfolio = () => {
                                     value={lang.writing || ''}
                                     onChange={e => updateLanguageSkill(idx, 'writing', e.target.value)}
                                 >
-                                    <option value="">เลือก</option>
+                                    <option value="" disabled selected hidden>เลือกระดับ</option>
                                     <option value="พอใช้">พอใช้</option>
                                     <option value="ดี">ดี</option>
                                     <option value="ดีมาก">ดีมาก</option>
@@ -620,12 +625,12 @@ const Portfolio = () => {
 
                             <div className={styles["personal-section"]}>
                                 <p>ช่วงวันที่</p>
-                                <div className={styles["date-group"]} style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                                <div className={styles["date-group"]} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                                     <select
                                         className={styles["port-input"]}
                                         value={activity.day || 1}
                                         onChange={(e) => updateActivity(idx, 'day', Number(e.target.value))}
-                                        style={{ flex: 1 }}
+                                        style={{ flex: 1 , minWidth: '120px' }}
                                     >
                                         {Array.from({ length: daysInCertificateMonth }, (_, i) => (
                                             <option key={i + 1} value={i + 1}>{i + 1}</option>
@@ -635,7 +640,7 @@ const Portfolio = () => {
                                         className={styles["port-input"]}
                                         value={activity.month || 0}
                                         onChange={(e) => updateActivity(idx, 'month', Number(e.target.value))}
-                                        style={{ flex: 1 }}
+                                        style={{ flex: 1 , minWidth: '120px'}}
                                     >
                                         {thaiMonths.map((m) => (
                                             <option key={m.value} value={m.value}>{m.name}</option>
@@ -645,7 +650,7 @@ const Portfolio = () => {
                                         className={styles["port-input"]}
                                         value={activity.year || new Date().getFullYear()}
                                         onChange={(e) => updateActivity(idx, 'year', Number(e.target.value))}
-                                        style={{ flex: 1 }}
+                                        style={{ flex: 1 ,  minWidth: '120px'}}
                                     >
                                         {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((y) => (
                                             <option key={y} value={y}>{y + 543}</option>
@@ -758,7 +763,7 @@ const Portfolio = () => {
                                 อัพโหลดรูปภาพ
                             </label>
                             <button className={styles["port-preview-btn"]}>
-                                ดูตัวอย่างแฟ้มสะสมผลงาน
+                                เลือกเทมเพลต
                             </button>
                         </div>
                     </div>
@@ -785,6 +790,83 @@ const Portfolio = () => {
                             {saving ? 'กำลังบันทึก...' : 'สร้างพอต'}
                         </button>
                     </div>
+                    <PDFDownloadLink
+                        document={
+                            <PortfolioPDF
+                                personal_image={profileImage ? URL.createObjectURL(profileImage) : null}
+                                introduce={Personal.introduce || ''}
+                                prefix={Personal.prefix || ''}
+                                first_name={Personal.first_name || ''}
+                                last_name={Personal.last_name || ''}
+                                birth_day={day}
+                                birth_month={thaiMonths.find(m => m.value === month)?.name || ''}
+                                birth_year={year + 543}
+                                nationality={Personal.nationality || ''}
+                                id_card={Personal.national_id || ''}
+                                email={Personal.email || ''}
+                                phonenumber1={Personal.phone_number1 || ''}
+                                phonenumber2={Personal.phone_number2 || ''}
+                                address={Personal.address || ''}
+                                province={Personal.province || ''}
+                                district={Personal.district || ''}
+                                subdistrict={Personal.subdistrict || ''}
+                                postal_code={Personal.postal_code || ''}
+
+                                school={educational[0]?.school || ''}
+                                graduation={educational[0]?.graduation || ''}
+                                educational_qualifications={educational[0]?.educational_qualifications || ''}
+                                study_path={educational[0]?.study_path || ''}
+                                grade_average={educational[0]?.grade_average || ''}
+                                study_results={educational[0]?.study_results || ''}
+                                province_edu={educational[0]?.province || ''}
+                                district_edu={educational[0]?.district || ''}
+
+                                skills_details={skillsAbilities.details || ''}
+                                others_skills={skillsAbilities.others || ''}
+                                skills={skillsAbilities.language_skills || []}
+
+                                activities={activitiesCertificates.map(act => ({
+                                    name_project: act.name_project,
+                                    date: act.date,
+                                    description: act.details,
+                                    photos: act.photo ? [URL.createObjectURL(act.photo)] : []
+                                }))}
+
+                                university={universityChoice[0]?.university || ''}
+                                faculty={universityChoice[0]?.faculty || ''}
+                                major={universityChoice[0]?.major || ''}
+                                reason={universityChoice[0]?.details || ''}
+
+
+
+                            />
+
+
+                        }
+                        fileName={
+                            Personal.portfolio_name && Personal.portfolio_name.trim() !== ''
+                                ? `${Personal.portfolio_name}.pdf`
+                                : 'Portfolio.pdf'
+                        }
+                    >
+                        {({ loading }) => (
+                            <button
+                                type="button"
+                                className={styles["export-btn"]}
+                                disabled={loading}
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: loading ? '#ccc' : '#e67e22',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: loading ? 'not-allowed' : 'pointer'
+                                }}
+                            >
+                                {loading ? 'กำลังสร้าง PDF...' : 'Export to PDF'}
+                            </button>
+                        )}
+                    </PDFDownloadLink>
                     {saveMessage && (
                         <div style={{
                             marginTop: 8,
@@ -840,7 +922,7 @@ const Portfolio = () => {
                                         value={Personal.prefix || ''}
                                         onChange={e => updatePersonal('prefix', e.target.value)}
                                     >
-                                        <option value="">เลือก</option>
+                                        <option value="" disabled selected hidden>คำนำหน้า</option>
                                         <option value="นาย">นาย</option>
                                         <option value="นางสาว">นางสาว</option>
                                         <option value="นาง">นาง</option>
@@ -1169,6 +1251,8 @@ const Portfolio = () => {
                                 className={styles["port-textarea"]}
                                 rows={4}
                                 style={{ resize: 'vertical' }}
+                                value={skillsAbilities.others || ''}
+                                onChange={e => updateSkills('others', e.target.value)}
                                 placeholder="ระบุทักษะอื่นๆ เช่น การใช้คอมพิวเตอร์, ทักษะการสื่อสาร, ฯลฯ"
                             />
                         </div>
@@ -1293,7 +1377,7 @@ const Portfolio = () => {
 
     return (
         <>
-            {mode === "no-login" && (
+            {mode === "login" && (
                 <>
                     <Nav />
                     <h1 style={{ textAlign: 'center', padding: '40px', color: '#333' }}>
@@ -1302,7 +1386,7 @@ const Portfolio = () => {
                 </>
             )}
 
-            {mode === "login" && (
+            {mode === "no-login" && (
                 <>
                     <Navlogin />
                     <div className={styles["portfolio-wrapper"]}>

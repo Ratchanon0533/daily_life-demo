@@ -204,7 +204,7 @@ const Reg = () => {
         <div className={styles["google-page"]}>
             <div className={styles["login-container"]}>
                 <div className={styles["login-banner"]}>
-                    <img src="public\img\messageImage_1764229058872.jpg" alt="banner" className={styles["banner-img"]} />
+                    <img src="/img/messageImage_1764229058872.jpg" alt="banner" className={styles["banner-img"]} />
                 </div>
 
                 <div className={styles["google-card"]}>

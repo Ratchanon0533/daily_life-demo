@@ -23,7 +23,7 @@
     text-align: left;
     margin-bottom: 1rem;
     justify-content: space-between;
-   
+
 }
 
 /* =========================
@@ -221,7 +221,8 @@
     .search-button02 {
         display: none;
     }
-    .search-dropdown-button{
+
+    .search-dropdown-button {
         display: none;
     }
 }
@@ -264,7 +265,7 @@
         z-index: 10;
     }
 
-  
+
 
 
     .deep-search-button {
