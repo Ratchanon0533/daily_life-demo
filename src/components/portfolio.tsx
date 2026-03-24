@@ -790,7 +790,7 @@ const Portfolio = () => {
                             {saving ? 'กำลังบันทึก...' : 'สร้างพอต'}
                         </button>
                     </div>
-                    <PDFDownloadLink
+                    {/* <PDFDownloadLink
                         document={
                             <PortfolioPDF
                                 personal_image={profileImage ? URL.createObjectURL(profileImage) : null}
@@ -866,7 +866,8 @@ const Portfolio = () => {
                                 {loading ? 'กำลังสร้าง PDF...' : 'Export to PDF'}
                             </button>
                         )}
-                    </PDFDownloadLink>
+                    </PDFDownloadLink> */}
+                    
                     {saveMessage && (
                         <div style={{
                             marginTop: 8,
