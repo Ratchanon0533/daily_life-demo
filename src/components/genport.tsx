@@ -178,7 +178,7 @@ const Genport = () => {
     const fetchAllData = async () => {
       try {
         const portRes    = await fetch(
-          `https://daily-life-backend.vercel.app/getport/${userId}`,
+          `https://daily-life-backend-theta.vercel.app/getport/${userId}`,
           { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
         const portResult = await portRes.json();
@@ -188,11 +188,11 @@ const Genport = () => {
 
           const [personalRes, eduRes, skillRes, activityRes, uniRes] =
             await Promise.all([
-              fetch(`https://daily-life-backend.vercel.app/getpersonal_info/${portId}`),
-              fetch(`https://daily-life-backend.vercel.app/geteducational/${portId}`),
-              fetch(`https://daily-life-backend.vercel.app/getskills_abilities/${portId}`),
-              fetch(`https://daily-life-backend.vercel.app/getactivities_certificates/${portId}`),
-              fetch(`https://daily-life-backend.vercel.app/getuniversity_choice/${portId}`),
+              fetch(`https://daily-life-backend-theta.vercel.app/getpersonal_info/${portId}`),
+              fetch(`https://daily-life-backend-theta.vercel.app/geteducational/${portId}`),
+              fetch(`https://daily-life-backend-theta.vercel.app/getskills_abilities/${portId}`),
+              fetch(`https://daily-life-backend-theta.vercel.app/getactivities_certificates/${portId}`),
+              fetch(`https://daily-life-backend-theta.vercel.app/getuniversity_choice/${portId}`),
             ]);
 
           const [personalJson, eduJson, skillJson, activityJson, uniJson] =
