@@ -115,7 +115,7 @@ const Reg = () => {
 
         setLoading(true);
         try {
-            const response = await fetch("https://daily-life-backend-theta.vercel.app/api/register", {
+            const response = await fetch("http://localhost:5000/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

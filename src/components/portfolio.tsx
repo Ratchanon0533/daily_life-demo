@@ -1377,7 +1377,7 @@ const Portfolio = () => {
 
     return (
         <>
-            {mode === "login" && (
+            {mode === "no-login" && (
                 <>
                     <Nav />
                     <h1 style={{ textAlign: 'center', padding: '40px', color: '#333' }}>
@@ -1386,7 +1386,7 @@ const Portfolio = () => {
                 </>
             )}
 
-            {mode === "no-login" && (
+            {mode === "login" && (
                 <>
                     <Navlogin />
                     <div className={styles["portfolio-wrapper"]}>
