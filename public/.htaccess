@@ -1,12 +1,16 @@
-# บังคับใช้ Passenger สำหรับ Node.js
+# 1. เปิดใช้งาน Node.js Passenger
 PassengerEnabled on
 PassengerAppSpecificStatus on
 
+# 2. ตั้งค่าการ Rewrite
 RewriteEngine On
+RewriteBase /
 
-# 1. ถ้ามีไฟล์จริง (เช่น รูปภาพในโฟลเดอร์ uploads) ให้เรียกไฟล์นั้นตรงๆ
-RewriteCond %{REQUEST_FILENAME} -f
+# 3. ถ้าเรียกหาไฟล์ที่มีอยู่จริง (เช่น รูปภาพใน /uploads) ให้แสดงไฟล์นั้นเลย ไม่ต้องผ่าน Node
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# 2. ถ้าหาไฟล์ไม่เจอ ให้ส่งคำขอทั้งหมดไปที่ Node.js App (Passenger จะจัดการ Port ให้เอง)
+# 4. ถ้าหาไฟล์ไม่เจอ ให้ส่งคำขอทั้งหมดไปที่ Node.js (แทนการส่งไป index.html)
+# ตรงนี้ Passenger จะจัดการส่งเข้า server.js ให้เองครับ
 RewriteRule ^(.*)$ http://127.0.0.1/$1 [P,L]
