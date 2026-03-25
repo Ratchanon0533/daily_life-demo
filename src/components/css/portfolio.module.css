@@ -201,7 +201,7 @@
     font-weight: 500;
     cursor: pointer;
     padding: 8px;
-    width: 30%;
+    border-radius: 12px;
 }
 
 .progress-caution {
@@ -269,8 +269,8 @@
     overflow: hidden;
     width: 100%;
     min-width: 0;
-   
-   
+
+
 }
 
 .slide-down {
@@ -361,10 +361,10 @@
 }
 
 .date-group {
-    display:flex;
+    display: flex;
     gap: 12px;
-    
-    
+
+
 }
 
 
@@ -414,6 +414,7 @@ input[type="radio"] {
     width: 100%;
     padding: 7px;
 }
+
 .all-port-box {
     max-width: 1200px;
     width: 100%;
@@ -428,13 +429,14 @@ input[type="radio"] {
     border-radius: 12px;
     padding: 1rem;
 }
-.all-port-content{
-  
-    width:100%;
+
+.all-port-content {
+
+    width: 100%;
     padding: 1rem;
     font-family: Kanit, sans-serif;
     font-size: 1rem;
-  
+
 }
 
 .popup-overlay {
@@ -443,7 +445,7 @@ input[type="radio"] {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -455,7 +457,7 @@ input[type="radio"] {
     padding: 32px;
     border-radius: 8px;
     min-width: 320px;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
     position: relative;
 }
 
@@ -474,10 +476,35 @@ input[type="radio"] {
 }
 
 @media (max-width: 900px) {
+    .personal-section {
+        flex-direction: column;
+
+    }
+
+    .name-group,
+    .custom-name-group,
+    .custom-birth-date {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .date-group {
+        flex-wrap: wrap;
+    }
+
+    .portfolio-expand-content {
+        padding: 15px;
+    }
+
+    .port-input {
+        margin-bottom: 3px;
+    }
+
     .port-progress {
-        flex-direction: column; 
+        flex-direction: column;
         align-items: center;
         padding: 16px;
+        padding-bottom: 2rem;
         height: auto;
     }
 
@@ -487,30 +514,14 @@ input[type="radio"] {
         background: #8a8a8a;
         margin: 20px 0;
     }
-    .progress-info-btn{
-        width: 100%;
-    }
-}
 
-@media (max-width: 900px) {
-    .personal-section {
+    .upload-btn-group {
         flex-direction: column;
-      
+        margin: 0 30px;
+    }
+    .port-upload-btn, .port-preview-btn {
+        margin: 0 auto;
+        width: 80%;
     }
 
-    .name-group, .custom-name-group, .custom-birth-date {
-        width: 100%;
-        min-width: 100%;
-    }
-
-    .date-group {
-        flex-wrap: wrap; 
-    }
-
-    .portfolio-expand-content {
-        padding: 15px;
-    }
-    .port-input{
-        margin-bottom: 3px;
-    }
 }

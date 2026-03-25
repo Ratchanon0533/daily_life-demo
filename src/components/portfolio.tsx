@@ -425,66 +425,77 @@ const Portfolio = () => {
         if (!file) return;
         updateEducational(index, 'study_results', file);
     };
-
-    // ===== Build payload for API =====
-    const buildCreatePortPayload = (): FormData => {
+    const buildCreatePortPayload = () => {
         const formData = new FormData();
 
-        const data = {
-            user_id: userId,
-            port_id: portId,
-            personal_info: Personal,
-            educational,
-            skills_abilities: skillsAbilities,
-            activities_certificates: activitiesCertificates.map(({ photo, day, month, year, ...rest }) => rest),
-            university_choice: universityChoice
-        };
-
-        formData.append('data', JSON.stringify(data));
-
-        // Add profile image
+        // 1. แนบไฟล์รูปภาพที่ได้จาก State (setProfileImage)
         if (profileImage) {
-            formData.append('profile', profileImage);
+            // 'image' คือชื่อ field ที่ Multer ใน server.js รอรับอยู่
+            formData.append('image', profileImage);
         }
 
-        // Add education files
-        educational.forEach((edu) => {
-            if (edu.study_results instanceof File) {
-                formData.append('transcript', edu.study_results);
-            }
-        });
-
-        // Add certificate files
-        activitiesCertificates.forEach((activity) => {
-            if (activity.photo instanceof File) {
-                formData.append('certificate', activity.photo);
-            }
-        });
+        // 2. แนบข้อมูลอื่นๆ ที่ต้องการบันทึก
+        // formData.append('portfolio_name', Personal.portfolio_name || '');
+        // formData.append('introduce', Personal.introduce || '');
+        // ... แนบ field อื่นๆ ตามโครงสร้าง table ของคุณ
 
         return formData;
     };
+    // ===== Build payload for API =====
+    // const buildCreatePortPayload = (): FormData => {
+    //     const formData = new FormData();
+
+    //     const data = {
+    //         user_id: userId,
+    //         port_id: portId,
+    //         personal_info: Personal,
+    //         educational,
+    //         skills_abilities: skillsAbilities,
+    //         activities_certificates: activitiesCertificates.map(({ photo, day, month, year, ...rest }) => rest),
+    //         university_choice: universityChoice
+    //     };
+
+    //     formData.append('data', JSON.stringify(data));
+
+    //     // Add profile image
+    //     if (profileImage) {
+    //         formData.append('profile', profileImage);
+    //     }
+
+    //     // Add education files
+    //     educational.forEach((edu) => {
+    //         if (edu.study_results instanceof File) {
+    //             formData.append('transcript', edu.study_results);
+    //         }
+    //     });
+
+    //     // Add certificate files
+    //     activitiesCertificates.forEach((activity) => {
+    //         if (activity.photo instanceof File) {
+    //             formData.append('certificate', activity.photo);
+    //         }
+    //     });
+
+    //     return formData;
+    // };
 
     // ===== Handle save =====
     const handleSavePort = async () => {
-
         setSaveMessage(null);
         setSaving(true);
         try {
-            const payload = buildCreatePortPayload();
+            const payload = buildCreatePortPayload(); // ตอนนี้จะได้เป็น FormData
             const token = localStorage.getItem('token');
 
             const res = await fetch('https://daily-life-backend-theta.vercel.app/createport', {
                 method: 'POST',
                 headers: {
+                    // ส่งแค่ Authorization ส่วน Content-Type ปล่อยว่างไว้ให้เบราว์เซอร์จัดการ
                     ...(token ? { Authorization: `Bearer ${token}` } : {})
                 },
-                body: payload
+                body: payload // ส่ง FormData ไปโดยตรง
             });
 
-            // if (!res.ok) {
-            //     const text = await res.text();
-            //     throw new Error(text || `HTTP ${res.status}`);
-            // }
             if (!res.ok) {
                 const text = await res.text();
                 console.log("❌ Backend error:", text);
@@ -630,7 +641,7 @@ const Portfolio = () => {
                                         className={styles["port-input"]}
                                         value={activity.day || 1}
                                         onChange={(e) => updateActivity(idx, 'day', Number(e.target.value))}
-                                        style={{ flex: 1 , minWidth: '120px' }}
+                                        style={{ flex: 1, minWidth: '120px' }}
                                     >
                                         {Array.from({ length: daysInCertificateMonth }, (_, i) => (
                                             <option key={i + 1} value={i + 1}>{i + 1}</option>
@@ -640,7 +651,7 @@ const Portfolio = () => {
                                         className={styles["port-input"]}
                                         value={activity.month || 0}
                                         onChange={(e) => updateActivity(idx, 'month', Number(e.target.value))}
-                                        style={{ flex: 1 , minWidth: '120px'}}
+                                        style={{ flex: 1, minWidth: '120px' }}
                                     >
                                         {thaiMonths.map((m) => (
                                             <option key={m.value} value={m.value}>{m.name}</option>
@@ -650,7 +661,7 @@ const Portfolio = () => {
                                         className={styles["port-input"]}
                                         value={activity.year || new Date().getFullYear()}
                                         onChange={(e) => updateActivity(idx, 'year', Number(e.target.value))}
-                                        style={{ flex: 1 ,  minWidth: '120px'}}
+                                        style={{ flex: 1, minWidth: '120px' }}
                                     >
                                         {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((y) => (
                                             <option key={y} value={y}>{y + 543}</option>
@@ -787,86 +798,89 @@ const Portfolio = () => {
                             onClick={handleSavePort}
                             disabled={saving}
                         >
-                            {saving ? 'กำลังบันทึก...' : 'สร้างพอต'}
+                            {saving ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
                         </button>
+                        <PDFDownloadLink
+                            document={
+                                <PortfolioPDF
+                                    personal_image={profileImage ? URL.createObjectURL(profileImage) : null}
+                                    introduce={Personal.introduce || ''}
+                                    prefix={Personal.prefix || ''}
+                                    first_name={Personal.first_name || ''}
+                                    last_name={Personal.last_name || ''}
+                                    birth_day={day}
+                                    birth_month={thaiMonths.find(m => m.value === month)?.name || ''}
+                                    birth_year={year + 543}
+                                    nationality={Personal.nationality || ''}
+                                    id_card={Personal.national_id || ''}
+                                    email={Personal.email || ''}
+                                    phonenumber1={Personal.phone_number1 || ''}
+                                    phonenumber2={Personal.phone_number2 || ''}
+                                    address={Personal.address || ''}
+                                    province={Personal.province || ''}
+                                    district={Personal.district || ''}
+                                    subdistrict={Personal.subdistrict || ''}
+                                    postal_code={Personal.postal_code || ''}
+
+                                    school={educational[0]?.school || ''}
+                                    graduation={educational[0]?.graduation || ''}
+                                    educational_qualifications={educational[0]?.educational_qualifications || ''}
+                                    study_path={educational[0]?.study_path || ''}
+                                    grade_average={educational[0]?.grade_average || ''}
+                                    study_results={educational[0]?.study_results || ''}
+                                    province_edu={educational[0]?.province || ''}
+                                    district_edu={educational[0]?.district || ''}
+
+                                    skills_details={skillsAbilities.details || ''}
+                                    others_skills={skillsAbilities.others || ''}
+                                    skills={skillsAbilities.language_skills || []}
+
+                                    activities={activitiesCertificates.map(act => ({
+                                        name_project: act.name_project,
+                                        date: act.date,
+                                        description: act.details,
+                                        photos: act.photo ? [URL.createObjectURL(act.photo)] : []
+                                    }))}
+
+                                    university={universityChoice[0]?.university || ''}
+                                    faculty={universityChoice[0]?.faculty || ''}
+                                    major={universityChoice[0]?.major || ''}
+                                    reason={universityChoice[0]?.details || ''}
+
+
+
+                                />
+
+
+                            }
+                            fileName={
+                                Personal.portfolio_name && Personal.portfolio_name.trim() !== ''
+                                    ? `${Personal.portfolio_name}.pdf`
+                                    : 'Portfolio.pdf'
+                            }
+                        >
+                            {({ loading }) => (
+                                <button
+                                    type="button"
+                                    className={styles["export-btn"]}
+                                    disabled={loading}
+                                    style={{
+                                        padding: '8px',
+                                        backgroundColor: loading ? '#ccc' : '#e67e22',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '12px',
+                                        cursor: loading ? 'not-allowed' : 'pointer',
+
+
+                                    }}
+                                >
+                                    {loading ? 'กำลังสร้าง PDF...' : 'Export to PDF'}
+                                </button>
+                            )}
+                        </PDFDownloadLink>
                     </div>
-                    <PDFDownloadLink
-                        document={
-                            <PortfolioPDF
-                                personal_image={profileImage ? URL.createObjectURL(profileImage) : null}
-                                introduce={Personal.introduce || ''}
-                                prefix={Personal.prefix || ''}
-                                first_name={Personal.first_name || ''}
-                                last_name={Personal.last_name || ''}
-                                birth_day={day}
-                                birth_month={thaiMonths.find(m => m.value === month)?.name || ''}
-                                birth_year={year + 543}
-                                nationality={Personal.nationality || ''}
-                                id_card={Personal.national_id || ''}
-                                email={Personal.email || ''}
-                                phonenumber1={Personal.phone_number1 || ''}
-                                phonenumber2={Personal.phone_number2 || ''}
-                                address={Personal.address || ''}
-                                province={Personal.province || ''}
-                                district={Personal.district || ''}
-                                subdistrict={Personal.subdistrict || ''}
-                                postal_code={Personal.postal_code || ''}
 
-                                school={educational[0]?.school || ''}
-                                graduation={educational[0]?.graduation || ''}
-                                educational_qualifications={educational[0]?.educational_qualifications || ''}
-                                study_path={educational[0]?.study_path || ''}
-                                grade_average={educational[0]?.grade_average || ''}
-                                study_results={educational[0]?.study_results || ''}
-                                province_edu={educational[0]?.province || ''}
-                                district_edu={educational[0]?.district || ''}
-
-                                skills_details={skillsAbilities.details || ''}
-                                others_skills={skillsAbilities.others || ''}
-                                skills={skillsAbilities.language_skills || []}
-
-                                activities={activitiesCertificates.map(act => ({
-                                    name_project: act.name_project,
-                                    date: act.date,
-                                    description: act.details,
-                                    photos: act.photo ? [URL.createObjectURL(act.photo)] : []
-                                }))}
-
-                                university={universityChoice[0]?.university || ''}
-                                faculty={universityChoice[0]?.faculty || ''}
-                                major={universityChoice[0]?.major || ''}
-                                reason={universityChoice[0]?.details || ''}
-
-
-
-                            />
-
-
-                        }
-                        fileName={
-                            Personal.portfolio_name && Personal.portfolio_name.trim() !== ''
-                                ? `${Personal.portfolio_name}.pdf`
-                                : 'Portfolio.pdf'
-                        }
-                    >
-                        {({ loading }) => (
-                            <button
-                                type="button"
-                                className={styles["export-btn"]}
-                                disabled={loading}
-                                style={{
-                                    padding: '10px 20px',
-                                    backgroundColor: loading ? '#ccc' : '#e67e22',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: loading ? 'not-allowed' : 'pointer'
-                                }}
-                            >
-                                {loading ? 'กำลังสร้าง PDF...' : 'Export to PDF'}
-                            </button>
-                        )}
-                    </PDFDownloadLink>
 
                     {saveMessage && (
                         <div style={{
