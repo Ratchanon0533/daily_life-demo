@@ -444,7 +444,7 @@ const Portfolio = () => {
 
         // Add profile image
         if (profileImage) {
-            formData.append('profile', profileImage);
+            formData.append('profile_image', profileImage);
         }
 
         // Add education files
