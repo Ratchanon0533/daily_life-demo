@@ -232,7 +232,7 @@ const Portfolio = () => {
 
         const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
         if (raw) {
-            const storedUserData = localStorage.getItem("user");
+            const storedUserData = localStorage.getItem("user") || '{}';
             try {
                 const maybeObj = userData || JSON.parse(storedUserData);
                 if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
