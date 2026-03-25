@@ -251,7 +251,7 @@ const Reg = () => {
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                handleRegister();
+                                handleLogin();
                             }}>
                             <div className={styles["google-input-group-column"]}>
                                 <input
