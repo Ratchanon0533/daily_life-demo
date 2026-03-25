@@ -82,10 +82,10 @@ interface UniversityChoice {
 }
 
 interface Userdata {
-    id: string;
-    username: string;
-    firstname: string; // เพิ่มตัวนี้
-    lastname: string;  // เพิ่มตัวนี้
+    id: string | null;
+    username: string| null;
+    firstname: string| null; // เพิ่มตัวนี้
+    lastname: string| null;  // เพิ่มตัวนี้
 }
 
 const Portfolio = () => {
@@ -232,8 +232,9 @@ const Portfolio = () => {
 
         const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
         if (raw) {
+            const storedUserData = localStorage.getItem("user");
             try {
-                const maybeObj = userData || JSON.parse(raw);
+                const maybeObj = userData || JSON.parse(storedUserData);
                 if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
                     setUserId(maybeObj.id || maybeObj.user_id);
                 } else if (typeof raw === 'string') {
@@ -444,7 +445,7 @@ const Portfolio = () => {
 
         // Add profile image
         if (profileImage) {
-            formData.append('profile_image', profileImage);
+            formData.append('profile', profileImage);
         }
 
         // Add education files

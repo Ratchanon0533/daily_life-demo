@@ -66,6 +66,7 @@ const Reg = () => {
                 setAlertType("success");
                 localStorage.setItem("user", JSON.stringify(data.user));
                 localStorage.setItem("token", data.token);
+                console.log(localStorage.getItem("user"))
                 navigatory("/HOME");
             }
             else {
