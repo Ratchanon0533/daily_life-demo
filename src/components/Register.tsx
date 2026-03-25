@@ -115,7 +115,7 @@ const Reg = () => {
 
         setLoading(true);
         try {
-            const response = await fetch("http://dailylifes.online/api/register", {
+            const response = await fetch("http://dailylifes.online:5000/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
