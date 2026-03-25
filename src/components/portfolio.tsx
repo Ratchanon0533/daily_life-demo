@@ -191,7 +191,7 @@ const Portfolio = () => {
 
     // const [userId, setUserId] = useState<number | string>('');
     const [portId, setPortId] = useState<string>('');
-
+    const [userId, setUserId] = useState<number | string>('');
     // ===== Memoized values =====
     const daysInMonth = useMemo(() => {
         const date = new Date(year, month);
@@ -222,27 +222,27 @@ const Portfolio = () => {
     }, []);
 
     useEffect(() => {
-        // const tryGet = (keys: string[]) => {
-        //     for (const k of keys) {
-        //         const v = localStorage.getItem(k);
-        //         if (v) return v;
-        //     }
-        //     return null;
-        // };
+        const tryGet = (keys: string[]) => {
+            for (const k of keys) {
+                const v = localStorage.getItem(k);
+                if (v) return v;
+            }
+            return null;
+        };
 
-        // const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
-        // if (raw) {
-        //     try {
-        //         const maybeObj = userData || JSON.parse(raw);
-        //         if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
-        //             setUserId(maybeObj.id || maybeObj.user_id);
-        //         } else if (typeof raw === 'string') {
-        //             setUserId(Number(raw) || raw);
-        //         }
-        //     } catch (e) {
-        //         setUserId(Number(raw) || raw);
-        //     }
-        // }
+        const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
+        if (raw) {
+            try {
+                const maybeObj = userData || JSON.parse(raw);
+                if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
+                    setUserId(maybeObj.id || maybeObj.user_id);
+                } else if (typeof raw === 'string') {
+                    setUserId(Number(raw) || raw);
+                }
+            } catch (e) {
+                setUserId(Number(raw) || raw);
+            }
+        }
 
 
 
@@ -425,59 +425,44 @@ const Portfolio = () => {
         if (!file) return;
         updateEducational(index, 'study_results', file);
     };
-    const buildCreatePortPayload = () => {
+
+    // ===== Build payload for API =====
+    const buildCreatePortPayload = (): FormData => {
         const formData = new FormData();
 
-        // 1. แนบไฟล์รูปภาพที่ได้จาก State (setProfileImage)
+        const data = {
+            user_id: userId,
+            port_id: portId,
+            personal_info: Personal,
+            educational,
+            skills_abilities: skillsAbilities,
+            activities_certificates: activitiesCertificates.map(({ photo, day, month, year, ...rest }) => rest),
+            university_choice: universityChoice
+        };
+
+        formData.append('data', JSON.stringify(data));
+
+        // Add profile image
         if (profileImage) {
-            // 'image' คือชื่อ field ที่ Multer ใน server.js รอรับอยู่
-            formData.append('image', profileImage);
+            formData.append('profile', profileImage);
         }
 
-        // 2. แนบข้อมูลอื่นๆ ที่ต้องการบันทึก
-        // formData.append('portfolio_name', Personal.portfolio_name || '');
-        // formData.append('introduce', Personal.introduce || '');
-        // ... แนบ field อื่นๆ ตามโครงสร้าง table ของคุณ
+        // Add education files
+        educational.forEach((edu) => {
+            if (edu.study_results instanceof File) {
+                formData.append('transcript', edu.study_results);
+            }
+        });
+
+        // Add certificate files
+        activitiesCertificates.forEach((activity) => {
+            if (activity.photo instanceof File) {
+                formData.append('certificate', activity.photo);
+            }
+        });
 
         return formData;
     };
-    // ===== Build payload for API =====
-    // const buildCreatePortPayload = (): FormData => {
-    //     const formData = new FormData();
-
-    //     const data = {
-    //         user_id: userId,
-    //         port_id: portId,
-    //         personal_info: Personal,
-    //         educational,
-    //         skills_abilities: skillsAbilities,
-    //         activities_certificates: activitiesCertificates.map(({ photo, day, month, year, ...rest }) => rest),
-    //         university_choice: universityChoice
-    //     };
-
-    //     formData.append('data', JSON.stringify(data));
-
-    //     // Add profile image
-    //     if (profileImage) {
-    //         formData.append('profile', profileImage);
-    //     }
-
-    //     // Add education files
-    //     educational.forEach((edu) => {
-    //         if (edu.study_results instanceof File) {
-    //             formData.append('transcript', edu.study_results);
-    //         }
-    //     });
-
-    //     // Add certificate files
-    //     activitiesCertificates.forEach((activity) => {
-    //         if (activity.photo instanceof File) {
-    //             formData.append('certificate', activity.photo);
-    //         }
-    //     });
-
-    //     return formData;
-    // };
 
     // ===== Handle save =====
     const handleSavePort = async () => {
