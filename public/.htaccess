@@ -1,8 +1,12 @@
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
-</IfModule>
+# บังคับใช้ Passenger สำหรับ Node.js
+PassengerEnabled on
+PassengerAppSpecificStatus on
+
+RewriteEngine On
+
+# 1. ถ้ามีไฟล์จริง (เช่น รูปภาพในโฟลเดอร์ uploads) ให้เรียกไฟล์นั้นตรงๆ
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# 2. ถ้าหาไฟล์ไม่เจอ ให้ส่งคำขอทั้งหมดไปที่ Node.js App (Passenger จะจัดการ Port ให้เอง)
+RewriteRule ^(.*)$ http://127.0.0.1/$1 [P,L]
