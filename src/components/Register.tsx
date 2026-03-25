@@ -246,94 +246,111 @@ const Reg = () => {
                     </p>
 
                     {/* ================= LOGIN ================= */}
+
                     {mode === "login" && (
-                        <div className={styles["google-input-group-column"]}>
-                            <input
-                                className={styles["google-input"]}
-                                placeholder="Username"
-                                value={loginUsername}
-                                onChange={(e) => setLoginUsername(e.target.value)}
-                            />
-
-                            <input
-                                className={styles["google-input"]}
-                                placeholder="Password"
-                                type="password"
-                                value={loginPassword}
-                                onChange={(e) => setLoginPassword(e.target.value)}
-                            />
-
-                            <button
-                                className={styles["google-btn"]}
-                                onClick={handleLogin}
-                                disabled={loading}
-                            >
-                                {loading ? "Signing in..." : "Sign in"}
-                            </button>
-                        </div>
-                    )}
-
-                    {/* ================= REGISTER ================= */}
-                    {mode === "register" && (
-                        <>
-                            <div className={styles["google-input-group"]}>
-
-                                <input
-                                    className={styles["google-input"]}
-                                    placeholder="First name"
-                                    value={firstname}
-                                    onChange={(e) => setFirstname(e.target.value)}
-                                />
-                                <input
-                                    className={styles["google-input"]}
-                                    placeholder="Last name"
-                                    value={lastname}
-                                    onChange={(e) => setLastname(e.target.value)}
-
-                                />
-                            </div>
-
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleRegister();
+                            }}>
                             <div className={styles["google-input-group-column"]}>
                                 <input
                                     className={styles["google-input"]}
-                                    placeholder="Email"
-                                    type="email"
-                                    style={{ marginTop: '0.7rem' }}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-
-                                <input
-                                    className={styles["google-input"]}
-                                    placeholder="Phone number"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                />
-
-                                <input
-                                    className={styles["google-input"]}
                                     placeholder="Username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
+                                    value={loginUsername}
+                                    onChange={(e) => setLoginUsername(e.target.value)}
                                 />
 
                                 <input
                                     className={styles["google-input"]}
-                                    placeholder="Password (min 6 characters)"
+                                    placeholder="Password"
                                     type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={loginPassword}
+                                    onChange={(e) => setLoginPassword(e.target.value)}
                                 />
 
                                 <button
+                                    type="submit"
                                     className={styles["google-btn"]}
-                                    onClick={handleRegister}
+                                    onClick={handleLogin}
                                     disabled={loading}
                                 >
-                                    {loading ? "Creating account..." : "Create account"}
+                                    {loading ? "Signing in..." : "Sign in"}
                                 </button>
                             </div>
-                        </>
+                        </form>
+                    )}
+
+
+                    {/* ================= REGISTER ================= */}
+                    {mode === "register" && (
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleRegister();
+                            }}
+                        >
+                            <>
+                                <div className={styles["google-input-group"]}>
+
+                                    <input
+                                        className={styles["google-input"]}
+                                        placeholder="First name"
+                                        value={firstname}
+                                        onChange={(e) => setFirstname(e.target.value)}
+                                    />
+                                    <input
+                                        className={styles["google-input"]}
+                                        placeholder="Last name"
+                                        value={lastname}
+                                        onChange={(e) => setLastname(e.target.value)}
+
+                                    />
+                                </div>
+
+                                <div className={styles["google-input-group-column"]}>
+                                    <input
+                                        className={styles["google-input"]}
+                                        placeholder="Email"
+                                        type="email"
+                                        style={{ marginTop: '0.7rem' }}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+
+                                    <input
+                                        className={styles["google-input"]}
+                                        placeholder="Phone number"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                    />
+
+                                    <input
+                                        className={styles["google-input"]}
+                                        placeholder="Username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
+
+                                    <input
+                                        className={styles["google-input"]}
+                                        placeholder="Password (min 6 characters)"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+
+                                    <button
+                                        type="submit"
+                                        className={styles["google-btn"]}
+                                        onClick={handleRegister}
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Creating account..." : "Create account"}
+                                    </button>
+                                </div>
+                            </>
+                        </form>
                     )}
 
                     {/* ALERT */}
