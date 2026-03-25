@@ -80,7 +80,7 @@ const ProfileSteam: React.FC = () => {
         formData.append("username", profile.username || "");
       }
 
-      const response = await fetch(`https://daily-life-backend-theta.vercel.app/user/update${storedUser.id}`, {
+      const response = await fetch(`https://api.dailylifes.online/user/update${storedUser.id}`, {
         method: 'PUT',
         headers: formData ? {} : { "Content-Type": "application/json" },
         body: formData ? formData : JSON.stringify(profile),

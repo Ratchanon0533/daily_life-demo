@@ -16,7 +16,7 @@ const Setting = () => {
 
     const updateProfile = async () => {
         try {
-            const response = await fetch(`https://daily-life-backend-theta.vercel.app/user/update/${storedUser.id}`, {
+            const response = await fetch(`https://api.dailylifes.online/user/update/${storedUser.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

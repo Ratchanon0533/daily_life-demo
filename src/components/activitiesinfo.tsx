@@ -57,7 +57,7 @@ const Activitiesinfo = () => {
     setProfile(JSON.parse(localStorage.getItem("user") || "{}"));
     
 
-    fetch("https://daily-life-backend-theta.vercel.app/event/get")
+    fetch("https://api.dailylifes.online/event/get")
       .then(res => res.json())
       .then(res => {
         // setOrganizers(res.data || []);
@@ -89,7 +89,7 @@ const Activitiesinfo = () => {
 
   const handleRegister = async () => {
   try {
-    const response = await fetch("https://daily-life-backend-theta.vercel.app/event/register", {
+    const response = await fetch("https://api.dailylifes.online/event/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

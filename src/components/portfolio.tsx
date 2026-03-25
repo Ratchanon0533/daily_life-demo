@@ -487,7 +487,7 @@ const Portfolio = () => {
             const payload = buildCreatePortPayload(); // ตอนนี้จะได้เป็น FormData
             const token = localStorage.getItem('token');
 
-            const res = await fetch('https://daily-life-backend-theta.vercel.app/createport', {
+            const res = await fetch('https://api.dailylifes.online/createport', {
                 method: 'POST',
                 headers: {
                     // ส่งแค่ Authorization ส่วน Content-Type ปล่อยว่างไว้ให้เบราว์เซอร์จัดการ

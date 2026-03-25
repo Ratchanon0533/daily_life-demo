@@ -81,7 +81,7 @@ const SearchSection = () => {
         if (inputMajor.trim()) requestBody.major = inputMajor;
 
         try {
-            const response = await fetch('https://daily-life-backend-theta.vercel.app/university/search', {
+            const response = await fetch('https://api.dailylifes.online/university/search', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody),

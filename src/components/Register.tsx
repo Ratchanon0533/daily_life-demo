@@ -48,7 +48,7 @@ const Reg = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("https://daily-life-backend-theta.vercel.app/api/login", {
+            const response = await fetch("https://api.dailylifes.online/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -115,7 +115,7 @@ const Reg = () => {
 
         setLoading(true);
         try {
-            const response = await fetch("https://daily-life-backend-theta.vercel.app/api/register", {
+            const response = await fetch("https://api.dailylifes.online/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

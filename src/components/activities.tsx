@@ -48,7 +48,7 @@ const Activities = () => {
     setMode(token ? "login" : "no-login");
     localStorage.setItem("activities", JSON.stringify(activities));
 
-    fetch("https://daily-life-backend-theta.vercel.app/event/get")
+    fetch("https://api.dailylifes.online/event/get")
       .then((res) => res.json())
       .then((res) => {
         if (!res.success || !Array.isArray(res.data)) return;
