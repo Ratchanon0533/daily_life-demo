@@ -189,7 +189,7 @@ const Portfolio = () => {
         { university: '', faculty: '', major: '', details: '' }
     ]);
 
-    const [userId, setUserId] = useState<number | string>('');
+    // const [userId, setUserId] = useState<number | string>('');
     const [portId, setPortId] = useState<string>('');
 
     // ===== Memoized values =====
@@ -222,27 +222,27 @@ const Portfolio = () => {
     }, []);
 
     useEffect(() => {
-        const tryGet = (keys: string[]) => {
-            for (const k of keys) {
-                const v = localStorage.getItem(k);
-                if (v) return v;
-            }
-            return null;
-        };
+        // const tryGet = (keys: string[]) => {
+        //     for (const k of keys) {
+        //         const v = localStorage.getItem(k);
+        //         if (v) return v;
+        //     }
+        //     return null;
+        // };
 
-        const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
-        if (raw) {
-            try {
-                const maybeObj = userData || JSON.parse(raw);
-                if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
-                    setUserId(maybeObj.id || maybeObj.user_id);
-                } else if (typeof raw === 'string') {
-                    setUserId(Number(raw) || raw);
-                }
-            } catch (e) {
-                setUserId(Number(raw) || raw);
-            }
-        }
+        // const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
+        // if (raw) {
+        //     try {
+        //         const maybeObj = userData || JSON.parse(raw);
+        //         if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
+        //             setUserId(maybeObj.id || maybeObj.user_id);
+        //         } else if (typeof raw === 'string') {
+        //             setUserId(Number(raw) || raw);
+        //         }
+        //     } catch (e) {
+        //         setUserId(Number(raw) || raw);
+        //     }
+        // }
 
 
 
