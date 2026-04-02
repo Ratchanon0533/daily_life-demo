@@ -52,7 +52,8 @@ export default function DashboardUniversity() {
             if (userPart?.organizer_id && tok) {
                 fetchEvents(userPart.organizer_id, tok);
             }
-        } catch {
+        } catch (err) {
+            console.error('Error parsing user info', err);
             setEvents(null);
             setToken(null);
         }
@@ -80,6 +81,43 @@ export default function DashboardUniversity() {
             setEvents([]);
         }
     };
+
+    const deleteEvent = async (eventId: number) => {
+        if (!token) {
+            console.error('No auth token');
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://api.dailylifes.online/event/delete/${eventId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                setEvents(prev => prev ? prev.filter(e => e.activity_id !== eventId) : []);
+                console.log('Event deleted:', result);
+            } else {
+                console.error('Delete failed:', result);
+            }
+        } catch (error) {
+            console.error('Delete event error:', error);
+        }
+    };
+
+    const editEvent = async (event: EventData) => {
+        localStorage.setItem('editEventData', JSON.stringify(event));
+        navigator.clipboard.writeText(JSON.stringify(event)).then(() => {
+            window.location.href = '/edit-event';
+        }).catch(err => {
+            console.error('Failed to copy event data for editing:', err);
+        });
+    };
+
 // ...existing code...
     return (
         <div className="dashboard-university-container">
@@ -161,6 +199,27 @@ export default function DashboardUniversity() {
                                             <span className={event.status === 'เปิดรับ' ? 'status-open' : 'status-closed'}>
                                                 {event.status}
                                             </span>
+                                        </div>
+
+                                        <div className="event-actions" style={{ marginTop: '12px', display: 'flex', gap: '10px' }}>
+                                            <button
+                                                className="submit-btn"
+                                                style={{ backgroundColor: '#009688', padding: '6px 10px', fontSize: '0.85rem' }}
+                                                onClick={() => editEvent(event)}
+                                            >
+                                                แก้ไข
+                                            </button>
+                                            <button
+                                                className="submit-btn"
+                                                style={{ backgroundColor: '#e53935', padding: '6px 10px', fontSize: '0.85rem' }}
+                                                onClick={() => {
+                                                    if (window.confirm('ยืนยันจะลบกิจกรรมนี้หรือไม่?')) {
+                                                        deleteEvent(event.activity_id);
+                                                    }
+                                                }}
+                                            >
+                                                ลบ
+                                            </button>
                                         </div>
 
                                         <div className="event-dates">

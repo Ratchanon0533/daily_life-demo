@@ -1,7 +1,8 @@
 import "./css/Addevent.css";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface EventFormData {
+    id?: number;
     organizer_id: string;
     organizer_name: string;
     title: string;
@@ -11,6 +12,7 @@ interface EventFormData {
     close_date: string;
     status: 'เปิดรับ' | 'ใกล้เต็ม';
     image: File | null;
+    image_url?: string | null;
     contact1: string;
     contact2: string;
 }
@@ -21,13 +23,23 @@ export default function AddEvent() {
     const user = parsed?.user ?? parsed ?? null; // support both {user, token} and plain user
     const token = parsed?.token ?? null;
 
-    console.log(user.organizer_id);
-    console.log(user.organizer_name);
+    if (user) {
+        console.log(user.organizer_id);
+        console.log(user.organizer_name);
+    }
 
+    const toLocalDatetime = (iso?: string | null): string => {
+        if (!iso) return '';
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return '';
+        const tzOffsetMs = d.getTimezoneOffset() * 60000;
+        const localDate = new Date(d.getTime() - tzOffsetMs);
+        return localDate.toISOString().slice(0, 16);
+    };
 
     const [formData, setFormData] = useState<EventFormData>({
-        organizer_id: user.organizer_id || '',
-        organizer_name: user.organizer_name || '',
+        organizer_id: user?.organizer_id || '',
+        organizer_name: user?.organizer_name || '',
         title: '',
         description: '',
         location: '',
@@ -35,6 +47,7 @@ export default function AddEvent() {
         close_date: '',
         status: 'เปิดรับ',
         image: null,
+        image_url: null,
         contact1: '',
         contact2: '',
     });
@@ -60,7 +73,7 @@ export default function AddEvent() {
             uploadFormData.append('image', file);
 
             const response = await fetch('https://api.dailylifes.online/upload/event-image', {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     ...(token ? { Authorization: `Bearer ${token}` } : {})
                 },
@@ -77,6 +90,35 @@ export default function AddEvent() {
             throw new Error('Failed to upload image to S3');
         }
     };
+    useEffect(() => {
+        const editDataRaw = localStorage.getItem("editEventData");
+        if (!editDataRaw) {
+            console.warn('No editEventData in localStorage');
+            return;
+        }
+
+        try {
+            const editData = JSON.parse(editDataRaw);
+
+            setFormData(prev => ({
+                ...prev,
+                id: editData.id,
+                organizer_id: editData.organizer_id?.toString() ?? prev.organizer_id,
+                organizer_name: editData.organizer_name ?? prev.organizer_name,
+                title: editData.title ?? '',
+                description: editData.description ?? '',
+                location: editData.location ?? '',
+                open_date: toLocalDatetime(editData.open_date),
+                close_date: toLocalDatetime(editData.close_date),
+                status: editData.status ?? 'เปิดรับ',
+                image_url: editData.image_url ?? null,
+                contact1: editData.contact1 ?? '',
+                contact2: editData.contact2 ?? '',
+            }));
+        } catch (error) {
+            console.error('Invalid editEventData in localStorage', error);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -88,13 +130,14 @@ export default function AddEvent() {
             if (!token) throw new Error("Missing auth token. Please login.");
 
             // upload image to S3 if provided
-            let imageUrl: string | null = null;
+            let imageUrl: string | null = formData.image_url ?? null;
             if (formData.image) {
                 imageUrl = await uploadImageToS3(formData.image);
             }
 
-            // prepare event data (without image File object)
+            // prepare updated event data
             const eventData = {
+                id: formData.id,
                 organizer_id: formData.organizer_id,
                 organizer_name: formData.organizer_name,
                 title: formData.title,
@@ -108,8 +151,8 @@ export default function AddEvent() {
                 status: formData.status,
             };
 
-            const response = await fetch('http://localhost:5000/post/event', {
-                method: 'POST',
+            const response = await fetch('http://localhost:5000/event/edit', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
@@ -119,25 +162,11 @@ export default function AddEvent() {
 
             const result = await response.json();
             if (!response.ok) {
-                throw new Error(result.message || result.error || 'Failed to create event');
+                throw new Error(result.message || result.error || 'Failed to update event');
             }
 
             setSuccess(true);
-            setFormData({
-                organizer_id: user.organizer_id || '',
-                organizer_name: user.organizer_name || '',
-                title: '',
-                description: '',
-                location: '',
-                open_date: '',
-                close_date: '',
-                status: 'เปิดรับ',
-                image: null,
-                contact1: '',
-                contact2: '',
-            });
-
-            alert('Event created successfully!');
+            alert('Event updated successfully!');
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
@@ -149,13 +178,13 @@ export default function AddEvent() {
         <div className="addevent-container">
             <div className="addevent-wrapper">
                 <div className="addevent-header">
-                    <h1>เพิ่มกิจกรรมใหม่</h1>
+                    <h1>แก้ไขกิจกรรม</h1>
                     <p>กรอกข้อมูลรายละเอียดของกิจกรรม</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="addevent-form">
                     {error && <div className="error-message">{error}</div>}
-                    {success && <div className="success-message">กิจกรรมถูกสร้างเรียบร้อยแล้ว!</div>}
+                    {success && <div className="success-message">กิจกรรมถูกอัปเดตเรียบร้อยแล้ว!</div>}
 
                     {/* Basic Information Section */}
                     <div className="form-section">
@@ -310,7 +339,7 @@ export default function AddEvent() {
                             style={{ position: 'relative' }}
                         >
                             {loading && <span className="loading-spinner"></span>}
-                            {loading ? 'กำลังสร้าง...' : 'สร้างกิจกรรม'}
+                            {loading ? 'กำลังบันทึก...' : 'บันทึกการแก้ไข'}
                         </button>
                         <button
                             type="button"

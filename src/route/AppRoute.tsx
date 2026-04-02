@@ -17,6 +17,7 @@ import Organization from '../components/organization/Login'
 import Dashboarduniversity from '../components/organization/dashboarduniversity'
 import DashboardOrganizers from '../components/organization/dashboarduniversity'
 import AddEvent from '../components/organization/Addevent'
+import EditEvent from '../components/organization/Editevent'
 
 const AppRoute = () => {
     return (
@@ -39,6 +40,7 @@ const AppRoute = () => {
             <Route path='/dashboard-university' element={<Dashboarduniversity/>}/>
             <Route path="/dashboard-organizers" element={<DashboardOrganizers />} />
             <Route path="/add-event" element={<AddEvent />} />
+            <Route path="/edit-event" element={<EditEvent />} />
         </Routes>
     )
 }
