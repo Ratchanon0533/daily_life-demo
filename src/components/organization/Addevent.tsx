@@ -108,7 +108,7 @@ export default function AddEvent() {
                 status: formData.status,
             };
 
-            const response = await fetch('http://localhost:5000/post/event', {
+            const response = await fetch('https://api.dailylifes.online/post/event', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
