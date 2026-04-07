@@ -7,7 +7,7 @@ import {
     getDaysInMonth,
     format,
 } from 'date-fns';
-import { th } from 'date-fns/locale';
+import { ca, th } from 'date-fns/locale';
 import { useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { PortfolioPDF } from "./MyDocument";
@@ -83,9 +83,9 @@ interface UniversityChoice {
 
 interface Userdata {
     id: string | null;
-    username: string| null;
-    firstname: string| null; // เพิ่มตัวนี้
-    lastname: string| null;  // เพิ่มตัวนี้
+    username: string | null;
+    firstname: string | null; // เพิ่มตัวนี้
+    lastname: string | null;  // เพิ่มตัวนี้
 }
 
 const Portfolio = () => {
@@ -254,8 +254,7 @@ const Portfolio = () => {
                 setUserData(parsed);
                 // ✅ ใช้จากตัวแปร parsed โดยตรง ไม่ต้องรอ State
                 const seed = parsed.username || 'anon';
-                const id = parsed.id || 'anon';
-                setPortId(`port_${seed}_${id}`);
+                setPortId(`port_${seed}_`);
             }
         }
     }, []);
@@ -1363,18 +1362,40 @@ const Portfolio = () => {
         </div>
     );
 
-    const TEMPLATES = [
-        { id: 'classic', name: 'Classic Portfolio', desc: 'เน้นความเรียบหรู ดูสะอาดตา' },
-        { id: 'modern', name: 'Modern Dark', desc: 'โทนสีมืด ทันสมัย เหมาะกับสาย Tech' },
-        { id: 'minimal', name: 'Minimalist', desc: 'น้อยแต่มาก เน้นเนื้อหาเป็นหลัก' },
-    ];
+    // const TEMPLATES = [
+    //     { id: 'classic', name: 'Classic Portfolio', desc: 'เน้นความเรียบหรู ดูสะอาดตา' },
+    //     { id: 'modern', name: 'Modern Dark', desc: 'โทนสีมืด ทันสมัย เหมาะกับสาย Tech' },
+    //     { id: 'minimal', name: 'Minimalist', desc: 'น้อยแต่มาก เน้นเนื้อหาเป็นหลัก' },
+    // ];
 
-    const [selectedTempl, setSelectedTempl] = useState<string>('classic');
+    // const [selectedTempl, setSelectedTempl] = useState<string>('classic');
 
-    const goToGenport = () => {
-        localStorage.setItem('userid', userData?.id || '');
-        navigatory('/genport')
+    // const goToGenport = () => {
+    //     localStorage.setItem('userid', userData?.id || '');
+    //     navigatory('/genport')
+    // }
+
+    // เพิ่ม state
+    const [portList, setPortList] = useState<any[]>([]);
+
+
+    const handlegetport = async () => {
+        try {
+            const response = await fetch(`https://api.dailylifes.online/getall_ports/${userData?.id}`);
+            const result = await response.json();
+            if (result.success) {
+                setPortList(result.data);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     }
+
+    useEffect(() => {
+        if (port === "allport" && userData?.id) {
+            handlegetport();
+        }
+    }, [port, userData?.id]);
 
     return (
         <>
@@ -1409,71 +1430,93 @@ const Portfolio = () => {
                         </div>
                     </div>
 
-
                     {port === "allport" && (
-                        <div style={{ padding: "40px" }}>
-
-                            <h3 style={{ textAlign: "center", marginBottom: "30px" }}>
-                                เลือกรูปแบบ (Template)
-                            </h3>
-
-                            <div
-                                style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "repeat(3, 1fr)",
-                                    gap: "20px",
-                                    maxWidth: "900px",
-                                    margin: "0 auto"
-                                }}
-                            >
-                                {TEMPLATES.map((item) => (
-                                    <div
-                                        key={item.id}
-                                        onClick={() => setSelectedTempl(item.id)}
-                                        style={{
-                                            border: selectedTempl === item.id ? "2px solid #3b82f6" : "2px solid #ddd",
-                                            borderRadius: "10px",
-                                            padding: "20px",
-                                            cursor: "pointer",
-                                            background: selectedTempl === item.id ? "#eff6ff" : "white"
-                                        }}
-                                    >
-                                        <p style={{ fontSize: "12px", color: "#888" }}>
-                                            {item.id.toUpperCase()}
-                                        </p>
-
-                                        <h4>{item.name}</h4>
-
-                                        <p style={{ fontSize: "14px", color: "#666" }}>
-                                            {item.desc}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div style={{ textAlign: "center", marginTop: "40px" }}>
-                                <p>
-                                    คุณกำลังเลือกใช้: <b>{selectedTempl}</b>
-                                </p>
-
-                                <button
-                                    onClick={goToGenport}
-                                    style={{
-                                        marginTop: "10px",
-                                        padding: "10px 30px",
-                                        background: "#2563eb",
-                                        color: "white",
-                                        borderRadius: "6px",
-                                        border: "none",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    ใช้ Template นี้
-                                </button>
-                            </div>
-
+                        <div style={{ textAlign: 'center', padding: '40px', color: '#333' }}>
+                            {portList.length > 0 && (
+                                <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {portList.map((item) => (
+                                        <button
+                                            key={item.port_id}
+                                            onClick={() => navigatory(`/edit-portfolio/${item.port_id}`)}
+                                            style={{
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                background: 'transparent',
+                                                padding: 0,
+                                                width: '100%',
+                                                textAlign: 'inherit'
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    border: '1px solid #ddd',
+                                                    borderRadius: '8px',
+                                                    padding: '16px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '12px',
+                                                    background: '#fff',
+                                                    transition: 'all 0.3s ease',
+                                                    cursor: 'pointer'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background = '#f5f5f5';
+                                                    e.currentTarget.style.borderColor = '#0066cc';
+                                                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 102, 204, 0.1)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background = '#fff';
+                                                    e.currentTarget.style.borderColor = '#a1a1a1';
+                                                    e.currentTarget.style.boxShadow = 'none';
+                                                }}
+                                            >
+                                                {item.profile_url ? (
+                                                    <img
+                                                        src={item.profile_url}
+                                                        alt={item.portfolio_name}
+                                                        style={{
+                                                            width: '48px',
+                                                            height: '48px',
+                                                            borderRadius: '50%',
+                                                            objectFit: 'cover',
+                                                            flexShrink: 0
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        style={{
+                                                            width: '48px',
+                                                            height: '48px',
+                                                            borderRadius: '50%',
+                                                            background: '#e0e0e0',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '20px',
+                                                            color: '#888',
+                                                            flexShrink: 0
+                                                        }}
+                                                    >
+                                                        📁
+                                                    </div>
+                                                )}
+                                                <div style={{ textAlign: 'left', flex: 1 }}>
+                                                    <div style={{ fontWeight: 'bold', fontSize: '16px',color: '#000000' }}>
+                                                        {item.portfolio_name}
+                                                    </div>
+                                                    <div style={{ fontSize: '12px', color: '#000000' }}>
+                                                        {new Date(item.created_at).toLocaleDateString('th-TH')}
+                                                    </div>
+                                                </div>
+                                                <div style={{ fontSize: '18px', color: '#0066cc' }}>→</div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
+
                     {port === "create" && renderPortfolioContent()}
                 </>
             )}

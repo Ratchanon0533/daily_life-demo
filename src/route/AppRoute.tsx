@@ -12,7 +12,7 @@ import Activities from '../components/activities'
 import Activitiesinfo from '../components/activitiesinfo'
 import Portfolio from '../components/portfolio'
 import SelfDiscoveryQuiz from '../components/Quiz'
-import Genport from '../components/genport'
+import Editport from '../components/EditPort'
 import Organization from '../components/organization/Login'
 import Dashboarduniversity from '../components/organization/dashboarduniversity'
 import DashboardOrganizers from '../components/organization/dashboarduniversity'
@@ -34,7 +34,7 @@ const AppRoute = () => {
             <Route path='/activities' element={<Activities/>}/>
             <Route path='/activities/:id' element={<Activitiesinfo/>}/>
             <Route path='/portfolio' element={<Portfolio/>}/>
-            <Route path='/genport' element={<Genport/>}/>
+            <Route path='/editport' element={<Editport/>}/>
             <Route path='/quiz' element={<SelfDiscoveryQuiz/>}/>
             <Route path='/organization' element={<Organization/>}/>
             <Route path='/dashboard-university' element={<Dashboarduniversity/>}/>
