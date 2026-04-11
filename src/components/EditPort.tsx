@@ -208,7 +208,7 @@ const EditPort = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/getport_details/${port_id}`,
+          `https://api.dailylifes.online/getport_details/${port_id}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           }
@@ -335,7 +335,7 @@ const EditPort = () => {
       };
 
       const res = await fetch(
-        `http://localhost:5000/editport/${port_id}`,
+        `https://api.dailylifes.online/editport/${port_id}`,
         {
           method: "PUT",
           headers: {

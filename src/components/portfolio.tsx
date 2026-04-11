@@ -7,7 +7,7 @@ import {
     getDaysInMonth,
     format,
 } from 'date-fns';
-import { ca, th } from 'date-fns/locale';
+import {  th } from 'date-fns/locale';
 import { useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { PortfolioPDF } from "./MyDocument";
@@ -33,6 +33,7 @@ interface PersonalInfo {
     height?: string | null;
     weight?: string | null;
     gender?: string | null;
+    profile_image_url?: string | null;
 
 }
 
@@ -66,7 +67,7 @@ interface ActivityCertificate {
     number?: number | null;
     name_project?: string | null;
     date?: string | null;
-    photo?: File | null;
+    photo?: string | File | null;
     details?: string | null;
     // เพิ่มวันที่อิสระสำหรับแต่ละตัว
     day?: number;
@@ -150,6 +151,7 @@ const Portfolio = () => {
     });
 
     const [profileImage, setProfileImage] = useState<File | null>(null);
+    const [uploadingDuringSave, setUploadingDuringSave] = useState(false);
 
     const [educational, setEducational] = useState<EducationalItem[]>([
         {
@@ -419,66 +421,119 @@ const Portfolio = () => {
         });
     };
 
-    // ===== File upload handler =====
-    const handleEducationFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    // ===== File upload to API (for use during save) =====
+    const uploadFileToAPI = async (file: File, endpoint: 'profile' | 'transcript' | 'certificate'): Promise<string | null> => {
+        const formData = new FormData();
+        formData.append('image', file);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`https://api.dailylifes.online/upload/${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok && data.imageUrl) {
+                return data.imageUrl;
+            } else {
+                console.error('Upload failed:', data.message);
+                throw new Error(data.message || 'Upload failed');
+            }
+        } catch (err) {
+            console.error('Upload error:', err);
+            throw err;
+        }
+    };
+
+    // ===== File input handlers (store files in state, don't upload yet) =====
+    const handleProfileFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setProfileImage(file);
+    };
+
+    const handleEducationFileUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (!file) return;
         updateEducational(index, 'study_results', file);
     };
 
-    // ===== Build payload for API =====
-    const buildCreatePortPayload = (): FormData => {
-        const formData = new FormData();
-
-        const data = {
-            user_id: userId,
-            port_id: portId,
-            personal_info: Personal,
-            educational,
-            skills_abilities: skillsAbilities,
-            activities_certificates: activitiesCertificates.map(({ photo, day, month, year, ...rest }) => rest),
-            university_choice: universityChoice
-        };
-
-        formData.append('data', JSON.stringify(data));
-
-        // Add profile image
-        if (profileImage) {
-            formData.append('profile', profileImage);
+    const handleCertificateFileSelect = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            updateActivity(idx, 'photo', file);
         }
-
-        // Add education files
-        educational.forEach((edu) => {
-            if (edu.study_results instanceof File) {
-                formData.append('transcript', edu.study_results);
-            }
-        });
-
-        // Add certificate files
-        activitiesCertificates.forEach((activity) => {
-            if (activity.photo instanceof File) {
-                formData.append('certificate', activity.photo);
-            }
-        });
-
-        return formData;
     };
 
-    // ===== Handle save =====
+    // ===== Handle save with file uploads =====
     const handleSavePort = async () => {
         setSaveMessage(null);
         setSaving(true);
+        setUploadingDuringSave(true);
         try {
-            const payload = buildCreatePortPayload(); // ตอนนี้จะได้เป็น FormData
-            const token = localStorage.getItem('token');
+            // Step 1: Upload profile image if exists
+            let profileImageUrl: string | null = null;
+            if (profileImage instanceof File) {
+                profileImageUrl = await uploadFileToAPI(profileImage, 'profile');
+            }
 
+            // Step 2: Upload transcript files
+            const educationalWithUrls = await Promise.all(
+                educational.map(async (edu) => {
+                    let studyResultsUrl: string | null = null;
+                    if (edu.study_results instanceof File) {
+                        studyResultsUrl = await uploadFileToAPI(edu.study_results, 'transcript');
+                    }
+                    return {
+                        ...edu,
+                        study_results: studyResultsUrl || (typeof edu.study_results === 'string' ? edu.study_results : null),
+                    };
+                })
+            );
+
+            // Step 3: Upload certificate files
+            const activitiesWithUrls = await Promise.all(
+                activitiesCertificates.map(async (activity) => {
+                    const { photo, day, month, year, ...rest } = activity;
+                    let photoUrl: string | null = null;
+                    if (photo instanceof File) {
+                        photoUrl = await uploadFileToAPI(photo, 'certificate');
+                    } else if (typeof photo === 'string') {
+                        photoUrl = photo;
+                    }
+                    return {
+                        ...rest,
+                        photo_url: photoUrl,
+                    };
+                })
+            );
+
+            // Step 4: Build payload with uploaded URLs
+            const formData = new FormData();
+            const data = {
+                user_id: userId,
+                port_id: portId,
+                personal_info: {
+                    ...Personal,
+                    profile_image_url: profileImageUrl,
+                },
+                educational: educationalWithUrls,
+                skills_abilities: skillsAbilities,
+                activities_certificates: activitiesWithUrls,
+                university_choice: universityChoice
+            };
+
+            formData.append('data', JSON.stringify(data));
+
+            // Step 5: Send to createport endpoint
+            const token = localStorage.getItem('token');
             const res = await fetch('https://api.dailylifes.online/createport', {
                 method: 'POST',
                 headers: {
-                    // ส่งแค่ Authorization ส่วน Content-Type ปล่อยว่างไว้ให้เบราว์เซอร์จัดการ
                     ...(token ? { Authorization: `Bearer ${token}` } : {})
                 },
-                body: payload // ส่ง FormData ไปโดยตรง
+                body: formData
             });
 
             if (!res.ok) {
@@ -488,12 +543,13 @@ const Portfolio = () => {
             }
 
             setSaveMessage('บันทึกสำเร็จ!');
-            location.reload();
+            setTimeout(() => location.reload(), 1500);
         } catch (err: any) {
             console.error(err);
             setSaveMessage(`เกิดข้อผิดพลาด: ${err.message || err}`);
         } finally {
             setSaving(false);
+            setUploadingDuringSave(false);
         }
     };
 
@@ -680,21 +736,17 @@ const Portfolio = () => {
                                         type="file"
                                         accept="image/*"
                                         style={{ display: 'none' }}
-                                        onChange={e => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                                updateActivity(idx, 'photo', file);
-                                            }
-                                        }}
+                                        disabled={saving}
+                                        onChange={e => handleCertificateFileSelect(e, idx)}
                                     />
                                     <label
                                         htmlFor={`cert-upload-${idx}`}
                                         className={styles["port-upload-btn"]}
-                                        style={{ cursor: 'pointer' }}
+                                        style={{ cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}
                                     >
-                                        {activity.photo ? '✓ เลือกไฟล์แล้ว' : 'เลือกรูปภาพ'}
+                                        {activity.photo instanceof File ? '✓ เลือกไฟล์แล้ว' : 'เลือกรูปภาพ'}
                                     </label>
-                                    {activity.photo && (
+                                    {activity.photo instanceof File && (
                                         <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
                                             {(activity.photo as File).name}
                                         </p>
@@ -747,16 +799,15 @@ const Portfolio = () => {
                                 type="file"
                                 accept="image/*"
                                 style={{ display: 'none' }}
-                                onChange={e => {
-                                    const file = e.target.files?.[0] || null;
-                                    setProfileImage(file);
-                                }}
+                                disabled={saving}
+                                onChange={handleProfileFileSelect}
                             />
                             <label
                                 htmlFor="port-image-upload1"
                                 className={styles["port-upload-btn"]}
+                                style={{ opacity: saving ? 0.6 : 1, cursor: saving ? 'not-allowed' : 'pointer' }}
                             >
-                                อัพโหลดรูปภาพ
+                                {profileImage ? '✓ เลือกรูปแล้ว' : 'อัพโหลดรูปภาพ'}
                             </label>
                             <button className={styles["port-preview-btn"]}>
                                 เลือกเทมเพลต
@@ -781,9 +832,9 @@ const Portfolio = () => {
                         <button
                             className={styles["progress-info-btn"]}
                             onClick={handleSavePort}
-                            disabled={saving}
+                            disabled={saving || uploadingDuringSave}
                         >
-                            {saving ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
+                            {uploadingDuringSave ? 'กำลังอัพโหลดไฟล์...' : (saving ? 'กำลังบันทึก...' : 'บันทึกข้อมูล')}
                         </button>
                         <PDFDownloadLink
                             document={
@@ -812,7 +863,7 @@ const Portfolio = () => {
                                     educational_qualifications={educational[0]?.educational_qualifications || ''}
                                     study_path={educational[0]?.study_path || ''}
                                     grade_average={educational[0]?.grade_average || ''}
-                                    study_results={educational[0]?.study_results || ''}
+                                    study_results={educational[0]?.study_results && educational[0].study_results instanceof File ? URL.createObjectURL(educational[0].study_results) : (typeof educational[0]?.study_results === 'string' ? educational[0].study_results : '')}
                                     province_edu={educational[0]?.province || ''}
                                     district_edu={educational[0]?.district || ''}
 
@@ -824,7 +875,7 @@ const Portfolio = () => {
                                         name_project: act.name_project,
                                         date: act.date,
                                         description: act.details,
-                                        photos: act.photo ? [URL.createObjectURL(act.photo)] : []
+                                        photos: act.photo instanceof File ? [URL.createObjectURL(act.photo)] : (typeof act.photo === 'string' ? [act.photo] : [])
                                     }))}
 
                                     university={universityChoice[0]?.university || ''}
@@ -1181,12 +1232,13 @@ const Portfolio = () => {
                                         type="file"
                                         accept="image/*,application/pdf"
                                         style={{ display: 'none' }}
+                                        disabled={saving}
                                         onChange={e => handleEducationFileUpload(e, 0)}
                                     />
                                     <label
                                         htmlFor="edu-upload-0"
                                         className={styles["port-upload-btn"]}
-                                        style={{ cursor: 'pointer' }}
+                                        style={{ cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}
                                     >
                                         {educational[0]?.study_results instanceof File ? '✓ เลือกไฟล์แล้ว' : 'เลือกไฟล์'}
                                     </label>
