@@ -1,8 +1,7 @@
 .contact-box {
     background-color: #033E65;
     padding: 40px 20px;
-    height: 25rem;
-    margin-top: 10rem;
+    margin-top: 5rem;           /* ← Pushes footer to the bottom when content is short */
     font-family: Kanit, sans-serif;
     color: white;
     text-align: left;
