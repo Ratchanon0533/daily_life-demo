@@ -207,6 +207,99 @@ const Portfolio = () => {
         }));
     }, []);
 
+    // ===== Completion progress =====
+    const completionPercent = useMemo(() => {
+        // Accepts: non-empty string, File, non-zero number
+        const isFilled = (v: any) => {
+            if (v === null || v === undefined) return false;
+            if (v instanceof File) return true;
+            if (typeof v === 'number') return true;
+            return String(v).trim() !== '';
+        };
+
+        // --- Personal info (40%) ---
+        const personalFields: (keyof PersonalInfo)[] = [
+            'portfolio_name', 'introduce', 'prefix', 'first_name', 'last_name',
+            'date_birth', 'nationality', 'national_id', 'phone_number1', 'email',
+            'address', 'province', 'district', 'subdistrict', 'postal_code'
+        ];
+        const filledPersonal = personalFields.filter(f => isFilled(Personal[f])).length;
+        const personalScore = (filledPersonal / personalFields.length) * 40;
+
+        // --- Profile image (12%) ---
+        // Count existing URL too (for edit mode where image already uploaded)
+        const hasProfile = !!profileImage || isFilled(Personal.profile_image_url);
+        const profileScore = hasProfile ? 12 : 0;
+
+        // --- Education (12%) - count filled fields across ALL education entries ---
+        const eduFieldsPerEntry: (keyof EducationalItem)[] = [
+            'school', 'graduation', 'educational_qualifications',
+            'province', 'district', 'study_path', 'grade_average', 'study_results'
+        ];
+        const eduTotal = educational.length * eduFieldsPerEntry.length;
+        const eduFilled = educational.reduce((sum, edu) => {
+            return sum + eduFieldsPerEntry.filter(f => isFilled(edu[f])).length;
+        }, 0);
+        const eduScore = eduTotal > 0 ? (eduFilled / eduTotal) * 12 : 0;
+
+        // --- Skills (12%) - details, others, plus ALL language skill fields ---
+        const langFieldsPerEntry: (keyof LanguageSkill)[] = ['language', 'listening', 'speaking', 'reading', 'writing'];
+        const langSkills = skillsAbilities.language_skills || [];
+        // 2 fields at top level (details, others) + langFieldsPerEntry * number of languages
+        const skillsTotal = 2 + (langSkills.length * langFieldsPerEntry.length);
+        let skillsFilled = 0;
+        if (isFilled(skillsAbilities.details)) skillsFilled++;
+        if (isFilled(skillsAbilities.others)) skillsFilled++;
+        langSkills.forEach(lang => {
+            skillsFilled += langFieldsPerEntry.filter(f => isFilled(lang[f])).length;
+        });
+        const skillsScore = skillsTotal > 0 ? (skillsFilled / skillsTotal) * 12 : 0;
+
+        // --- Activities/certificates (12%) - count across ALL entries ---
+        const actFieldsPerEntry: (keyof ActivityCertificate)[] = ['name_project', 'date', 'photo', 'details'];
+        const actTotal = activitiesCertificates.length * actFieldsPerEntry.length;
+        const actFilled = activitiesCertificates.reduce((sum, act) => {
+            return sum + actFieldsPerEntry.filter(f => isFilled(act[f])).length;
+        }, 0);
+        const activitiesScore = actTotal > 0 ? (actFilled / actTotal) * 12 : 0;
+
+        // --- University (12%) - count across ALL choices ---
+        const uniFieldsPerEntry: (keyof UniversityChoice)[] = ['university', 'faculty', 'major', 'details'];
+        const uniTotal = universityChoice.length * uniFieldsPerEntry.length;
+        const uniFilled = universityChoice.reduce((sum, u) => {
+            return sum + uniFieldsPerEntry.filter(f => isFilled(u[f])).length;
+        }, 0);
+        const uniScore = uniTotal > 0 ? (uniFilled / uniTotal) * 12 : 0;
+
+        const total = personalScore + profileScore + eduScore + skillsScore + activitiesScore + uniScore;
+        return Math.round(total);
+    }, [Personal, profileImage, educational, skillsAbilities, activitiesCertificates, universityChoice]);
+
+    const completionLabel = useMemo(() => {
+        if (completionPercent >= 100) return 'ครบถ้วน';
+        if (completionPercent >= 70) return 'เกือบครบแล้ว';
+        if (completionPercent >= 40) return 'กำลังดำเนินการ';
+        if (completionPercent > 0) return 'เริ่มต้น';
+        return 'ยังไม่ได้กรอกข้อมูล';
+    }, [completionPercent]);
+
+    // Status colors matched to the completion level (used for bar + info boxes)
+    const completionStatus = useMemo(() => {
+        if (completionPercent >= 100) {
+            return { bar: '#28a745', bg: '#d4edda', text: '#155724', border: '#28a745', icon: '✅' };
+        }
+        if (completionPercent >= 70) {
+            return { bar: '#17a2b8', bg: '#d1ecf1', text: '#0c5460', border: '#17a2b8', icon: '💪' };
+        }
+        if (completionPercent >= 40) {
+            return { bar: '#ffc107', bg: '#fff3cd', text: '#856404', border: '#ffc107', icon: '⏳' };
+        }
+        if (completionPercent > 0) {
+            return { bar: '#fd7e14', bg: '#ffe5d0', text: '#7d3c00', border: '#fd7e14', icon: '📝' };
+        }
+        return { bar: '#dc3545', bg: '#f8d7da', text: '#721c24', border: '#dc3545', icon: '⚠️' };
+    }, [completionPercent]);
+
     // ===== Helper function to get days in cert month =====
     const getDaysInCertMonth = (certMonth: number, certYear: number) => {
         const date = new Date(certYear, certMonth);
@@ -851,15 +944,54 @@ const Portfolio = () => {
                 <div className={styles["port-progress-group"]}>
                     <div className={styles["divider"]}></div>
                     <div className={styles["progression-bar"]}>
-                        <p>ความสมบูรณ์ของแฟ้มสะสมผลงาน : ครบถ้วน</p>
-                        <p>100%</p>
+                        <p>ความสมบูรณ์ของแฟ้มสะสมผลงาน : {completionLabel}</p>
+                        <p style={{ color: completionStatus.text, fontWeight: 'bold' }}>{completionPercent}%</p>
                     </div>
-                    <div className={styles["bar"]}></div>
-                    <div className={styles["progress-info"]}>
-                        แฟ้มสะสมผลงานของคุณสมบูรณ์แล้ว
+                    <div
+                        className={styles["bar"]}
+                        style={{
+                            position: 'relative',
+                            background: '#e0e0e0',
+                            borderRadius: '4px',
+                            overflow: 'hidden'
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: `${completionPercent}%`,
+                                height: '100%',
+                                background: completionStatus.bar,
+                                transition: 'width 0.4s ease, background 0.4s ease'
+                            }}
+                        />
                     </div>
-                    <div className={styles["progress-info"]}>
-                        ข้อมูลครบถ้วน
+                    <div
+                        className={styles["progress-info"]}
+                        style={{
+                            background: completionStatus.bg,
+                            color: completionStatus.text,
+                            borderLeft: `4px solid ${completionStatus.border}`,
+                            padding: '10px 14px',
+                            borderRadius: '6px',
+                            fontWeight: 500
+                        }}
+                    >
+                        <span style={{ marginRight: '8px' }}>{completionStatus.icon}</span>
+                        {completionPercent >= 100 ? 'แฟ้มสะสมผลงานของคุณสมบูรณ์แล้ว' : `ยังขาดอีก ${100 - completionPercent}% เพื่อให้สมบูรณ์`}
+                    </div>
+                    <div
+                        className={styles["progress-info"]}
+                        style={{
+                            background: completionStatus.bg,
+                            color: completionStatus.text,
+                            borderLeft: `4px solid ${completionStatus.border}`,
+                            padding: '10px 14px',
+                            borderRadius: '6px',
+                            fontWeight: 500
+                        }}
+                    >
+                        <span style={{ marginRight: '8px' }}>{completionStatus.icon}</span>
+                        {completionPercent >= 100 ? 'ข้อมูลครบถ้วน' : 'กรุณากรอกข้อมูลให้ครบถ้วน'}
                     </div>
                     <div className={styles["progress-info-btn-group"]}>
                         <button
@@ -1649,248 +1781,246 @@ const Portfolio = () => {
                                 <button
                                     className={styles["port-btn"]}
                                     onClick={() => setAllport("allport")}
-                                    style={{ backgroundColor: port === "allport" ? '#007bff' : '#6c757d' }}
-                                >
-                                    จัดการแฟ้มสะสมผลงานทั้งหมด
-                                </button>
-                                <button
-                                    className={styles["port-btn"]}
-                                    onClick={() => {
-                                        setAllport("create");
-                                        setEditingPortId(null);
-                                        // Generate a fresh portId whenever user opens the create tab
-                                        const storedUserData = localStorage.getItem("user");
-                                        const parsed = storedUserData ? JSON.parse(storedUserData) : null;
-                                        const seed = parsed?.username || 'anon';
-                                        setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
-                                    }}
-                                    style={{ backgroundColor: port === "create" ? '#007bff' : '#6c757d' }}
-                                >
-                                    สร้างแฟ้มสะสมผลงาน
-                                </button>
-                            </div>
+                                style={{ backgroundColor: port === "allport" ? '#007bff' : '#6c757d' }}
+                            >
+                                จัดการแฟ้มสะสมผลงานทั้งหมด
+                            </button>
+                            <button
+                                className={styles["port-btn"]}
+                                onClick={() => {
+                                    setAllport("create");
+                                    setEditingPortId(null);
+                                    // Generate a fresh portId whenever user opens the create tab
+                                    const storedUserData = localStorage.getItem("user");
+                                    const parsed = storedUserData ? JSON.parse(storedUserData) : null;
+                                    const seed = parsed?.username || 'anon';
+                                    setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
+                                }}
+                                style={{ backgroundColor: port === "create" ? '#007bff' : '#6c757d' }}
+                            >
+                                สร้างแฟ้มสะสมผลงาน
+                            </button>
                         </div>
+                    </div>
 
-                        {port === "allport" && (
-                            <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-                                <h2 style={{ marginBottom: '24px', color: '#333', fontFamily: 'Kanit, sans-serif' }}>แฟ้มสะสมผลงานของฉัน</h2>
+                    {port === "allport" && (
+                        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+                            <h2 style={{ marginBottom: '24px', color: '#333' , fontFamily: 'Kanit, sans-serif'}}>แฟ้มสะสมผลงานของฉัน</h2>
 
-                                {portList.length === 0 ? (
-                                    <div style={{
-                                        textAlign: 'center',
-                                        padding: '40px',
-                                        backgroundColor: '#f9f9f9',
-                                        borderRadius: '8px',
-                                        color: '#666'
-                                    }}>
-                                        <p style={{ fontSize: '16px', marginBottom: '20px' }}>
-                                            คุณยังไม่มีแฟ้มสะสมผลงาน
-                                        </p>
-                                        <button
-                                            onClick={() => setAllport("create")}
+                            {portList.length === 0 ? (
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '40px',
+                                    backgroundColor: '#f9f9f9',
+                                    borderRadius: '8px',
+                                    color: '#666'
+                                }}>
+                                    <p style={{ fontSize: '16px', marginBottom: '20px' }}>
+                                        คุณยังไม่มีแฟ้มสะสมผลงาน
+                                    </p>
+                                    <button
+                                        onClick={() => setAllport("create")}
+                                        style={{
+                                            padding: '10px 20px',
+                                            backgroundColor: '#007bff',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px'
+                                        }}
+                                    >
+                                        สร้างแฟ้มสะสมผลงานใหม่
+                                    </button>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {portList.map((item) => (
+                                        <div
+                                            key={item.port_id}
                                             style={{
-                                                padding: '10px 20px',
-                                                backgroundColor: '#007bff',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer',
-                                                fontSize: '14px'
+                                                border: '1px solid #ddd',
+                                                borderRadius: '8px',
+                                                padding: '16px 40px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '12px',
+                                                background: '#fff',
+                                                transition: 'all 0.3s ease',
+                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
                                             }}
                                         >
-                                            สร้างแฟ้มสะสมผลงานใหม่
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        {portList.map((item) => (
+                                            {/* Profile section */}
                                             <div
-                                                key={item.port_id}
+                                                onClick={() => handleEditPortfolio(item.port_id)}
                                                 style={{
-                                                    border: '1px solid #ddd',
-                                                    borderRadius: '8px',
-                                                    padding: '16px',
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    justifyContent: 'space-between',
                                                     gap: '12px',
-                                                    background: '#fff',
-                                                    transition: 'all 0.3s ease',
-                                                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    const parent = e.currentTarget.parentElement;
+                                                    if (parent) {
+                                                        parent.style.background = '#f5f5f5';
+                                                        parent.style.borderColor = '#0066cc';
+                                                        parent.style.boxShadow = '0 2px 8px rgba(0, 102, 204, 0.1)';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    const parent = e.currentTarget.parentElement;
+                                                    if (parent) {
+                                                        parent.style.background = '#fff';
+                                                        parent.style.borderColor = '#ddd';
+                                                        parent.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                                                    }
                                                 }}
                                             >
-                                                {/* Profile section */}
-                                                <div
-                                                    onClick={() => handleEditPortfolio(item.port_id)}
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '12px',
-                                                        flex: 1,
-                                                        cursor: 'pointer',
-                                                        transition: 'all 0.3s ease'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        const parent = e.currentTarget.parentElement;
-                                                        if (parent) {
-                                                            parent.style.background = '#f5f5f5';
-                                                            parent.style.borderColor = '#0066cc';
-                                                            parent.style.boxShadow = '0 2px 8px rgba(0, 102, 204, 0.1)';
-                                                        }
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        const parent = e.currentTarget.parentElement;
-                                                        if (parent) {
-                                                            parent.style.background = '#fff';
-                                                            parent.style.borderColor = '#ddd';
-                                                            parent.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
-                                                        }
-                                                    }}
-                                                >
-                                                    {/* Profile image */}
-                                                    {item.profile_url ? (
-                                                        <img
-                                                            src={item.profile_url}
-                                                            alt={item.portfolio_name}
-                                                            style={{
-                                                                width: '60px',
-                                                                height: '60px',
-                                                                borderRadius: '8px',
-                                                                objectFit: 'cover',
-                                                                flexShrink: 0
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <div
-                                                            style={{
-                                                                width: '60px',
-                                                                height: '60px',
-                                                                borderRadius: '8px',
-                                                                background: '#e0e0e0',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                fontSize: '24px',
-                                                                color: '#888',
-                                                                flexShrink: 0
-                                                            }}
-                                                        >
-                                                            📁
-                                                        </div>
-                                                    )}
-
-                                                    {/* Portfolio info */}
-                                                    <div style={{ textAlign: 'left', flex: 1 }}>
-                                                        <div style={{
-                                                            fontWeight: 'bold',
-                                                            fontSize: '16px',
-                                                            color: '#000000',
-                                                            marginBottom: '4px'
-                                                        }}>
-                                                            {item.portfolio_name || 'ไม่มีชื่อ'}
-                                                        </div>
-                                                        <div style={{
-                                                            fontSize: '12px',
-                                                            color: '#666',
-                                                            marginBottom: '4px'
-                                                        }}>
-                                                            {new Date(item.created_at).toLocaleDateString('th-TH', {
-                                                                year: 'numeric',
-                                                                month: 'long',
-                                                                day: 'numeric'
-                                                            })}
-                                                        </div>
-                                                        <div style={{
-                                                            fontSize: '11px',
-                                                            color: '#999',
-                                                            
-                                                        }}>
-                                                            ID: {item.port_id}
-                                                        </div>
+                                                {/* Profile image */}
+                                                {item.profile_url ? (
+                                                    <img
+                                                        src={item.profile_url}
+                                                        alt={item.portfolio_name}
+                                                        style={{
+                                                            width: '60px',
+                                                            height: '60px',
+                                                            borderRadius: '8px',
+                                                            objectFit: 'cover',
+                                                            flexShrink: 0
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        style={{
+                                                            width: '60px',
+                                                            height: '60px',
+                                                            borderRadius: '8px',
+                                                            background: '#e0e0e0',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '24px',
+                                                            color: '#888',
+                                                            flexShrink: 0
+                                                        }}
+                                                    >
+                                                        📁
                                                     </div>
+                                                )}
 
-                                                    {/* Arrow icon */}
+                                                {/* Portfolio info */}
+                                                <div style={{ textAlign: 'left' }}>
                                                     <div style={{
-                                                        fontSize: '18px',
-                                                        color: '#0066cc',
-                                                        transition: 'transform 0.3s ease'
+                                                        fontWeight: 'bold',
+                                                        fontSize: '16px',
+                                                        color: '#000000',
+                                                        marginBottom: '4px'
                                                     }}>
-                                                        →
+                                                        {item.portfolio_name || 'ไม่มีชื่อ'}
+                                                    </div>
+                                                    <div style={{
+                                                        fontSize: '12px',
+                                                        color: '#666',
+                                                        marginBottom: '4px'
+                                                    }}>
+                                                        {new Date(item.created_at).toLocaleDateString('th-TH', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </div>
+                                                    <div style={{
+                                                        fontSize: '11px',
+                                                        color: '#999'
+                                                    }}>
+                                                        ID: {item.port_id}
                                                     </div>
                                                 </div>
 
-                                                {/* Action buttons */}
+                                                {/* Arrow icon */}
                                                 <div style={{
-                                                    display: 'flex',
-                                                    gap: '8px',
-                                                    alignItems: 'center'
+                                                    fontSize: '18px',
+                                                    color: '#0066cc',
+                                                    transition: 'transform 0.3s ease'
                                                 }}>
-                                                    {/* Edit button */}
-                                                    <button
-                                                        onClick={() => handleEditPortfolio(item.port_id)}
-                                                        style={{
-                                                            padding: '8px 14px',
-                                                            backgroundColor: '#007bff',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '4px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '12px',
-                                                            fontWeight: 'bold',
-                                                            transition: 'all 0.3s ease',
-                                                            whiteSpace: 'nowrap'
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            e.currentTarget.style.backgroundColor = '#0056b3';
-                                                            e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 86, 179, 0.3)';
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            e.currentTarget.style.backgroundColor = '#007bff';
-                                                            e.currentTarget.style.boxShadow = 'none';
-                                                        }}
-                                                    >
-                                                        แก้ไข
-                                                    </button>
-
-                                                    {/* Delete button */}
-                                                    <button
-                                                        onClick={() => handleDeletePortfolio(item.port_id)}
-                                                        style={{
-                                                            padding: '8px 14px',
-                                                            backgroundColor: '#dc3545',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '4px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '12px',
-                                                            fontWeight: 'bold',
-                                                            transition: 'all 0.3s ease',
-                                                            whiteSpace: 'nowrap'
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            e.currentTarget.style.backgroundColor = '#c82333';
-                                                            e.currentTarget.style.boxShadow = '0 2px 6px rgba(220, 53, 69, 0.3)';
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            e.currentTarget.style.backgroundColor = '#dc3545';
-                                                            e.currentTarget.style.boxShadow = 'none';
-                                                        }}
-                                                    >
-                                                        ลบ
-                                                    </button>
+                                                    →
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+
+                                            {/* Action buttons */}
+                                            <div style={{
+                                                display: 'flex',
+                                                gap: '12px',
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-end'
+                                            }}>
+                                                {/* Edit button */}
+                                                <button
+                                                    onClick={() => handleEditPortfolio(item.port_id)}
+                                                    style={{
+                                                        padding: '10px 20px',
+                                                        backgroundColor: '#007bff',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        fontSize: '13px',
+                                                        fontWeight: 'bold',
+                                                        transition: 'all 0.3s ease',
+                                                        whiteSpace: 'nowrap'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#0056b3';
+                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 86, 179, 0.3)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#007bff';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }}
+                                                >
+                                                    แก้ไข
+                                                </button>
+
+                                                {/* Delete button */}
+                                                <button
+                                                    onClick={() => handleDeletePortfolio(item.port_id)}
+                                                    style={{
+                                                        padding: '10px 20px',
+                                                        backgroundColor: '#dc3545',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        fontSize: '13px',
+                                                        fontWeight: 'bold',
+                                                        transition: 'all 0.3s ease',
+                                                        whiteSpace: 'nowrap'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#c82333';
+                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(220, 53, 69, 0.3)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#dc3545';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }}
+                                                >
+                                                    ลบ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
 
-                        )}
+                    )}
 
-                        {port === "create" && renderPortfolioContent()}
-                    </>
-                )}
+                    {port === "create" && renderPortfolioContent()}
+                </>
+            )}
             </div>
 
             <Contact />
