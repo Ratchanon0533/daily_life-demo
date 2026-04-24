@@ -7,8 +7,8 @@ import {
     getDaysInMonth,
     format,
 } from 'date-fns';
-import {  th } from 'date-fns/locale';
-import { useNavigate } from "react-router-dom";
+import { th } from 'date-fns/locale';
+// import { useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { PortfolioPDF } from "./MyDocument";
 
@@ -91,7 +91,7 @@ interface Userdata {
 
 const Portfolio = () => {
 
-    const navigatory = useNavigate();
+    // const navigatory = useNavigate();
 
     // ===== User data state =====
     const [userData, setUserData] = useState<Userdata | undefined>();
@@ -509,32 +509,56 @@ const Portfolio = () => {
                 })
             );
 
-            // Step 4: Build payload with uploaded URLs
-            const formData = new FormData();
-            const data = {
-                user_id: userId,
-                port_id: portId,
-                personal_info: {
-                    ...Personal,
-                    profile_image_url: profileImageUrl,
-                },
-                educational: educationalWithUrls,
-                skills_abilities: skillsAbilities,
-                activities_certificates: activitiesWithUrls,
-                university_choice: universityChoice
-            };
-
-            formData.append('data', JSON.stringify(data));
-
-            // Step 5: Send to createport endpoint
+            // Step 5: Send to createport or updateport endpoint
             const token = localStorage.getItem('token');
-            const res = await fetch('https://api.dailylifes.online/createport', {
-                method: 'POST',
-                headers: {
-                    ...(token ? { Authorization: `Bearer ${token}` } : {})
-                },
-                body: formData
-            });
+
+            let res: Response;
+            if (editingPortId) {
+                // UPDATE existing portfolio
+                const updatePayload = {
+                    user_id: userId,
+                    port_id: editingPortId,
+                    personal_info: {
+                        ...Personal,
+                        profile_image_url: profileImageUrl ?? Personal.profile_image_url ?? null,
+                    },
+                    educational: educationalWithUrls,
+                    skills_abilities: skillsAbilities,
+                    activities_certificates: activitiesWithUrls,
+                    university_choice: universityChoice
+                };
+                res = await fetch(`https://api.dailylifes.online/updateport/${editingPortId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify(updatePayload)
+                });
+            } else {
+                // CREATE new portfolio
+                const formData = new FormData();
+                const data = {
+                    user_id: userId,
+                    port_id: portId,
+                    personal_info: {
+                        ...Personal,
+                        profile_image_url: profileImageUrl,
+                    },
+                    educational: educationalWithUrls,
+                    skills_abilities: skillsAbilities,
+                    activities_certificates: activitiesWithUrls,
+                    university_choice: universityChoice
+                };
+                formData.append('data', JSON.stringify(data));
+                res = await fetch('https://api.dailylifes.online/createport', {
+                    method: 'POST',
+                    headers: {
+                        ...(token ? { Authorization: `Bearer ${token}` } : {})
+                    },
+                    body: formData
+                });
+            }
 
             if (!res.ok) {
                 const text = await res.text();
@@ -542,8 +566,11 @@ const Portfolio = () => {
                 throw new Error(`HTTP ${res.status}: ${text}`);
             }
 
-            setSaveMessage('บันทึกสำเร็จ!');
-            setTimeout(() => location.reload(), 1500);
+            setSaveMessage(editingPortId ? 'อัปเดตสำเร็จ!' : 'บันทึกสำเร็จ!');
+            if (editingPortId) {
+                setEditingPortId(null);
+            }
+            // setTimeout(() => location.reload(), 1500);
         } catch (err: any) {
             console.error(err);
             setSaveMessage(`เกิดข้อผิดพลาด: ${err.message || err}`);
@@ -834,7 +861,7 @@ const Portfolio = () => {
                             onClick={handleSavePort}
                             disabled={saving || uploadingDuringSave}
                         >
-                            {uploadingDuringSave ? 'กำลังอัพโหลดไฟล์...' : (saving ? 'กำลังบันทึก...' : 'บันทึกข้อมูล')}
+                            {uploadingDuringSave ? 'กำลังอัพโหลดไฟล์...' : (saving ? 'กำลังบันทึก...' : (editingPortId ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล'))}
                         </button>
                         <PDFDownloadLink
                             document={
@@ -1420,9 +1447,9 @@ const Portfolio = () => {
         const confirmDelete = window.confirm(
             `คุณแน่ใจหรือว่าต้องการลบแฟ้มสะสมผลงาน? การลบนี้ไม่สามารถกู้คืนได้`
         );
-        
+
         if (!confirmDelete) return;
- 
+
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(
@@ -1435,14 +1462,14 @@ const Portfolio = () => {
                     }
                 }
             );
- 
+
             const data = await response.json();
- 
+
             if (!response.ok) {
                 alert(`เกิดข้อผิดพลาด: ${data.message || 'ไม่สามารถลบ Portfolio'}`);
                 return;
             }
- 
+
             if (data.success) {
                 alert('ลบ Portfolio สำเร็จ');
                 // รีเฟรชรายการ
@@ -1456,6 +1483,7 @@ const Portfolio = () => {
 
     // เพิ่ม state
     const [portList, setPortList] = useState<any[]>([]);
+    const [editingPortId, setEditingPortId] = useState<string | null>(null);
 
 
     const handlegetport = async () => {
@@ -1475,6 +1503,112 @@ const Portfolio = () => {
             handlegetport();
         }
     }, [port, userData?.id]);
+
+    // ===== Load portfolio data for editing =====
+    const handleEditPortfolio = async (port_id: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { Authorization: `Bearer ${token}` };
+
+            // Fetch all 5 sections in parallel
+            const [
+                personalRes,
+                educationalRes,
+                skillsRes,
+                activitiesRes,
+                universityRes
+            ] = await Promise.all([
+                fetch(`https://api.dailylifes.online/getpersonal_info/${port_id}`, { headers }),
+                fetch(`https://api.dailylifes.online/geteducational/${port_id}`, { headers }),
+                fetch(`https://api.dailylifes.online/getskills_abilities/${port_id}`, { headers }),
+                fetch(`https://api.dailylifes.online/getactivities_certificates/${port_id}`, { headers }),
+                fetch(`https://api.dailylifes.online/getuniversity_choice/${port_id}`, { headers }),
+            ]);
+
+            const [personalData, educationalData, skillsData, activitiesData, universityData] = await Promise.all([
+                personalRes.json(),
+                educationalRes.json(),
+                skillsRes.json(),
+                activitiesRes.json(),
+                universityRes.json(),
+            ]);
+
+            // --- Personal info ---
+            if (personalData.success && personalData.data?.length > 0) {
+                const p = personalData.data[0];
+                setPersonal(p);
+                if (p.date_birth) {
+                    const d = new Date(p.date_birth);
+                    if (!isNaN(d.getTime())) {
+                        setDay(d.getDate());
+                        setMonth(d.getMonth());
+                        setYear(d.getFullYear());
+                    }
+                }
+            }
+
+            // --- Educational ---
+            if (educationalData.success && educationalData.data?.length > 0) {
+                setEducational(educationalData.data);
+            }
+
+            // --- Skills: backend returns flat rows (one row per language), group them ---
+            if (skillsData.success && skillsData.data?.length > 0) {
+                const rows = skillsData.data;
+                // details & others are the same across rows (from skills_abilities table)
+                const details = rows[0].details ?? '';
+                const others = rows[0].others ?? '';
+                // Each row is one language skill
+                const language_skills: LanguageSkill[] = rows
+                    .filter((r: any) => r.language) // skip rows with no language
+                    .map((r: any) => ({
+                        language: r.language,
+                        listening: r.listening,
+                        speaking: r.speaking,
+                        reading: r.reading,
+                        writing: r.writing,
+                    }));
+                setSkillsAbilities({
+                    details,
+                    others,
+                    language_skills: language_skills.length > 0
+                        ? language_skills
+                        : [{ language: '', listening: '', speaking: '', reading: '', writing: '' }]
+                });
+            }
+
+            // --- Activities/certificates ---
+            if (activitiesData.success && activitiesData.data?.length > 0) {
+                const activities = activitiesData.data.map((act: any) => {
+                    let actDay = 1, actMonth = 0, actYear = new Date().getFullYear();
+                    const photo = act.photo_url || act.photo || null;
+                    if (act.date) {
+                        const d = new Date(act.date);
+                        if (!isNaN(d.getTime())) {
+                            actDay = d.getDate();
+                            actMonth = d.getMonth();
+                            actYear = d.getFullYear();
+                        }
+                    }
+                    return { ...act, photo, day: actDay, month: actMonth, year: actYear };
+                });
+                setActivitiesCertificates(activities);
+            }
+
+            // --- University choice ---
+            if (universityData.success && universityData.data?.length > 0) {
+                setUniversityChoice(universityData.data);
+            }
+
+            // Switch to edit mode
+            setEditingPortId(port_id);
+            setAllport("create");
+
+        } catch (error: any) {
+            console.error('Edit load error:', error);
+            alert(`เกิดข้อผิดพลาด: ${error.message}`);
+        }
+    };
 
     return (
         <>
@@ -1501,7 +1635,7 @@ const Portfolio = () => {
                             </button>
                             <button
                                 className={styles["port-btn"]}
-                                onClick={() => setAllport("create")}
+                                onClick={() => { setAllport("create"); setEditingPortId(null); }}
                                 style={{ backgroundColor: port === "create" ? '#007bff' : '#6c757d' }}
                             >
                                 สร้างแฟ้มสะสมผลงาน
@@ -1510,219 +1644,219 @@ const Portfolio = () => {
                     </div>
 
                     {port === "allport" && (
-<div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <h2 style={{ marginBottom: '24px', color: '#333' }}>แฟ้มสะสมผลงานของฉัน</h2>
-            
-            {portList.length === 0 ? (
-                <div style={{
-                    textAlign: 'center',
-                    padding: '40px',
-                    backgroundColor: '#f9f9f9',
-                    borderRadius: '8px',
-                    color: '#666'
-                }}>
-                    <p style={{ fontSize: '16px', marginBottom: '20px' }}>
-                        คุณยังไม่มีแฟ้มสะสมผลงาน
-                    </p>
-                    <button
-                        onClick={() => setAllport("create")}
-                        style={{
-                            padding: '10px 20px',
-                            backgroundColor: '#007bff',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '14px'
-                        }}
-                    >
-                        สร้างแฟ้มสะสมผลงานใหม่
-                    </button>
-                </div>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {portList.map((item) => (
-                        <div
-                            key={item.port_id}
-                            style={{
-                                border: '1px solid #ddd',
-                                borderRadius: '8px',
-                                padding: '16px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: '12px',
-                                background: '#fff',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-                            }}
-                        >
-                            {/* Profile section */}
-                            <div
-                                onClick={() => navigatory(`/edit-portfolio/${item.port_id}`)}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px',
-                                    flex: 1,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease'
-                                }}
-                                onMouseEnter={(e) => {
-                                    const parent = e.currentTarget.parentElement;
-                                    if (parent) {
-                                        parent.style.background = '#f5f5f5';
-                                        parent.style.borderColor = '#0066cc';
-                                        parent.style.boxShadow = '0 2px 8px rgba(0, 102, 204, 0.1)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    const parent = e.currentTarget.parentElement;
-                                    if (parent) {
-                                        parent.style.background = '#fff';
-                                        parent.style.borderColor = '#ddd';
-                                        parent.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
-                                    }
-                                }}
-                            >
-                                {/* Profile image */}
-                                {item.profile_url ? (
-                                    <img
-                                        src={item.profile_url}
-                                        alt={item.portfolio_name}
+                        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+                            <h2 style={{ marginBottom: '24px', color: '#333' , fontFamily: 'Kanit, sans-serif'}}>แฟ้มสะสมผลงานของฉัน</h2>
+
+                            {portList.length === 0 ? (
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '40px',
+                                    backgroundColor: '#f9f9f9',
+                                    borderRadius: '8px',
+                                    color: '#666'
+                                }}>
+                                    <p style={{ fontSize: '16px', marginBottom: '20px' }}>
+                                        คุณยังไม่มีแฟ้มสะสมผลงาน
+                                    </p>
+                                    <button
+                                        onClick={() => setAllport("create")}
                                         style={{
-                                            width: '60px',
-                                            height: '60px',
-                                            borderRadius: '8px',
-                                            objectFit: 'cover',
-                                            flexShrink: 0
-                                        }}
-                                    />
-                                ) : (
-                                    <div
-                                        style={{
-                                            width: '60px',
-                                            height: '60px',
-                                            borderRadius: '8px',
-                                            background: '#e0e0e0',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '24px',
-                                            color: '#888',
-                                            flexShrink: 0
+                                            padding: '10px 20px',
+                                            backgroundColor: '#007bff',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px'
                                         }}
                                     >
-                                        📁
-                                    </div>
-                                )}
- 
-                                {/* Portfolio info */}
-                                <div style={{ textAlign: 'left', flex: 1 }}>
-                                    <div style={{
-                                        fontWeight: 'bold',
-                                        fontSize: '16px',
-                                        color: '#000000',
-                                        marginBottom: '4px'
-                                    }}>
-                                        {item.portfolio_name || 'ไม่มีชื่อ'}
-                                    </div>
-                                    <div style={{
-                                        fontSize: '12px',
-                                        color: '#666',
-                                        marginBottom: '4px'
-                                    }}>
-                                        {new Date(item.created_at).toLocaleDateString('th-TH', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric'
-                                        })}
-                                    </div>
-                                    <div style={{
-                                        fontSize: '11px',
-                                        color: '#999'
-                                    }}>
-                                        ID: {item.port_id}
-                                    </div>
+                                        สร้างแฟ้มสะสมผลงานใหม่
+                                    </button>
                                 </div>
- 
-                                {/* Arrow icon */}
-                                <div style={{
-                                    fontSize: '18px',
-                                    color: '#0066cc',
-                                    transition: 'transform 0.3s ease'
-                                }}>
-                                    →
-                                </div>
-                            </div>
- 
-                            {/* Action buttons */}
-                            <div style={{
-                                display: 'flex',
-                                gap: '8px',
-                                alignItems: 'center'
-                            }}>
-                                {/* Edit button */}
-                                <button
-                                    onClick={() => navigatory(`/edit-portfolio/${item.port_id}`)}
-                                    style={{
-                                        padding: '8px 14px',
-                                        backgroundColor: '#007bff',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        transition: 'all 0.3s ease',
-                                        whiteSpace: 'nowrap'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.backgroundColor = '#0056b3';
-                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 86, 179, 0.3)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.backgroundColor = '#007bff';
-                                        e.currentTarget.style.boxShadow = 'none';
-                                    }}
-                                >
-                                    แก้ไข
-                                </button>
- 
-                                {/* Delete button */}
-                                <button
-                                    onClick={() => handleDeletePortfolio(item.port_id)}
-                                    style={{
-                                        padding: '8px 14px',
-                                        backgroundColor: '#dc3545',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        transition: 'all 0.3s ease',
-                                        whiteSpace: 'nowrap'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.backgroundColor = '#c82333';
-                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(220, 53, 69, 0.3)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.backgroundColor = '#dc3545';
-                                        e.currentTarget.style.boxShadow = 'none';
-                                    }}
-                                >
-                                    ลบ
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {portList.map((item) => (
+                                        <div
+                                            key={item.port_id}
+                                            style={{
+                                                border: '1px solid #ddd',
+                                                borderRadius: '8px',
+                                                padding: '16px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                gap: '12px',
+                                                background: '#fff',
+                                                transition: 'all 0.3s ease',
+                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                                            }}
+                                        >
+                                            {/* Profile section */}
+                                            <div
+                                                onClick={() => handleEditPortfolio(item.port_id)}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '12px',
+                                                    flex: 1,
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    const parent = e.currentTarget.parentElement;
+                                                    if (parent) {
+                                                        parent.style.background = '#f5f5f5';
+                                                        parent.style.borderColor = '#0066cc';
+                                                        parent.style.boxShadow = '0 2px 8px rgba(0, 102, 204, 0.1)';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    const parent = e.currentTarget.parentElement;
+                                                    if (parent) {
+                                                        parent.style.background = '#fff';
+                                                        parent.style.borderColor = '#ddd';
+                                                        parent.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                                                    }
+                                                }}
+                                            >
+                                                {/* Profile image */}
+                                                {item.profile_url ? (
+                                                    <img
+                                                        src={item.profile_url}
+                                                        alt={item.portfolio_name}
+                                                        style={{
+                                                            width: '60px',
+                                                            height: '60px',
+                                                            borderRadius: '8px',
+                                                            objectFit: 'cover',
+                                                            flexShrink: 0
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        style={{
+                                                            width: '60px',
+                                                            height: '60px',
+                                                            borderRadius: '8px',
+                                                            background: '#e0e0e0',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '24px',
+                                                            color: '#888',
+                                                            flexShrink: 0
+                                                        }}
+                                                    >
+                                                        📁
+                                                    </div>
+                                                )}
 
- 
+                                                {/* Portfolio info */}
+                                                <div style={{ textAlign: 'left', flex: 1 }}>
+                                                    <div style={{
+                                                        fontWeight: 'bold',
+                                                        fontSize: '16px',
+                                                        color: '#000000',
+                                                        marginBottom: '4px'
+                                                    }}>
+                                                        {item.portfolio_name || 'ไม่มีชื่อ'}
+                                                    </div>
+                                                    <div style={{
+                                                        fontSize: '12px',
+                                                        color: '#666',
+                                                        marginBottom: '4px'
+                                                    }}>
+                                                        {new Date(item.created_at).toLocaleDateString('th-TH', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </div>
+                                                    <div style={{
+                                                        fontSize: '11px',
+                                                        color: '#999'
+                                                    }}>
+                                                        ID: {item.port_id}
+                                                    </div>
+                                                </div>
+
+                                                {/* Arrow icon */}
+                                                <div style={{
+                                                    fontSize: '18px',
+                                                    color: '#0066cc',
+                                                    transition: 'transform 0.3s ease'
+                                                }}>
+                                                    →
+                                                </div>
+                                            </div>
+
+                                            {/* Action buttons */}
+                                            <div style={{
+                                                display: 'flex',
+                                                gap: '8px',
+                                                alignItems: 'center'
+                                            }}>
+                                                {/* Edit button */}
+                                                <button
+                                                    onClick={() => handleEditPortfolio(item.port_id)}
+                                                    style={{
+                                                        padding: '8px 14px',
+                                                        backgroundColor: '#007bff',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        fontSize: '12px',
+                                                        fontWeight: 'bold',
+                                                        transition: 'all 0.3s ease',
+                                                        whiteSpace: 'nowrap'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#0056b3';
+                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 86, 179, 0.3)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#007bff';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }}
+                                                >
+                                                    แก้ไข
+                                                </button>
+
+                                                {/* Delete button */}
+                                                <button
+                                                    onClick={() => handleDeletePortfolio(item.port_id)}
+                                                    style={{
+                                                        padding: '8px 14px',
+                                                        backgroundColor: '#dc3545',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        fontSize: '12px',
+                                                        fontWeight: 'bold',
+                                                        transition: 'all 0.3s ease',
+                                                        whiteSpace: 'nowrap'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#c82333';
+                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(220, 53, 69, 0.3)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#dc3545';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }}
+                                                >
+                                                    ลบ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+
                     )}
 
                     {port === "create" && renderPortfolioContent()}

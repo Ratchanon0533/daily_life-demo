@@ -2,15 +2,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.portfolio-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 3.5rem;
+    height: 4.5rem;
     background-color: #033E65;
-    box-shadow: #033E65 0px 5px 4px 3px;
+   
 }
 
 .portfolio-btn-group {
