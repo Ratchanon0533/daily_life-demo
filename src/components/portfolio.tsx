@@ -300,6 +300,47 @@ const Portfolio = () => {
         return { bar: '#dc3545', bg: '#f8d7da', text: '#721c24', border: '#dc3545', icon: '⚠️' };
     }, [completionPercent]);
 
+    // Per-section completion flags (true = at least one required field filled in that section)
+    const sectionStatus = useMemo(() => {
+        const isFilled = (v: any) => {
+            if (v === null || v === undefined) return false;
+            if (v instanceof File) return true;
+            if (typeof v === 'number') return true;
+            return String(v).trim() !== '';
+        };
+
+        // Personal: require name + at least one contact field
+        const personalDone =
+            isFilled(Personal.first_name) &&
+            isFilled(Personal.last_name) &&
+            (isFilled(Personal.phone_number1) || isFilled(Personal.email));
+
+        // Education: at least school + qualification on the first entry
+        const edu = educational[0];
+        const educationDone = !!edu && isFilled(edu.school) && isFilled(edu.educational_qualifications);
+
+        // Skills: details OR at least one language with all 5 sub-fields filled
+        const langOK = (skillsAbilities.language_skills || []).some(l =>
+            isFilled(l.language) && isFilled(l.listening) && isFilled(l.speaking) && isFilled(l.reading) && isFilled(l.writing)
+        );
+        const skillsDone = isFilled(skillsAbilities.details) || langOK;
+
+        // Activities: at least one activity with name + date
+        const activitiesDone = activitiesCertificates.some(a => isFilled(a.name_project) && isFilled(a.date));
+
+        // University: at least one with university + faculty + major filled
+        const uni = universityChoice[0];
+        const universityDone = !!uni && isFilled(uni.university) && isFilled(uni.faculty) && isFilled(uni.major);
+
+        return {
+            personal: personalDone,
+            education: educationDone,
+            skills: skillsDone,
+            activities: activitiesDone,
+            university: universityDone,
+        };
+    }, [Personal, educational, skillsAbilities, activitiesCertificates, universityChoice]);
+
     // ===== Helper function to get days in cert month =====
     const getDaysInCertMonth = (certMonth: number, certYear: number) => {
         const date = new Date(certYear, certMonth);
@@ -1103,7 +1144,24 @@ const Portfolio = () => {
             >
                 <div className={styles["port-data-wrapper"]}>
                     <div className={styles["portfolio-data-content"]}>
-                        <img className={styles["check-icon"]} src="/green-check-mark-verified-circle-16223.png" alt="check-icon" />
+                        <span
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                backgroundColor: sectionStatus.personal ? '#28a745' : '#dc3545',
+                                color: 'white',
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                marginRight: '8px',
+                                transition: 'background-color 0.3s ease'
+                            }}
+                        >
+                            {sectionStatus.personal ? '✓' : '✗'}
+                        </span>
                         ข้อมูลส่วนตัว
                     </div>
                     <div className={styles["portfolio-data-content"]}>แก้ไข</div>
@@ -1310,7 +1368,24 @@ const Portfolio = () => {
             >
                 <div className={styles["port-data-wrapper"]}>
                     <div className={styles["portfolio-data-content"]}>
-                        <img className={styles["check-icon"]} src="/green-check-mark-verified-circle-16223.png" alt="check-icon" />
+                        <span
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                backgroundColor: sectionStatus.education ? '#28a745' : '#dc3545',
+                                color: 'white',
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                marginRight: '8px',
+                                transition: 'background-color 0.3s ease'
+                            }}
+                        >
+                            {sectionStatus.education ? '✓' : '✗'}
+                        </span>
                         ประวัติการศึกษา
                     </div>
                     <div className={styles["portfolio-data-content"]}>แก้ไข</div>
@@ -1426,7 +1501,24 @@ const Portfolio = () => {
             >
                 <div className={styles["port-data-wrapper"]}>
                     <div className={styles["portfolio-data-content"]}>
-                        <img className={styles["check-icon"]} src="/green-check-mark-verified-circle-16223.png" alt="check-icon" />
+                        <span
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                backgroundColor: sectionStatus.skills ? '#28a745' : '#dc3545',
+                                color: 'white',
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                marginRight: '8px',
+                                transition: 'background-color 0.3s ease'
+                            }}
+                        >
+                            {sectionStatus.skills ? '✓' : '✗'}
+                        </span>
                         ทักษะ/ความสามารถ
                     </div>
                     <div className={styles["portfolio-data-content"]}>แก้ไข</div>
@@ -1484,7 +1576,24 @@ const Portfolio = () => {
             >
                 <div className={styles["port-data-wrapper"]}>
                     <div className={styles["portfolio-data-content"]}>
-                        <img className={styles["check-icon"]} src="/green-check-mark-verified-circle-16223.png" alt="check-icon" />
+                        <span
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                backgroundColor: sectionStatus.activities ? '#28a745' : '#dc3545',
+                                color: 'white',
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                marginRight: '8px',
+                                transition: 'background-color 0.3s ease'
+                            }}
+                        >
+                            {sectionStatus.activities ? '✓' : '✗'}
+                        </span>
                         กิจกรรม/เกียรติบัตร
                     </div>
                     <div className={styles["portfolio-data-content"]}>แก้ไข</div>
@@ -1519,7 +1628,24 @@ const Portfolio = () => {
             >
                 <div className={styles["port-data-wrapper"]}>
                     <div className={styles["portfolio-data-content"]}>
-                        <img className={styles["check-icon"]} src="/green-check-mark-verified-circle-16223.png" alt="check-icon" />
+                        <span
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                backgroundColor: sectionStatus.university ? '#28a745' : '#dc3545',
+                                color: 'white',
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                marginRight: '8px',
+                                transition: 'background-color 0.3s ease'
+                            }}
+                        >
+                            {sectionStatus.university ? '✓' : '✗'}
+                        </span>
                         มหาวิทยาลัยที่ต้องการ
                     </div>
                     <div className={styles["portfolio-data-content"]}>แก้ไข</div>
@@ -1810,7 +1936,7 @@ const Portfolio = () => {
                             {portList.length === 0 ? (
                                 <div style={{
                                     textAlign: 'center',
-                                    padding: '40px',
+                                    padding: '40px 200px',
                                     backgroundColor: '#f9f9f9',
                                     borderRadius: '8px',
                                     color: '#666'
@@ -1841,7 +1967,7 @@ const Portfolio = () => {
                                             style={{
                                                 border: '1px solid #ddd',
                                                 borderRadius: '8px',
-                                                padding: '16px 40px',
+                                                padding: '16px',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '12px',
@@ -1959,7 +2085,7 @@ const Portfolio = () => {
                                                 <button
                                                     onClick={() => handleEditPortfolio(item.port_id)}
                                                     style={{
-                                                        padding: '10px 20px',
+                                                        padding: '10px 28px',
                                                         backgroundColor: '#007bff',
                                                         color: 'white',
                                                         border: 'none',
@@ -1986,7 +2112,7 @@ const Portfolio = () => {
                                                 <button
                                                     onClick={() => handleDeletePortfolio(item.port_id)}
                                                     style={{
-                                                        padding: '10px 20px',
+                                                        padding: '10px 28px',
                                                         backgroundColor: '#dc3545',
                                                         color: 'white',
                                                         border: 'none',
