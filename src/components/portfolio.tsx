@@ -8,7 +8,7 @@ import {
     format,
 } from 'date-fns';
 import { th } from 'date-fns/locale';
-import { useNavigate } from "react-router-dom";
+
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { PortfolioPDF } from "./MyDocument";
 
@@ -91,7 +91,6 @@ interface Userdata {
 
 const Portfolio = () => {
 
-    const navigatory = useNavigate();
 
     // ===== User data state =====
     const [userData, setUserData] = useState<Userdata | undefined>();
