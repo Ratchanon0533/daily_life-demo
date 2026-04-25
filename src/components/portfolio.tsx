@@ -9,8 +9,8 @@ import {
 } from 'date-fns';
 import { th } from 'date-fns/locale';
 
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { PortfolioPDF } from "./MyDocument";
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
+import { PortfolioPDF, PortfolioPDFClassic, PortfolioPDFModern } from "./MyDocument";
 
 
 interface PersonalInfo {
@@ -299,7 +299,7 @@ const Portfolio = () => {
         return { bar: '#dc3545', bg: '#f8d7da', text: '#721c24', border: '#dc3545', icon: '⚠️' };
     }, [completionPercent]);
 
-    // Per-section completion flags (true = at least one required field filled in that section)
+    // Per-section completion flags (true = ALL fields in that section are filled)
     const sectionStatus = useMemo(() => {
         const isFilled = (v: any) => {
             if (v === null || v === undefined) return false;
@@ -308,28 +308,46 @@ const Portfolio = () => {
             return String(v).trim() !== '';
         };
 
-        // Personal: require name + at least one contact field
-        const personalDone =
-            isFilled(Personal.first_name) &&
-            isFilled(Personal.last_name) &&
-            (isFilled(Personal.phone_number1) || isFilled(Personal.email));
+        // ===== Personal: ALL fields including profile image =====
+        const personalFields: (keyof PersonalInfo)[] = [
+            'portfolio_name', 'introduce', 'prefix', 'first_name', 'last_name',
+            'date_birth', 'nationality', 'national_id',
+            'phone_number1', 'phone_number2', 'email',
+            'address', 'province', 'district', 'subdistrict', 'postal_code'
+        ];
+        const personalAllFilled = personalFields.every(f => isFilled(Personal[f]));
+        const profilePresent = !!profileImage || isFilled(Personal.profile_image_url);
+        const personalDone = personalAllFilled && profilePresent;
 
-        // Education: at least school + qualification on the first entry
-        const edu = educational[0];
-        const educationDone = !!edu && isFilled(edu.school) && isFilled(edu.educational_qualifications);
-
-        // Skills: details OR at least one language with all 5 sub-fields filled
-        const langOK = (skillsAbilities.language_skills || []).some(l =>
-            isFilled(l.language) && isFilled(l.listening) && isFilled(l.speaking) && isFilled(l.reading) && isFilled(l.writing)
+        // ===== Education: ALL fields across ALL entries =====
+        const eduFields: (keyof EducationalItem)[] = [
+            'school', 'graduation', 'educational_qualifications',
+            'province', 'district', 'study_path', 'grade_average', 'study_results'
+        ];
+        const educationDone = educational.length > 0 && educational.every(edu =>
+            eduFields.every(f => isFilled(edu[f]))
         );
-        const skillsDone = isFilled(skillsAbilities.details) || langOK;
 
-        // Activities: at least one activity with name + date
-        const activitiesDone = activitiesCertificates.some(a => isFilled(a.name_project) && isFilled(a.date));
+        // ===== Skills: details + others + ALL languages with ALL sub-fields =====
+        const langFields: (keyof LanguageSkill)[] = ['language', 'listening', 'speaking', 'reading', 'writing'];
+        const langs = skillsAbilities.language_skills || [];
+        const skillsDone =
+            isFilled(skillsAbilities.details) &&
+            isFilled(skillsAbilities.others) &&
+            langs.length > 0 &&
+            langs.every(l => langFields.every(f => isFilled(l[f])));
 
-        // University: at least one with university + faculty + major filled
-        const uni = universityChoice[0];
-        const universityDone = !!uni && isFilled(uni.university) && isFilled(uni.faculty) && isFilled(uni.major);
+        // ===== Activities: ALL fields across ALL entries =====
+        const actFields: (keyof ActivityCertificate)[] = ['name_project', 'date', 'photo', 'details'];
+        const activitiesDone = activitiesCertificates.length > 0 && activitiesCertificates.every(a =>
+            actFields.every(f => isFilled(a[f]))
+        );
+
+        // ===== University: ALL fields across ALL choices =====
+        const uniFields: (keyof UniversityChoice)[] = ['university', 'faculty', 'major', 'details'];
+        const universityDone = universityChoice.length > 0 && universityChoice.every(u =>
+            uniFields.every(f => isFilled(u[f]))
+        );
 
         return {
             personal: personalDone,
@@ -338,7 +356,7 @@ const Portfolio = () => {
             activities: activitiesDone,
             university: universityDone,
         };
-    }, [Personal, educational, skillsAbilities, activitiesCertificates, universityChoice]);
+    }, [Personal, profileImage, educational, skillsAbilities, activitiesCertificates, universityChoice]);
 
     // ===== Helper function to get days in cert month =====
     const getDaysInCertMonth = (certMonth: number, certYear: number) => {
@@ -700,15 +718,18 @@ const Portfolio = () => {
             }
 
             setSaveMessage(editingPortId ? 'อัปเดตสำเร็จ!' : 'บันทึกสำเร็จ!');
-            if (editingPortId) {
-                setEditingPortId(null);
-            } else {
+            // Mark the form as clean (will flip back to dirty next time the user changes anything)
+            // setTimeout pushes this state update past the useEffect that sets isDirty=true on form changes
+            setTimeout(() => setIsDirty(false), 0);
+            if (!editingPortId) {
                 // Regenerate portId for the next create so we don't collide
                 const storedUserData = localStorage.getItem("user");
                 const parsed = storedUserData ? JSON.parse(storedUserData) : null;
                 const seed = parsed?.username || 'anon';
                 setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
             }
+            // Note: when editing, we keep editingPortId set so subsequent saves continue updating
+            // the same portfolio (instead of creating a duplicate).
             // setTimeout(() => location.reload(), 1500);
         } catch (err: any) {
             console.error(err);
@@ -975,8 +996,12 @@ const Portfolio = () => {
                             >
                                 {profileImage ? '✓ เลือกรูปแล้ว' : 'อัพโหลดรูปภาพ'}
                             </label>
-                            <button className={styles["port-preview-btn"]}>
-                                เลือกเทมเพลต
+                            <button
+                                type="button"
+                                className={styles["port-preview-btn"]}
+                                onClick={() => setShowTemplateModal(true)}
+                            >
+                                เลือกเทมเพลต {selectedTemplate > 0 && `(${selectedTemplate})`}
                             </button>
                         </div>
                     </div>
@@ -1037,63 +1062,76 @@ const Portfolio = () => {
                         <button
                             className={styles["progress-info-btn"]}
                             onClick={handleSavePort}
-                            disabled={saving || uploadingDuringSave}
+                            disabled={saving || uploadingDuringSave || !isDirty}
+                            style={{
+                                opacity: (saving || uploadingDuringSave || !isDirty) ? 0.6 : 1,
+                                cursor: (saving || uploadingDuringSave || !isDirty) ? 'not-allowed' : 'pointer'
+                            }}
+                            title={!isDirty && !saving && !uploadingDuringSave ? 'ยังไม่มีข้อมูลที่เปลี่ยนแปลง' : ''}
                         >
-                            {uploadingDuringSave ? 'กำลังอัพโหลดไฟล์...' : (saving ? 'กำลังบันทึก...' : (editingPortId ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล'))}
+                            {uploadingDuringSave
+                                ? 'กำลังอัพโหลดไฟล์...'
+                                : saving
+                                    ? 'กำลังบันทึก...'
+                                    : editingPortId
+                                        ? (isDirty ? 'อัปเดตข้อมูล' : 'บันทึกแล้ว')
+                                        : 'บันทึกข้อมูล'}
                         </button>
-                        <PDFDownloadLink
-                            document={
-                                <PortfolioPDF
-                                    personal_image={profileImage ? URL.createObjectURL(profileImage) : null}
-                                    introduce={Personal.introduce || ''}
-                                    prefix={Personal.prefix || ''}
-                                    first_name={Personal.first_name || ''}
-                                    last_name={Personal.last_name || ''}
-                                    birth_day={day}
-                                    birth_month={thaiMonths.find(m => m.value === month)?.name || ''}
-                                    birth_year={year + 543}
-                                    nationality={Personal.nationality || ''}
-                                    id_card={Personal.national_id || ''}
-                                    email={Personal.email || ''}
-                                    phonenumber1={Personal.phone_number1 || ''}
-                                    phonenumber2={Personal.phone_number2 || ''}
-                                    address={Personal.address || ''}
-                                    province={Personal.province || ''}
-                                    district={Personal.district || ''}
-                                    subdistrict={Personal.subdistrict || ''}
-                                    postal_code={Personal.postal_code || ''}
+                        {(() => {
+                            const pdfProps = {
+                                personal_image: profileImage ? URL.createObjectURL(profileImage) : null,
+                                introduce: Personal.introduce || '',
+                                prefix: Personal.prefix || '',
+                                first_name: Personal.first_name || '',
+                                last_name: Personal.last_name || '',
+                                birth_day: day,
+                                birth_month: thaiMonths.find(m => m.value === month)?.name || '',
+                                birth_year: year + 543,
+                                nationality: Personal.nationality || '',
+                                id_card: Personal.national_id || '',
+                                email: Personal.email || '',
+                                phonenumber1: Personal.phone_number1 || '',
+                                phonenumber2: Personal.phone_number2 || '',
+                                address: Personal.address || '',
+                                province: Personal.province || '',
+                                district: Personal.district || '',
+                                subdistrict: Personal.subdistrict || '',
+                                postal_code: Personal.postal_code || '',
 
-                                    school={educational[0]?.school || ''}
-                                    graduation={educational[0]?.graduation || ''}
-                                    educational_qualifications={educational[0]?.educational_qualifications || ''}
-                                    study_path={educational[0]?.study_path || ''}
-                                    grade_average={educational[0]?.grade_average || ''}
-                                    study_results={educational[0]?.study_results && educational[0].study_results instanceof File ? URL.createObjectURL(educational[0].study_results) : (typeof educational[0]?.study_results === 'string' ? educational[0].study_results : '')}
-                                    province_edu={educational[0]?.province || ''}
-                                    district_edu={educational[0]?.district || ''}
+                                school: educational[0]?.school || '',
+                                graduation: educational[0]?.graduation || '',
+                                educational_qualifications: educational[0]?.educational_qualifications || '',
+                                study_path: educational[0]?.study_path || '',
+                                grade_average: educational[0]?.grade_average || '',
+                                study_results: educational[0]?.study_results && educational[0].study_results instanceof File ? URL.createObjectURL(educational[0].study_results) : (typeof educational[0]?.study_results === 'string' ? educational[0].study_results : ''),
+                                province_edu: educational[0]?.province || '',
+                                district_edu: educational[0]?.district || '',
 
-                                    skills_details={skillsAbilities.details || ''}
-                                    others_skills={skillsAbilities.others || ''}
-                                    skills={skillsAbilities.language_skills || []}
+                                skills_details: skillsAbilities.details || '',
+                                others_skills: skillsAbilities.others || '',
+                                skills: skillsAbilities.language_skills || [],
 
-                                    activities={activitiesCertificates.map(act => ({
-                                        name_project: act.name_project,
-                                        date: act.date,
-                                        description: act.details,
-                                        photos: act.photo instanceof File ? [URL.createObjectURL(act.photo)] : (typeof act.photo === 'string' ? [act.photo] : [])
-                                    }))}
+                                activities: activitiesCertificates.map(act => ({
+                                    name_project: act.name_project,
+                                    date: act.date,
+                                    description: act.details,
+                                    photos: act.photo instanceof File ? [URL.createObjectURL(act.photo)] : (typeof act.photo === 'string' ? [act.photo] : [])
+                                })),
 
-                                    university={universityChoice[0]?.university || ''}
-                                    faculty={universityChoice[0]?.faculty || ''}
-                                    major={universityChoice[0]?.major || ''}
-                                    reason={universityChoice[0]?.details || ''}
+                                university: universityChoice[0]?.university || '',
+                                faculty: universityChoice[0]?.faculty || '',
+                                major: universityChoice[0]?.major || '',
+                                reason: universityChoice[0]?.details || '',
+                            };
 
+                            const PdfComponent =
+                                selectedTemplate === 2 ? PortfolioPDFClassic :
+                                selectedTemplate === 3 ? PortfolioPDFModern :
+                                PortfolioPDF;
 
-
-                                />
-
-
-                            }
+                            return (
+                                <PDFDownloadLink
+                                    document={<PdfComponent {...pdfProps} />}
                             fileName={
                                 Personal.portfolio_name && Personal.portfolio_name.trim() !== ''
                                     ? `${Personal.portfolio_name}.pdf`
@@ -1120,6 +1158,8 @@ const Portfolio = () => {
                                 </button>
                             )}
                         </PDFDownloadLink>
+                            );
+                        })()}
                     </div>
 
 
@@ -1734,9 +1774,9 @@ const Portfolio = () => {
             }
 
             if (data.success) {
+                // Optimistic update — remove from local state immediately so UI updates without a refresh
+                setPortList(prev => prev.filter(p => p.port_id !== port_id));
                 alert('ลบ Portfolio สำเร็จ');
-                // รีเฟรชรายการ
-                await handlegetport();
             }
         } catch (error: any) {
             console.error('Delete error:', error);
@@ -1747,6 +1787,10 @@ const Portfolio = () => {
     // เพิ่ม state
     const [portList, setPortList] = useState<any[]>([]);
     const [editingPortId, setEditingPortId] = useState<string | null>(null);
+    const [selectedTemplate, setSelectedTemplate] = useState<1 | 2 | 3>(1);
+    const [showTemplateModal, setShowTemplateModal] = useState<boolean>(false);
+    // True when the form has unsaved changes (gets reset to false right after a successful save)
+    const [isDirty, setIsDirty] = useState<boolean>(false);
 
 
     const handlegetport = async () => {
@@ -1779,6 +1823,140 @@ const Portfolio = () => {
             handlegetport();
         }
     }, [port, userData?.id]);
+
+    // Mark form as dirty whenever any form-state changes.
+    // This effect runs on every form-state change but uses a ref-like guard pattern to avoid
+    // marking dirty during programmatic loads (handleEditPortfolio sets isDirty=false explicitly afterward).
+    useEffect(() => {
+        setIsDirty(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [Personal, profileImage, educational, skillsAbilities, activitiesCertificates, universityChoice]);
+
+    // ===== Download portfolio as PDF (without entering edit mode) =====
+    const handleDownloadPortfolio = async (port_id: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { Authorization: `Bearer ${token}` };
+
+            // Fetch all 5 sections in parallel (same as edit)
+            const [personalRes, educationalRes, skillsRes, activitiesRes, universityRes] = await Promise.all([
+                fetch(`https://api.dailylifes.online/getpersonal_info/${port_id}`, { headers }),
+                fetch(`https://api.dailylifes.online/geteducational/${port_id}`, { headers }),
+                fetch(`https://api.dailylifes.online/getskills_abilities/${port_id}`, { headers }),
+                fetch(`https://api.dailylifes.online/getactivities_certificates/${port_id}`, { headers }),
+                fetch(`https://api.dailylifes.online/getuniversity_choice/${port_id}`, { headers }),
+            ]);
+
+            const [personalData, educationalData, skillsData, activitiesData, universityData] = await Promise.all([
+                personalRes.json(), educationalRes.json(), skillsRes.json(), activitiesRes.json(), universityRes.json()
+            ]);
+
+            const p = personalData.success && personalData.data?.[0] ? personalData.data[0] : {};
+            const edu = educationalData.success && educationalData.data?.[0] ? educationalData.data[0] : {};
+            const uni = universityData.success && universityData.data?.[0] ? universityData.data[0] : {};
+
+            // Skills are returned as flat rows; group them
+            let skills_details = '', others_skills = '', skills: any[] = [];
+            if (skillsData.success && skillsData.data?.length > 0) {
+                skills_details = skillsData.data[0].details ?? '';
+                others_skills = skillsData.data[0].others ?? '';
+                skills = skillsData.data
+                    .filter((r: any) => r.language)
+                    .map((r: any) => ({
+                        language: r.language,
+                        listening: r.listening,
+                        speaking: r.speaking,
+                        reading: r.reading,
+                        writing: r.writing,
+                    }));
+            }
+
+            // Activities
+            const activities = (activitiesData.success && activitiesData.data?.length > 0)
+                ? activitiesData.data.map((a: any) => ({
+                    name_project: a.name_project,
+                    date: a.date,
+                    description: a.details,
+                    photos: a.photo_url ? [a.photo_url] : (a.photo ? [a.photo] : []),
+                }))
+                : [];
+
+            // Parse birth date for day/month/year
+            let bDay = 1, bMonth = 0, bYear = new Date().getFullYear();
+            if (p.date_birth) {
+                const d = new Date(p.date_birth);
+                if (!isNaN(d.getTime())) {
+                    bDay = d.getDate();
+                    bMonth = d.getMonth();
+                    bYear = d.getFullYear();
+                }
+            }
+
+            const pdfProps = {
+                personal_image: p.profile_image_url || null,
+                introduce: p.introduce || '',
+                prefix: p.prefix || '',
+                first_name: p.first_name || '',
+                last_name: p.last_name || '',
+                birth_day: bDay,
+                birth_month: thaiMonths.find(m => m.value === bMonth)?.name || '',
+                birth_year: bYear + 543,
+                nationality: p.nationality || '',
+                id_card: p.national_id || '',
+                email: p.email || '',
+                phonenumber1: p.phone_number1 || '',
+                phonenumber2: p.phone_number2 || '',
+                address: p.address || '',
+                province: p.province || '',
+                district: p.district || '',
+                subdistrict: p.subdistrict || '',
+                postal_code: p.postal_code || '',
+
+                school: edu.school || '',
+                graduation: edu.graduation || '',
+                educational_qualifications: edu.educational_qualifications || '',
+                study_path: edu.study_path || '',
+                grade_average: edu.grade_average || '',
+                study_results: typeof edu.study_results === 'string' ? edu.study_results : '',
+                province_edu: edu.province || '',
+                district_edu: edu.district || '',
+
+                skills_details,
+                others_skills,
+                skills,
+                activities,
+
+                university: uni.university || '',
+                faculty: uni.faculty || '',
+                major: uni.major || '',
+                reason: uni.details || '',
+            };
+
+            // Pick the same template the user chose for the create-mode export
+            const PdfComponent =
+                selectedTemplate === 2 ? PortfolioPDFClassic :
+                selectedTemplate === 3 ? PortfolioPDFModern :
+                PortfolioPDF;
+
+            // Generate the PDF blob and trigger download
+            const blob = await pdf(<PdfComponent {...pdfProps} />).toBlob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const fileName = (p.portfolio_name && p.portfolio_name.trim() !== '')
+                ? `${p.portfolio_name}.pdf`
+                : `Portfolio_${port_id}.pdf`;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+        } catch (error: any) {
+            console.error('Download error:', error);
+            alert(`เกิดข้อผิดพลาด: ${error.message}`);
+        }
+    };
 
     // ===== Load portfolio data for editing =====
     const handleEditPortfolio = async (port_id: string) => {
@@ -1879,6 +2057,9 @@ const Portfolio = () => {
             // Switch to edit mode
             setEditingPortId(port_id);
             setAllport("create");
+            // Mark form clean — user hasn't edited anything yet.
+            // setTimeout ensures this runs after the useEffect that flips isDirty=true on state changes.
+            setTimeout(() => setIsDirty(false), 0);
 
         } catch (error: any) {
             console.error('Edit load error:', error);
@@ -2003,7 +2184,7 @@ const Portfolio = () => {
                                                 }}
                                             >
                                                 {/* Profile image */}
-                                                {item.profile_url ? (
+                                                {item.profile_url && String(item.profile_url).trim() !== '' ? (
                                                     <img
                                                         src={item.profile_url}
                                                         alt={item.portfolio_name}
@@ -2013,6 +2194,14 @@ const Portfolio = () => {
                                                             borderRadius: '8px',
                                                             objectFit: 'cover',
                                                             flexShrink: 0
+                                                        }}
+                                                        onError={(e) => {
+                                                            // If image fails to load, replace it with the folder placeholder
+                                                            const img = e.currentTarget;
+                                                            const fallback = document.createElement('div');
+                                                            fallback.style.cssText = 'width:60px;height:60px;border-radius:8px;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:24px;color:#888;flex-shrink:0;';
+                                                            fallback.textContent = '📁';
+                                                            img.parentNode?.replaceChild(fallback, img);
                                                         }}
                                                     />
                                                 ) : (
@@ -2076,24 +2265,26 @@ const Portfolio = () => {
                                             {/* Action buttons */}
                                             <div style={{
                                                 display: 'flex',
-                                                gap: '12px',
+                                                gap: '10px',
                                                 alignItems: 'center',
                                                 justifyContent: 'flex-end'
                                             }}>
                                                 {/* Edit button */}
                                                 <button
                                                     onClick={() => handleEditPortfolio(item.port_id)}
+                                                    title="แก้ไข"
+                                                    aria-label="แก้ไข"
                                                     style={{
-                                                        padding: '10px 28px',
+                                                        padding: '10px 18px',
                                                         backgroundColor: '#007bff',
                                                         color: 'white',
                                                         border: 'none',
                                                         borderRadius: '4px',
                                                         cursor: 'pointer',
-                                                        fontSize: '13px',
-                                                        fontWeight: 'bold',
-                                                        transition: 'all 0.3s ease',
-                                                        whiteSpace: 'nowrap'
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        transition: 'all 0.3s ease'
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.currentTarget.style.backgroundColor = '#0056b3';
@@ -2104,23 +2295,61 @@ const Portfolio = () => {
                                                         e.currentTarget.style.boxShadow = 'none';
                                                     }}
                                                 >
-                                                    แก้ไข
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                    </svg>
+                                                </button>
+
+                                                {/* Download button */}
+                                                <button
+                                                    onClick={() => handleDownloadPortfolio(item.port_id)}
+                                                    title="ดาวน์โหลด"
+                                                    aria-label="ดาวน์โหลด"
+                                                    style={{
+                                                        padding: '10px 18px',
+                                                        backgroundColor: '#28a745',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#1e7e34';
+                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(40, 167, 69, 0.3)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#28a745';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }}
+                                                >
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                    </svg>
                                                 </button>
 
                                                 {/* Delete button */}
                                                 <button
                                                     onClick={() => handleDeletePortfolio(item.port_id)}
+                                                    title="ลบ"
+                                                    aria-label="ลบ"
                                                     style={{
-                                                        padding: '10px 28px',
+                                                        padding: '10px 18px',
                                                         backgroundColor: '#dc3545',
                                                         color: 'white',
                                                         border: 'none',
                                                         borderRadius: '4px',
                                                         cursor: 'pointer',
-                                                        fontSize: '13px',
-                                                        fontWeight: 'bold',
-                                                        transition: 'all 0.3s ease',
-                                                        whiteSpace: 'nowrap'
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        transition: 'all 0.3s ease'
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.currentTarget.style.backgroundColor = '#c82333';
@@ -2131,7 +2360,13 @@ const Portfolio = () => {
                                                         e.currentTarget.style.boxShadow = 'none';
                                                     }}
                                                 >
-                                                    ลบ
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                                        <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path>
+                                                        <path d="M10 11v6"></path>
+                                                        <path d="M14 11v6"></path>
+                                                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                    </svg>
                                                 </button>
                                             </div>
                                         </div>
@@ -2147,6 +2382,158 @@ const Portfolio = () => {
                 </>
             )}
             </div>
+
+            {/* ===== Template Selection Modal ===== */}
+            {showTemplateModal && (
+                <div
+                    onClick={() => setShowTemplateModal(false)}
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.6)',
+                        zIndex: 9999,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '20px'
+                    }}
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            background: '#fff',
+                            borderRadius: '12px',
+                            padding: '32px',
+                            maxWidth: '1100px',
+                            width: '100%',
+                            maxHeight: '90vh',
+                            overflowY: 'auto',
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                            fontFamily: 'Kanit, sans-serif'
+                        }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <h2 style={{ margin: 0, fontSize: '24px', color: '#333' }}>เลือกเทมเพลต</h2>
+                            <button
+                                type="button"
+                                onClick={() => setShowTemplateModal(false)}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    fontSize: '28px',
+                                    cursor: 'pointer',
+                                    color: '#666',
+                                    lineHeight: 1
+                                }}
+                                aria-label="close"
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+                            {[
+                                { id: 1 as const, name: 'Default', desc: 'หน้าตาแบบมาตรฐาน สีน้ำเงินและทอง', preview: '#1B2A4A', accent: '#C9A84C' },
+                                { id: 2 as const, name: 'Classic', desc: 'เรียบง่าย ฟอร์มอล สไตล์เอกสารราชการ', preview: '#000', accent: '#666' },
+                                { id: 3 as const, name: 'Modern', desc: 'ทันสมัย มี sidebar และสี accent', preview: '#0F4C75', accent: '#E94560' },
+                            ].map(tpl => {
+                                const isSelected = selectedTemplate === tpl.id;
+                                return (
+                                    <div
+                                        key={tpl.id}
+                                        onClick={() => {
+                                            setSelectedTemplate(tpl.id);
+                                            setShowTemplateModal(false);
+                                        }}
+                                        style={{
+                                            border: isSelected ? `3px solid ${tpl.accent}` : '2px solid #e0e0e0',
+                                            borderRadius: '12px',
+                                            padding: '16px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            background: isSelected ? '#f8f9fa' : '#fff',
+                                            position: 'relative'
+                                        }}
+                                    >
+                                        {isSelected && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '10px',
+                                                right: '10px',
+                                                background: tpl.accent,
+                                                color: '#fff',
+                                                width: '28px',
+                                                height: '28px',
+                                                borderRadius: '50%',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontWeight: 'bold'
+                                            }}>✓</div>
+                                        )}
+
+                                        {/* Preview */}
+                                        <div style={{
+                                            height: '220px',
+                                            background: tpl.preview,
+                                            borderRadius: '6px',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            display: 'flex',
+                                            flexDirection: tpl.id === 3 ? 'row' : 'column'
+                                        }}>
+                                            {tpl.id === 1 && (
+                                                <>
+                                                    <div style={{ height: '40px', background: tpl.accent, margin: '12px' }} />
+                                                    <div style={{ height: '8px', background: '#fff', margin: '4px 12px' }} />
+                                                    <div style={{ height: '8px', background: '#fff', margin: '4px 12px', width: '60%' }} />
+                                                    <div style={{ height: '60px', background: '#fff', margin: '12px' }} />
+                                                    <div style={{ height: '8px', background: '#fff', margin: '4px 12px' }} />
+                                                </>
+                                            )}
+                                            {tpl.id === 2 && (
+                                                <div style={{ background: '#fff', flex: 1, padding: '16px', margin: '4px' }}>
+                                                    <div style={{ height: '20px', background: '#000', marginBottom: '8px' }} />
+                                                    <div style={{ height: '4px', background: '#333', marginBottom: '4px' }} />
+                                                    <div style={{ height: '4px', background: '#333', marginBottom: '12px', width: '70%' }} />
+                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                        <div style={{ width: '50px', height: '60px', border: '1px solid #000' }} />
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ height: '4px', background: '#333', marginBottom: '4px' }} />
+                                                            <div style={{ height: '4px', background: '#333', marginBottom: '4px' }} />
+                                                            <div style={{ height: '4px', background: '#333', marginBottom: '4px' }} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {tpl.id === 3 && (
+                                                <>
+                                                    <div style={{ width: '40%', background: tpl.preview, padding: '12px' }}>
+                                                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: tpl.accent, margin: '0 auto 8px' }} />
+                                                        <div style={{ height: '4px', background: '#fff', marginBottom: '3px' }} />
+                                                        <div style={{ height: '4px', background: '#fff', marginBottom: '3px', width: '70%' }} />
+                                                    </div>
+                                                    <div style={{ flex: 1, background: '#F5F5F7', padding: '12px' }}>
+                                                        <div style={{ height: '6px', background: tpl.accent, marginBottom: '8px' }} />
+                                                        <div style={{ height: '4px', background: '#999', marginBottom: '4px' }} />
+                                                        <div style={{ height: '4px', background: '#999', marginBottom: '4px' }} />
+                                                        <div style={{ height: '4px', background: '#999', marginBottom: '8px', width: '60%' }} />
+                                                        <div style={{ height: '6px', background: tpl.accent, marginBottom: '8px' }} />
+                                                        <div style={{ height: '4px', background: '#999', marginBottom: '4px' }} />
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+
+                                        <h3 style={{ margin: '12px 0 4px', fontSize: '18px', color: '#333' }}>{tpl.name}</h3>
+                                        <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>{tpl.desc}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Contact />
         </div>
