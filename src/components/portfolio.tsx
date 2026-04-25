@@ -308,16 +308,14 @@ const Portfolio = () => {
             return String(v).trim() !== '';
         };
 
-        // ===== Personal: ALL fields including profile image =====
+        // ===== Personal: ALL fields (profile image is tracked separately, not required here) =====
         const personalFields: (keyof PersonalInfo)[] = [
             'portfolio_name', 'introduce', 'prefix', 'first_name', 'last_name',
             'date_birth', 'nationality', 'national_id',
             'phone_number1', 'phone_number2', 'email',
             'address', 'province', 'district', 'subdistrict', 'postal_code'
         ];
-        const personalAllFilled = personalFields.every(f => isFilled(Personal[f]));
-        const profilePresent = !!profileImage || isFilled(Personal.profile_image_url);
-        const personalDone = personalAllFilled && profilePresent;
+        const personalDone = personalFields.every(f => isFilled(Personal[f]));
 
         // ===== Education: ALL fields across ALL entries =====
         const eduFields: (keyof EducationalItem)[] = [
