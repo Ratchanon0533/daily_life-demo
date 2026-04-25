@@ -602,6 +602,34 @@ const Portfolio = () => {
         setProfileImage(file);
     };
 
+    // ===== Reset all form fields to defaults (used when opening "create" tab fresh) =====
+    const resetForm = () => {
+        setPersonal({
+            portfolio_name: '', introduce: '', prefix: '', first_name: '', last_name: '',
+            date_birth: '', nationality: '', national_id: '',
+            phone_number1: '', phone_number2: '', email: '',
+            address: '', province: '', district: '', subdistrict: '', postal_code: ''
+        });
+        setProfileImage(null);
+        setEducational([
+            { number: 1, school: '', graduation: '', educational_qualifications: '', province: '', district: '', study_path: '', grade_average: '', study_results: '' }
+        ]);
+        setSkillsAbilities({
+            details: '',
+            others: '',
+            language_skills: [{ language: '', listening: '', speaking: '', reading: '', writing: '' }]
+        });
+        setActivitiesCertificates([
+            { number: 1, name_project: '', date: '', photo: null, details: '', day: 1, month: 0, year: new Date().getFullYear() }
+        ]);
+        setUniversityChoice([{ university: '', faculty: '', major: '', details: '' }]);
+        // Reset birth date selectors to defaults
+        setDay(1);
+        setMonth(0);
+        setYear(new Date().getFullYear());
+        setSaveMessage(null);
+    };
+
     const handleEducationFileUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -929,18 +957,34 @@ const Portfolio = () => {
                                         className={styles["port-upload-btn"]}
                                         style={{ cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}
                                     >
-                                        {activity.photo instanceof File ? '✓ เลือกไฟล์แล้ว' : 'เลือกรูปภาพ'}
+                                        {activity.photo instanceof File
+                                            ? '✓ เลือกไฟล์แล้ว'
+                                            : (typeof activity.photo === 'string' && activity.photo.trim() !== ''
+                                                ? '✓ มีรูปอยู่แล้ว'
+                                                : 'เลือกรูปภาพ')}
                                     </label>
                                     {activity.photo instanceof File && (
                                         <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
                                             {(activity.photo as File).name}
                                         </p>
                                     )}
+                                    {!(activity.photo instanceof File) &&
+                                        typeof activity.photo === 'string' &&
+                                        activity.photo.trim() !== '' && (
+                                        <a
+                                            href={activity.photo}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ fontSize: '12px', color: '#007bff', marginTop: '5px', display: 'inline-block', textDecoration: 'underline' }}
+                                        >
+                                            ดูรูปที่อัปโหลดไว้
+                                        </a>
+                                    )}
                                 </div>
                             </div>
 
                             <div className={styles["personal-section"]}>
-                                <div className={styles["name-group"]} style={{ width: '100%' }}>
+                                <div className={styles["name-group"]} style={{ width: '100%', marginTop: "1rem" }}>
                                     <p>ระบุรายละเอียด</p>
                                     <textarea
                                         className={styles["port-textarea"]}
@@ -970,6 +1014,13 @@ const Portfolio = () => {
                                 alt="Portfolio"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                             />
+                        ) : Personal.profile_image_url ? (
+                            <img
+                                className={styles["port-image"]}
+                                src={Personal.profile_image_url}
+                                alt="Portfolio"
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            />
                         ) : (
                             <div className={styles["port-image-placeholder"]}>ไม่มีรูปภาพ</div>
                         )}
@@ -992,7 +1043,7 @@ const Portfolio = () => {
                                 className={styles["port-upload-btn"]}
                                 style={{ opacity: saving ? 0.6 : 1, cursor: saving ? 'not-allowed' : 'pointer' }}
                             >
-                                {profileImage ? '✓ เลือกรูปแล้ว' : 'อัพโหลดรูปภาพ'}
+                                {profileImage ? '✓ เลือกรูปแล้ว' : (Personal.profile_image_url ? '✓ มีรูปอยู่แล้ว' : 'อัพโหลดรูปภาพ')}
                             </label>
                             <button
                                 type="button"
@@ -1517,12 +1568,28 @@ const Portfolio = () => {
                                         className={styles["port-upload-btn"]}
                                         style={{ cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}
                                     >
-                                        {educational[0]?.study_results instanceof File ? '✓ เลือกไฟล์แล้ว' : 'เลือกไฟล์'}
+                                        {educational[0]?.study_results instanceof File
+                                            ? '✓ เลือกไฟล์แล้ว'
+                                            : (typeof educational[0]?.study_results === 'string' && educational[0].study_results.trim() !== ''
+                                                ? '✓ มีไฟล์อยู่แล้ว'
+                                                : 'เลือกไฟล์')}
                                     </label>
                                     {educational[0]?.study_results instanceof File && (
                                         <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
                                             {(educational[0].study_results as File).name}
                                         </p>
+                                    )}
+                                    {!(educational[0]?.study_results instanceof File) &&
+                                        typeof educational[0]?.study_results === 'string' &&
+                                        educational[0].study_results.trim() !== '' && (
+                                        <a
+                                            href={educational[0].study_results}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ fontSize: '12px', color: '#007bff', marginTop: '5px', display: 'inline-block', textDecoration: 'underline' }}
+                                        >
+                                            ดูไฟล์ที่อัปโหลดไว้
+                                        </a>
                                     )}
                                 </div>
                             </div>
@@ -1870,12 +1937,28 @@ const Portfolio = () => {
             }
 
             // Activities
+            const parsePhoto = (raw: any): string[] => {
+                if (!raw) return [];
+                if (Array.isArray(raw)) return raw.filter(Boolean);
+                if (typeof raw !== 'string') return [];
+                const trimmed = raw.trim();
+                if (trimmed.startsWith('[')) {
+                    try {
+                        const parsed = JSON.parse(trimmed);
+                        return Array.isArray(parsed) ? parsed.filter(Boolean) : [trimmed];
+                    } catch {
+                        return [trimmed];
+                    }
+                }
+                return [trimmed];
+            };
+
             const activities = (activitiesData.success && activitiesData.data?.length > 0)
                 ? activitiesData.data.map((a: any) => ({
                     name_project: a.name_project,
                     date: a.date,
                     description: a.details,
-                    photos: a.photo_url ? [a.photo_url] : (a.photo ? [a.photo] : []),
+                    photos: parsePhoto(a.photo_url ?? a.photo),
                 }))
                 : [];
 
@@ -2033,7 +2116,27 @@ const Portfolio = () => {
             if (activitiesData.success && activitiesData.data?.length > 0) {
                 const activities = activitiesData.data.map((act: any) => {
                     let actDay = 1, actMonth = 0, actYear = new Date().getFullYear();
-                    const photo = act.photo_url || act.photo || null;
+                    // photo column is a JSON array (e.g. ["https://..."]) — parse and take first URL.
+                    // Also handle older rows that stored a plain URL string.
+                    let photo: any = null;
+                    const raw = act.photo_url ?? act.photo;
+                    if (raw) {
+                        if (Array.isArray(raw)) {
+                            photo = raw[0] || null;
+                        } else if (typeof raw === 'string') {
+                            const trimmed = raw.trim();
+                            if (trimmed.startsWith('[')) {
+                                try {
+                                    const parsed = JSON.parse(trimmed);
+                                    photo = Array.isArray(parsed) ? (parsed[0] || null) : trimmed;
+                                } catch {
+                                    photo = trimmed;
+                                }
+                            } else {
+                                photo = trimmed;
+                            }
+                        }
+                    }
                     if (act.date) {
                         const d = new Date(act.date);
                         if (!isNaN(d.getTime())) {
@@ -2094,6 +2197,7 @@ const Portfolio = () => {
                                 onClick={() => {
                                     setAllport("create");
                                     setEditingPortId(null);
+                                    resetForm();
                                     // Generate a fresh portId whenever user opens the create tab
                                     const storedUserData = localStorage.getItem("user");
                                     const parsed = storedUserData ? JSON.parse(storedUserData) : null;
