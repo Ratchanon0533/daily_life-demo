@@ -2070,16 +2070,18 @@ const Portfolio = () => {
 
             // --- Personal info ---
             if (personalData.success && personalData.data?.length > 0) {
-                const p = personalData.data[0];
-                setPersonal(p);
+                const p = { ...personalData.data[0] };
+                // Normalize date_birth to YYYY-MM-DD (DB MySQL DATE column can't accept ISO datetime)
                 if (p.date_birth) {
                     const d = new Date(p.date_birth);
                     if (!isNaN(d.getTime())) {
+                        p.date_birth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                         setDay(d.getDate());
                         setMonth(d.getMonth());
                         setYear(d.getFullYear());
                     }
                 }
+                setPersonal(p);
             }
 
             // --- Educational ---
@@ -2145,7 +2147,16 @@ const Portfolio = () => {
                             actYear = d.getFullYear();
                         }
                     }
-                    return { ...act, photo, day: actDay, month: actMonth, year: actYear };
+                    // Normalize date to YYYY-MM-DD so it can be saved back to a MySQL DATE column.
+                    // Backend may return ISO string or Date object, both of which break the DATE column.
+                    let normalizedDate = act.date;
+                    if (act.date) {
+                        const d = new Date(act.date);
+                        if (!isNaN(d.getTime())) {
+                            normalizedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                        }
+                    }
+                    return { ...act, date: normalizedDate, photo, day: actDay, month: actMonth, year: actYear };
                 });
                 setActivitiesCertificates(activities);
             }
@@ -2242,160 +2253,73 @@ const Portfolio = () => {
                                     </button>
                                 </div>
                             ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <>
+                                <div className={`${styles["all-port-grid"]} ${styles["desktop-only"]}`}>
                                     {portList.map((item) => (
                                         <div
                                             key={item.port_id}
-                                            style={{
-                                                border: '1px solid #ddd',
-                                                borderRadius: '8px',
-                                                padding: '16px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '12px',
-                                                background: '#fff',
-                                                transition: 'all 0.3s ease',
-                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-                                            }}
+                                            className={styles["all-port-card"]}
                                         >
-                                            {/* Profile section */}
+                                            {/* Top: clickable preview area (image + info) */}
                                             <div
                                                 onClick={() => handleEditPortfolio(item.port_id)}
                                                 style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '12px',
                                                     cursor: 'pointer',
-                                                    transition: 'all 0.3s ease'
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    const parent = e.currentTarget.parentElement;
-                                                    if (parent) {
-                                                        parent.style.background = '#f5f5f5';
-                                                        parent.style.borderColor = '#0066cc';
-                                                        parent.style.boxShadow = '0 2px 8px rgba(0, 102, 204, 0.1)';
-                                                    }
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    const parent = e.currentTarget.parentElement;
-                                                    if (parent) {
-                                                        parent.style.background = '#fff';
-                                                        parent.style.borderColor = '#ddd';
-                                                        parent.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
-                                                    }
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    flex: 1
                                                 }}
                                             >
-                                                {/* Profile image */}
-                                                {item.profile_url && String(item.profile_url).trim() !== '' ? (
-                                                    <img
-                                                        src={item.profile_url}
-                                                        alt={item.portfolio_name}
-                                                        style={{
-                                                            width: '60px',
-                                                            height: '60px',
-                                                            borderRadius: '8px',
-                                                            objectFit: 'cover',
-                                                            flexShrink: 0
-                                                        }}
-                                                        onError={(e) => {
-                                                            // If image fails to load, replace it with the folder placeholder
-                                                            const img = e.currentTarget;
-                                                            const fallback = document.createElement('div');
-                                                            fallback.style.cssText = 'width:60px;height:60px;border-radius:8px;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:24px;color:#888;flex-shrink:0;';
-                                                            fallback.textContent = '📁';
-                                                            img.parentNode?.replaceChild(fallback, img);
-                                                        }}
-                                                    />
-                                                ) : (
-                                                    <div
-                                                        style={{
-                                                            width: '60px',
-                                                            height: '60px',
-                                                            borderRadius: '8px',
-                                                            background: '#e0e0e0',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            fontSize: '24px',
-                                                            color: '#888',
-                                                            flexShrink: 0
-                                                        }}
-                                                    >
-                                                        📁
-                                                    </div>
-                                                )}
+                                                {/* Cover image */}
+                                                <div className={styles["all-port-card-image-wrap"]}>
+                                                    {item.profile_url && String(item.profile_url).trim() !== '' ? (
+                                                        <img
+                                                            src={item.profile_url}
+                                                            alt={item.portfolio_name}
+                                                            className={styles["all-port-card-image"]}
+                                                            onError={(e) => {
+                                                                const img = e.currentTarget;
+                                                                const fallback = document.createElement('div');
+                                                                fallback.className = img.parentElement?.querySelector(':scope > div')?.className || '';
+                                                                fallback.style.cssText = 'width:100%;height:100%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:48px;color:#888;';
+                                                                fallback.textContent = '📁';
+                                                                img.parentNode?.replaceChild(fallback, img);
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className={styles["all-port-card-image-placeholder"]}>
+                                                            📁
+                                                        </div>
+                                                    )}
+                                                </div>
 
-                                                {/* Portfolio info */}
-                                                <div style={{ textAlign: 'left' }}>
-                                                    <div style={{
-                                                        fontWeight: 'bold',
-                                                        fontSize: '16px',
-                                                        color: '#000000',
-                                                        marginBottom: '4px'
-                                                    }}>
+                                                {/* Info */}
+                                                <div className={styles["all-port-card-info"]}>
+                                                    <div className={styles["all-port-card-title"]}>
                                                         {item.portfolio_name || 'ไม่มีชื่อ'}
                                                     </div>
-                                                    <div style={{
-                                                        fontSize: '12px',
-                                                        color: '#666',
-                                                        marginBottom: '4px'
-                                                    }}>
-                                                        {new Date(item.created_at).toLocaleDateString('th-TH', {
+                                                    <div className={styles["all-port-card-date"]}>
+                                                        📅 {new Date(item.created_at).toLocaleDateString('th-TH', {
                                                             year: 'numeric',
                                                             month: 'long',
                                                             day: 'numeric'
                                                         })}
                                                     </div>
-                                                    <div style={{
-                                                        fontSize: '11px',
-                                                        color: '#999'
-                                                    }}>
+                                                    <div className={styles["all-port-card-id"]}>
                                                         ID: {item.port_id}
                                                     </div>
                                                 </div>
-
-                                                {/* Arrow icon */}
-                                                <div style={{
-                                                    fontSize: '18px',
-                                                    color: '#0066cc',
-                                                    transition: 'transform 0.3s ease'
-                                                }}>
-                                                    →
-                                                </div>
                                             </div>
 
-                                            {/* Action buttons */}
-                                            <div style={{
-                                                display: 'flex',
-                                                gap: '10px',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-end'
-                                            }}>
+                                            {/* Bottom action buttons */}
+                                            <div className={styles["all-port-card-actions"]}>
                                                 {/* Edit button */}
                                                 <button
-                                                    onClick={() => handleEditPortfolio(item.port_id)}
+                                                    onClick={(e) => { e.stopPropagation(); handleEditPortfolio(item.port_id); }}
                                                     title="แก้ไข"
                                                     aria-label="แก้ไข"
-                                                    style={{
-                                                        padding: '10px 18px',
-                                                        backgroundColor: '#007bff',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        transition: 'all 0.3s ease'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#0056b3';
-                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 86, 179, 0.3)';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#007bff';
-                                                        e.currentTarget.style.boxShadow = 'none';
-                                                    }}
+                                                    className={styles["all-port-action-btn"]}
+                                                    style={{ backgroundColor: '#007bff' }}
                                                 >
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -2405,29 +2329,11 @@ const Portfolio = () => {
 
                                                 {/* Download button */}
                                                 <button
-                                                    onClick={() => handleDownloadPortfolio(item.port_id)}
+                                                    onClick={(e) => { e.stopPropagation(); handleDownloadPortfolio(item.port_id); }}
                                                     title="ดาวน์โหลด"
                                                     aria-label="ดาวน์โหลด"
-                                                    style={{
-                                                        padding: '10px 18px',
-                                                        backgroundColor: '#28a745',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        transition: 'all 0.3s ease'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#1e7e34';
-                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(40, 167, 69, 0.3)';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#28a745';
-                                                        e.currentTarget.style.boxShadow = 'none';
-                                                    }}
+                                                    className={styles["all-port-action-btn"]}
+                                                    style={{ backgroundColor: '#28a745' }}
                                                 >
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -2438,29 +2344,11 @@ const Portfolio = () => {
 
                                                 {/* Delete button */}
                                                 <button
-                                                    onClick={() => handleDeletePortfolio(item.port_id)}
+                                                    onClick={(e) => { e.stopPropagation(); handleDeletePortfolio(item.port_id); }}
                                                     title="ลบ"
                                                     aria-label="ลบ"
-                                                    style={{
-                                                        padding: '10px 18px',
-                                                        backgroundColor: '#dc3545',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        transition: 'all 0.3s ease'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#c82333';
-                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(220, 53, 69, 0.3)';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#dc3545';
-                                                        e.currentTarget.style.boxShadow = 'none';
-                                                    }}
+                                                    className={styles["all-port-action-btn"]}
+                                                    style={{ backgroundColor: '#dc3545' }}
                                                 >
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                         <polyline points="3 6 5 6 21 6"></polyline>
@@ -2473,7 +2361,140 @@ const Portfolio = () => {
                                             </div>
                                         </div>
                                     ))}
+
+                                    {/* "Create new" card with + icon */}
+                                    <div
+                                        className={styles["all-port-add-card"]}
+                                        onClick={() => {
+                                            setAllport("create");
+                                            setEditingPortId(null);
+                                            resetForm();
+                                            const storedUserData = localStorage.getItem("user");
+                                            const parsed = storedUserData ? JSON.parse(storedUserData) : null;
+                                            const seed = parsed?.username || 'anon';
+                                            setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
+                                        }}
+                                        role="button"
+                                        aria-label="สร้างแฟ้มสะสมผลงานใหม่"
+                                    >
+                                        <div className={styles["all-port-add-icon"]}>+</div>
+                                        <div className={styles["all-port-add-text"]}>สร้างแฟ้มสะสมผลงานใหม่</div>
+                                    </div>
                                 </div>
+
+                                {/* Mobile-only list view (matches the original list style with arrow) */}
+                                <div className={`${styles["all-port-list"]} ${styles["mobile-only"]}`}>
+                                    {portList.map((item) => (
+                                        <div
+                                            key={item.port_id}
+                                            style={{
+                                                border: '1px solid #ddd',
+                                                borderRadius: '8px',
+                                                padding: '16px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '12px',
+                                                background: '#fff',
+                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                                marginBottom: '12px'
+                                            }}
+                                        >
+                                            {/* Profile section (clickable) */}
+                                            <div
+                                                onClick={() => handleEditPortfolio(item.port_id)}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '12px',
+                                                    cursor: 'pointer',
+                                                    flex: 1,
+                                                    minWidth: 0
+                                                }}
+                                            >
+                                                {item.profile_url && String(item.profile_url).trim() !== '' ? (
+                                                    <img
+                                                        src={item.profile_url}
+                                                        alt={item.portfolio_name}
+                                                        style={{
+                                                            width: '50px',
+                                                            height: '50px',
+                                                            borderRadius: '8px',
+                                                            objectFit: 'cover',
+                                                            flexShrink: 0
+                                                        }}
+                                                        onError={(e) => {
+                                                            const img = e.currentTarget;
+                                                            const fallback = document.createElement('div');
+                                                            fallback.style.cssText = 'width:50px;height:50px;border-radius:8px;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:22px;color:#888;flex-shrink:0;';
+                                                            fallback.textContent = '📁';
+                                                            img.parentNode?.replaceChild(fallback, img);
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div style={{
+                                                        width: '50px', height: '50px', borderRadius: '8px',
+                                                        background: '#e0e0e0', display: 'flex',
+                                                        alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '22px', color: '#888', flexShrink: 0
+                                                    }}>📁</div>
+                                                )}
+
+                                                <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
+                                                    <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#000', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        {item.portfolio_name || 'ไม่มีชื่อ'}
+                                                    </div>
+                                                    <div style={{ fontSize: '11px', color: '#666' }}>
+                                                        {new Date(item.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' })}
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ fontSize: '18px', color: '#0066cc', flexShrink: 0 }}>→</div>
+                                            </div>
+
+                                            {/* Action buttons */}
+                                            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleEditPortfolio(item.port_id); }}
+                                                    title="แก้ไข"
+                                                    aria-label="แก้ไข"
+                                                    style={{ width: '36px', height: '36px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleDownloadPortfolio(item.port_id); }}
+                                                    title="ดาวน์โหลด"
+                                                    aria-label="ดาวน์โหลด"
+                                                    style={{ width: '36px', height: '36px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleDeletePortfolio(item.port_id); }}
+                                                    title="ลบ"
+                                                    aria-label="ลบ"
+                                                    style={{ width: '36px', height: '36px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                                        <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path>
+                                                        <path d="M10 11v6"></path>
+                                                        <path d="M14 11v6"></path>
+                                                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                </>
                             )}
                         </div>
 
