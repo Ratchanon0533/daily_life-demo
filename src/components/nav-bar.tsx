@@ -51,9 +51,9 @@ const Nav = () => {
                                 <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/activities" >ค้นหากิจกรรม</a>
                             </li>
                             
-                            <li className="nav-item">
+                            {/* <li className="nav-item">
                                 <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >ค้นหาตัวตน</a>
-                            </li>
+                            </li> */}
                             <li className="nav-item">
                                 <a className="nav-link nav-text-custom" style={{ marginTop: "-0.01rem" }} href="/About" >เกี่ยวกับเดลี่ไลพ์</a>
                             </li>

@@ -310,23 +310,6 @@ ${summary}
           <NoLoginPrompt />
         ) : (
           <div className="sdq-container">
-            {/* Settings */}
-            <div className="sdq-settings-bar">
-              <span className="sdq-settings-label">🦙 Ollama</span>
-              <input
-                className="sdq-settings-input"
-                value={ollamaUrl}
-                onChange={(e) => setOllamaUrl(e.target.value)}
-                placeholder="http://localhost:11434"
-              />
-              <input
-                className="sdq-settings-input sdq-settings-input--short"
-                value={ollamaModel}
-                onChange={(e) => setOllamaModel(e.target.value)}
-                placeholder="llama3.2"
-              />
-            </div>
-
             {error && <div className="sdq-error">⚠️ {error}</div>}
 
             {step === "intro"   && <Intro onStart={() => setStep("quiz")} />}
