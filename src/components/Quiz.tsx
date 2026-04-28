@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import Nav from './nav-bar';
 import Navlogin from './nav-bar(login)';
 import './css/Selfdiscoveryquiz.css';
+import Contact from './HomeSection/contact';
 
 // ============================================================
 // TYPES
@@ -331,6 +332,7 @@ ${summary}
           </div>
         )}
       </div>
+      <Contact />
     </>
   );
 };
