@@ -971,15 +971,15 @@ const Portfolio = () => {
                                     {!(activity.photo instanceof File) &&
                                         typeof activity.photo === 'string' &&
                                         activity.photo.trim() !== '' && (
-                                        <a
-                                            href={activity.photo}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ fontSize: '12px', color: '#007bff', marginTop: '5px', display: 'inline-block', textDecoration: 'underline' }}
-                                        >
-                                            ดูรูปที่อัปโหลดไว้
-                                        </a>
-                                    )}
+                                            <a
+                                                href={activity.photo}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ fontSize: '12px', color: '#007bff', marginTop: '5px', display: 'inline-block', textDecoration: 'underline' }}
+                                            >
+                                                ดูรูปที่อัปโหลดไว้
+                                            </a>
+                                        )}
                                 </div>
                             </div>
 
@@ -1175,38 +1175,38 @@ const Portfolio = () => {
 
                             const PdfComponent =
                                 selectedTemplate === 2 ? PortfolioPDFClassic :
-                                selectedTemplate === 3 ? PortfolioPDFModern :
-                                PortfolioPDF;
+                                    selectedTemplate === 3 ? PortfolioPDFModern :
+                                        PortfolioPDF;
 
                             return (
                                 <PDFDownloadLink
                                     document={<PdfComponent {...pdfProps} />}
-                            fileName={
-                                Personal.portfolio_name && Personal.portfolio_name.trim() !== ''
-                                    ? `${Personal.portfolio_name}.pdf`
-                                    : 'Portfolio.pdf'
-                            }
-                        >
-                            {({ loading }) => (
-                                <button
-                                    type="button"
-                                    className={styles["export-btn"]}
-                                    disabled={loading}
-                                    style={{
-                                        padding: '8px',
-                                        backgroundColor: loading ? '#ccc' : '#e67e22',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '12px',
-                                        cursor: loading ? 'not-allowed' : 'pointer',
-
-
-                                    }}
+                                    fileName={
+                                        Personal.portfolio_name && Personal.portfolio_name.trim() !== ''
+                                            ? `${Personal.portfolio_name}.pdf`
+                                            : 'Portfolio.pdf'
+                                    }
                                 >
-                                    {loading ? 'กำลังสร้าง PDF...' : 'Export to PDF'}
-                                </button>
-                            )}
-                        </PDFDownloadLink>
+                                    {({ loading }) => (
+                                        <button
+                                            type="button"
+                                            className={styles["export-btn"]}
+                                            disabled={loading}
+                                            style={{
+                                                padding: '8px',
+                                                backgroundColor: loading ? '#ccc' : '#e67e22',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '12px',
+                                                cursor: loading ? 'not-allowed' : 'pointer',
+
+
+                                            }}
+                                        >
+                                            {loading ? 'กำลังสร้าง PDF...' : 'Export to PDF'}
+                                        </button>
+                                    )}
+                                </PDFDownloadLink>
                             );
                         })()}
                     </div>
@@ -1582,15 +1582,15 @@ const Portfolio = () => {
                                     {!(educational[0]?.study_results instanceof File) &&
                                         typeof educational[0]?.study_results === 'string' &&
                                         educational[0].study_results.trim() !== '' && (
-                                        <a
-                                            href={educational[0].study_results}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ fontSize: '12px', color: '#007bff', marginTop: '5px', display: 'inline-block', textDecoration: 'underline' }}
-                                        >
-                                            ดูไฟล์ที่อัปโหลดไว้
-                                        </a>
-                                    )}
+                                            <a
+                                                href={educational[0].study_results}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ fontSize: '12px', color: '#007bff', marginTop: '5px', display: 'inline-block', textDecoration: 'underline' }}
+                                            >
+                                                ดูไฟล์ที่อัปโหลดไว้
+                                            </a>
+                                        )}
                                 </div>
                             </div>
                         </div>
@@ -2016,8 +2016,8 @@ const Portfolio = () => {
             // Pick the same template the user chose for the create-mode export
             const PdfComponent =
                 selectedTemplate === 2 ? PortfolioPDFClassic :
-                selectedTemplate === 3 ? PortfolioPDFModern :
-                PortfolioPDF;
+                    selectedTemplate === 3 ? PortfolioPDFModern :
+                        PortfolioPDF;
 
             // Generate the PDF blob and trigger download
             const blob = await pdf(<PdfComponent {...pdfProps} />).toBlob();
@@ -2185,9 +2185,11 @@ const Portfolio = () => {
                 {mode === "no-login" && (
                     <>
                         <Nav />
-                        <h1 style={{ textAlign: 'center', padding: '40px', color: '#333' }}>
-                            กรุณาลงชื่อเข้าใช้เพื่อสร้างแฟ้มสะสมผลงาน
-                        </h1>
+                        <div className="sdq-no-login">
+                            <div className="sdq-no-login__icon">🔒</div>
+                            <h2 className="sdq-no-login__title">กรุณาลงชื่อเข้าใช้</h2>
+                            <p className="sdq-no-login__sub">เพื่อเริ่มทำแบบทดสอบค้นหาตัวเองและรับคำแนะนำ</p>
+                        </div>
                     </>
                 )}
 
@@ -2199,311 +2201,311 @@ const Portfolio = () => {
                                 <button
                                     className={styles["port-btn"]}
                                     onClick={() => setAllport("allport")}
-                                style={{ backgroundColor: port === "allport" ? '#007bff' : '#6c757d' }}
-                            >
-                                จัดการแฟ้มสะสมผลงานทั้งหมด
-                            </button>
-                            <button
-                                className={styles["port-btn"]}
-                                onClick={() => {
-                                    setAllport("create");
-                                    setEditingPortId(null);
-                                    resetForm();
-                                    // Generate a fresh portId whenever user opens the create tab
-                                    const storedUserData = localStorage.getItem("user");
-                                    const parsed = storedUserData ? JSON.parse(storedUserData) : null;
-                                    const seed = parsed?.username || 'anon';
-                                    setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
-                                }}
-                                style={{ backgroundColor: port === "create" ? '#007bff' : '#6c757d' }}
-                            >
-                                สร้างแฟ้มสะสมผลงาน
-                            </button>
+                                    style={{ backgroundColor: port === "allport" ? '#007bff' : '#6c757d' }}
+                                >
+                                    จัดการแฟ้มสะสมผลงานทั้งหมด
+                                </button>
+                                <button
+                                    className={styles["port-btn"]}
+                                    onClick={() => {
+                                        setAllport("create");
+                                        setEditingPortId(null);
+                                        resetForm();
+                                        // Generate a fresh portId whenever user opens the create tab
+                                        const storedUserData = localStorage.getItem("user");
+                                        const parsed = storedUserData ? JSON.parse(storedUserData) : null;
+                                        const seed = parsed?.username || 'anon';
+                                        setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
+                                    }}
+                                    style={{ backgroundColor: port === "create" ? '#007bff' : '#6c757d' }}
+                                >
+                                    สร้างแฟ้มสะสมผลงาน
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    {port === "allport" && (
-                        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-                            <h2 style={{ marginBottom: '24px', color: '#333' , fontFamily: 'Kanit, sans-serif'}}>แฟ้มสะสมผลงานของฉัน</h2>
+                        {port === "allport" && (
+                            <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+                                <h2 style={{ marginBottom: '24px', color: '#333', fontFamily: 'Kanit, sans-serif' }}>แฟ้มสะสมผลงานของฉัน</h2>
 
-                            {portList.length === 0 ? (
-                                <div style={{
-                                    textAlign: 'center',
-                                    padding: '40px 200px',
-                                    backgroundColor: '#f9f9f9',
-                                    borderRadius: '8px',
-                                    color: '#666'
-                                }}>
-                                    <p style={{ fontSize: '16px', marginBottom: '20px' }}>
-                                        คุณยังไม่มีแฟ้มสะสมผลงาน
-                                    </p>
-                                    <button
-                                        onClick={() => setAllport("create")}
-                                        style={{
-                                            padding: '10px 20px',
-                                            backgroundColor: '#007bff',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px'
-                                        }}
-                                    >
-                                        สร้างแฟ้มสะสมผลงานใหม่
-                                    </button>
-                                </div>
-                            ) : (
-                                <>
-                                <div className={`${styles["all-port-grid"]} ${styles["desktop-only"]}`}>
-                                    {portList.map((item) => (
-                                        <div
-                                            key={item.port_id}
-                                            className={styles["all-port-card"]}
-                                        >
-                                            {/* Top: clickable preview area (image + info) */}
-                                            <div
-                                                onClick={() => handleEditPortfolio(item.port_id)}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    flex: 1
-                                                }}
-                                            >
-                                                {/* Cover image */}
-                                                <div className={styles["all-port-card-image-wrap"]}>
-                                                    {item.profile_url && String(item.profile_url).trim() !== '' ? (
-                                                        <img
-                                                            src={item.profile_url}
-                                                            alt={item.portfolio_name}
-                                                            className={styles["all-port-card-image"]}
-                                                            onError={(e) => {
-                                                                const img = e.currentTarget;
-                                                                const fallback = document.createElement('div');
-                                                                fallback.className = img.parentElement?.querySelector(':scope > div')?.className || '';
-                                                                fallback.style.cssText = 'width:100%;height:100%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:48px;color:#888;';
-                                                                fallback.textContent = '📁';
-                                                                img.parentNode?.replaceChild(fallback, img);
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <div className={styles["all-port-card-image-placeholder"]}>
-                                                            📁
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {/* Info */}
-                                                <div className={styles["all-port-card-info"]}>
-                                                    <div className={styles["all-port-card-title"]}>
-                                                        {item.portfolio_name || 'ไม่มีชื่อ'}
-                                                    </div>
-                                                    <div className={styles["all-port-card-date"]}>
-                                                        📅 {new Date(item.created_at).toLocaleDateString('th-TH', {
-                                                            year: 'numeric',
-                                                            month: 'long',
-                                                            day: 'numeric'
-                                                        })}
-                                                    </div>
-                                                    <div className={styles["all-port-card-id"]}>
-                                                        ID: {item.port_id}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Bottom action buttons */}
-                                            <div className={styles["all-port-card-actions"]}>
-                                                {/* Edit button */}
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleEditPortfolio(item.port_id); }}
-                                                    title="แก้ไข"
-                                                    aria-label="แก้ไข"
-                                                    className={styles["all-port-action-btn"]}
-                                                    style={{ backgroundColor: '#007bff' }}
-                                                >
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                                    </svg>
-                                                </button>
-
-                                                {/* Download button */}
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDownloadPortfolio(item.port_id); }}
-                                                    title="ดาวน์โหลด"
-                                                    aria-label="ดาวน์โหลด"
-                                                    className={styles["all-port-action-btn"]}
-                                                    style={{ backgroundColor: '#28a745' }}
-                                                >
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                    </svg>
-                                                </button>
-
-                                                {/* Delete button */}
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDeletePortfolio(item.port_id); }}
-                                                    title="ลบ"
-                                                    aria-label="ลบ"
-                                                    className={styles["all-port-action-btn"]}
-                                                    style={{ backgroundColor: '#dc3545' }}
-                                                >
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                                        <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path>
-                                                        <path d="M10 11v6"></path>
-                                                        <path d="M14 11v6"></path>
-                                                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    {/* "Create new" card with + icon */}
-                                    <div
-                                        className={styles["all-port-add-card"]}
-                                        onClick={() => {
-                                            setAllport("create");
-                                            setEditingPortId(null);
-                                            resetForm();
-                                            const storedUserData = localStorage.getItem("user");
-                                            const parsed = storedUserData ? JSON.parse(storedUserData) : null;
-                                            const seed = parsed?.username || 'anon';
-                                            setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
-                                        }}
-                                        role="button"
-                                        aria-label="สร้างแฟ้มสะสมผลงานใหม่"
-                                    >
-                                        <div className={styles["all-port-add-icon"]}>+</div>
-                                        <div className={styles["all-port-add-text"]}>สร้างแฟ้มสะสมผลงานใหม่</div>
-                                    </div>
-                                </div>
-
-                                {/* Mobile-only list view (matches the original list style with arrow) */}
-                                <div className={`${styles["all-port-list"]} ${styles["mobile-only"]}`}>
-                                    {portList.map((item) => (
-                                        <div
-                                            key={item.port_id}
+                                {portList.length === 0 ? (
+                                    <div style={{
+                                        textAlign: 'center',
+                                        padding: '40px 200px',
+                                        backgroundColor: '#f9f9f9',
+                                        borderRadius: '8px',
+                                        color: '#666'
+                                    }}>
+                                        <p style={{ fontSize: '16px', marginBottom: '20px' }}>
+                                            คุณยังไม่มีแฟ้มสะสมผลงาน
+                                        </p>
+                                        <button
+                                            onClick={() => setAllport("create")}
                                             style={{
-                                                border: '1px solid #ddd',
-                                                borderRadius: '8px',
-                                                padding: '16px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '12px',
-                                                background: '#fff',
-                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                                                marginBottom: '12px'
+                                                padding: '10px 20px',
+                                                backgroundColor: '#007bff',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                fontSize: '14px'
                                             }}
                                         >
-                                            {/* Profile section (clickable) */}
-                                            <div
-                                                onClick={() => handleEditPortfolio(item.port_id)}
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '12px',
-                                                    cursor: 'pointer',
-                                                    flex: 1,
-                                                    minWidth: 0
-                                                }}
-                                            >
-                                                {item.profile_url && String(item.profile_url).trim() !== '' ? (
-                                                    <img
-                                                        src={item.profile_url}
-                                                        alt={item.portfolio_name}
+                                            สร้างแฟ้มสะสมผลงานใหม่
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className={`${styles["all-port-grid"]} ${styles["desktop-only"]}`}>
+                                            {portList.map((item) => (
+                                                <div
+                                                    key={item.port_id}
+                                                    className={styles["all-port-card"]}
+                                                >
+                                                    {/* Top: clickable preview area (image + info) */}
+                                                    <div
+                                                        onClick={() => handleEditPortfolio(item.port_id)}
                                                         style={{
-                                                            width: '50px',
-                                                            height: '50px',
-                                                            borderRadius: '8px',
-                                                            objectFit: 'cover',
-                                                            flexShrink: 0
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            flex: 1
                                                         }}
-                                                        onError={(e) => {
-                                                            const img = e.currentTarget;
-                                                            const fallback = document.createElement('div');
-                                                            fallback.style.cssText = 'width:50px;height:50px;border-radius:8px;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:22px;color:#888;flex-shrink:0;';
-                                                            fallback.textContent = '📁';
-                                                            img.parentNode?.replaceChild(fallback, img);
-                                                        }}
-                                                    />
-                                                ) : (
-                                                    <div style={{
-                                                        width: '50px', height: '50px', borderRadius: '8px',
-                                                        background: '#e0e0e0', display: 'flex',
-                                                        alignItems: 'center', justifyContent: 'center',
-                                                        fontSize: '22px', color: '#888', flexShrink: 0
-                                                    }}>📁</div>
-                                                )}
+                                                    >
+                                                        {/* Cover image */}
+                                                        <div className={styles["all-port-card-image-wrap"]}>
+                                                            {item.profile_url && String(item.profile_url).trim() !== '' ? (
+                                                                <img
+                                                                    src={item.profile_url}
+                                                                    alt={item.portfolio_name}
+                                                                    className={styles["all-port-card-image"]}
+                                                                    onError={(e) => {
+                                                                        const img = e.currentTarget;
+                                                                        const fallback = document.createElement('div');
+                                                                        fallback.className = img.parentElement?.querySelector(':scope > div')?.className || '';
+                                                                        fallback.style.cssText = 'width:100%;height:100%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:48px;color:#888;';
+                                                                        fallback.textContent = '📁';
+                                                                        img.parentNode?.replaceChild(fallback, img);
+                                                                    }}
+                                                                />
+                                                            ) : (
+                                                                <div className={styles["all-port-card-image-placeholder"]}>
+                                                                    📁
+                                                                </div>
+                                                            )}
+                                                        </div>
 
-                                                <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
-                                                    <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#000', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                        {item.portfolio_name || 'ไม่มีชื่อ'}
+                                                        {/* Info */}
+                                                        <div className={styles["all-port-card-info"]}>
+                                                            <div className={styles["all-port-card-title"]}>
+                                                                {item.portfolio_name || 'ไม่มีชื่อ'}
+                                                            </div>
+                                                            <div className={styles["all-port-card-date"]}>
+                                                                📅 {new Date(item.created_at).toLocaleDateString('th-TH', {
+                                                                    year: 'numeric',
+                                                                    month: 'long',
+                                                                    day: 'numeric'
+                                                                })}
+                                                            </div>
+                                                            <div className={styles["all-port-card-id"]}>
+                                                                ID: {item.port_id}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div style={{ fontSize: '11px', color: '#666' }}>
-                                                        {new Date(item.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' })}
+
+                                                    {/* Bottom action buttons */}
+                                                    <div className={styles["all-port-card-actions"]}>
+                                                        {/* Edit button */}
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleEditPortfolio(item.port_id); }}
+                                                            title="แก้ไข"
+                                                            aria-label="แก้ไข"
+                                                            className={styles["all-port-action-btn"]}
+                                                            style={{ backgroundColor: '#007bff' }}
+                                                        >
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                            </svg>
+                                                        </button>
+
+                                                        {/* Download button */}
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDownloadPortfolio(item.port_id); }}
+                                                            title="ดาวน์โหลด"
+                                                            aria-label="ดาวน์โหลด"
+                                                            className={styles["all-port-action-btn"]}
+                                                            style={{ backgroundColor: '#28a745' }}
+                                                        >
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                                <polyline points="7 10 12 15 17 10"></polyline>
+                                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                            </svg>
+                                                        </button>
+
+                                                        {/* Delete button */}
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDeletePortfolio(item.port_id); }}
+                                                            title="ลบ"
+                                                            aria-label="ลบ"
+                                                            className={styles["all-port-action-btn"]}
+                                                            style={{ backgroundColor: '#dc3545' }}
+                                                        >
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path>
+                                                                <path d="M10 11v6"></path>
+                                                                <path d="M14 11v6"></path>
+                                                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                            </svg>
+                                                        </button>
                                                     </div>
                                                 </div>
+                                            ))}
 
-                                                <div style={{ fontSize: '18px', color: '#0066cc', flexShrink: 0 }}>→</div>
-                                            </div>
-
-                                            {/* Action buttons */}
-                                            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleEditPortfolio(item.port_id); }}
-                                                    title="แก้ไข"
-                                                    aria-label="แก้ไข"
-                                                    style={{ width: '36px', height: '36px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                >
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDownloadPortfolio(item.port_id); }}
-                                                    title="ดาวน์โหลด"
-                                                    aria-label="ดาวน์โหลด"
-                                                    style={{ width: '36px', height: '36px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                >
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDeletePortfolio(item.port_id); }}
-                                                    title="ลบ"
-                                                    aria-label="ลบ"
-                                                    style={{ width: '36px', height: '36px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                >
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                                        <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path>
-                                                        <path d="M10 11v6"></path>
-                                                        <path d="M14 11v6"></path>
-                                                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                                    </svg>
-                                                </button>
+                                            {/* "Create new" card with + icon */}
+                                            <div
+                                                className={styles["all-port-add-card"]}
+                                                onClick={() => {
+                                                    setAllport("create");
+                                                    setEditingPortId(null);
+                                                    resetForm();
+                                                    const storedUserData = localStorage.getItem("user");
+                                                    const parsed = storedUserData ? JSON.parse(storedUserData) : null;
+                                                    const seed = parsed?.username || 'anon';
+                                                    setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
+                                                }}
+                                                role="button"
+                                                aria-label="สร้างแฟ้มสะสมผลงานใหม่"
+                                            >
+                                                <div className={styles["all-port-add-icon"]}>+</div>
+                                                <div className={styles["all-port-add-text"]}>สร้างแฟ้มสะสมผลงานใหม่</div>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                                </>
-                            )}
-                        </div>
+
+                                        {/* Mobile-only list view (matches the original list style with arrow) */}
+                                        <div className={`${styles["all-port-list"]} ${styles["mobile-only"]}`}>
+                                            {portList.map((item) => (
+                                                <div
+                                                    key={item.port_id}
+                                                    style={{
+                                                        border: '1px solid #ddd',
+                                                        borderRadius: '8px',
+                                                        padding: '16px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '12px',
+                                                        background: '#fff',
+                                                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                                        marginBottom: '12px'
+                                                    }}
+                                                >
+                                                    {/* Profile section (clickable) */}
+                                                    <div
+                                                        onClick={() => handleEditPortfolio(item.port_id)}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '12px',
+                                                            cursor: 'pointer',
+                                                            flex: 1,
+                                                            minWidth: 0
+                                                        }}
+                                                    >
+                                                        {item.profile_url && String(item.profile_url).trim() !== '' ? (
+                                                            <img
+                                                                src={item.profile_url}
+                                                                alt={item.portfolio_name}
+                                                                style={{
+                                                                    width: '50px',
+                                                                    height: '50px',
+                                                                    borderRadius: '8px',
+                                                                    objectFit: 'cover',
+                                                                    flexShrink: 0
+                                                                }}
+                                                                onError={(e) => {
+                                                                    const img = e.currentTarget;
+                                                                    const fallback = document.createElement('div');
+                                                                    fallback.style.cssText = 'width:50px;height:50px;border-radius:8px;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:22px;color:#888;flex-shrink:0;';
+                                                                    fallback.textContent = '📁';
+                                                                    img.parentNode?.replaceChild(fallback, img);
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <div style={{
+                                                                width: '50px', height: '50px', borderRadius: '8px',
+                                                                background: '#e0e0e0', display: 'flex',
+                                                                alignItems: 'center', justifyContent: 'center',
+                                                                fontSize: '22px', color: '#888', flexShrink: 0
+                                                            }}>📁</div>
+                                                        )}
+
+                                                        <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
+                                                            <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#000', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                {item.portfolio_name || 'ไม่มีชื่อ'}
+                                                            </div>
+                                                            <div style={{ fontSize: '11px', color: '#666' }}>
+                                                                {new Date(item.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' })}
+                                                            </div>
+                                                        </div>
+
+                                                        <div style={{ fontSize: '18px', color: '#0066cc', flexShrink: 0 }}>→</div>
+                                                    </div>
+
+                                                    {/* Action buttons */}
+                                                    <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleEditPortfolio(item.port_id); }}
+                                                            title="แก้ไข"
+                                                            aria-label="แก้ไข"
+                                                            style={{ width: '36px', height: '36px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        >
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDownloadPortfolio(item.port_id); }}
+                                                            title="ดาวน์โหลด"
+                                                            aria-label="ดาวน์โหลด"
+                                                            style={{ width: '36px', height: '36px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        >
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                                <polyline points="7 10 12 15 17 10"></polyline>
+                                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDeletePortfolio(item.port_id); }}
+                                                            title="ลบ"
+                                                            aria-label="ลบ"
+                                                            style={{ width: '36px', height: '36px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        >
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path>
+                                                                <path d="M10 11v6"></path>
+                                                                <path d="M14 11v6"></path>
+                                                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
 
 
-                    )}
+                        )}
 
-                    {port === "create" && renderPortfolioContent()}
-                </>
-            )}
+                        {port === "create" && renderPortfolioContent()}
+                    </>
+                )}
             </div>
 
             {/* ===== Template Selection Modal ===== */}
