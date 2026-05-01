@@ -1,8 +1,10 @@
 import "./css/activities.css";
 import Nav from "./nav-bar";
 import Navlogin from "./nav-bar(login)";
+import Contact from "./Contact";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getToken, isTokenExpired } from "./auth";
 
 /* ================= INTERFACES ================= */
 
@@ -44,8 +46,8 @@ const Activities = () => {
 
   /* ================= FETCH DATA ================= */
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setMode(token ? "login" : "no-login");
+    const token = getToken();
+    setMode(token && !isTokenExpired(token) ? "login" : "no-login");
     localStorage.setItem("activities", JSON.stringify(activities));
 
     fetch("https://api.dailylifes.online/event/get")
@@ -151,6 +153,8 @@ const Activities = () => {
           </div>
         </div>
       </div>
+
+      <Contact />
     </>
   );
 };

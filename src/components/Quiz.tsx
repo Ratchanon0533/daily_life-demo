@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import Nav from './nav-bar';
 import Navlogin from './nav-bar(login)';
 import './css/Selfdiscoveryquiz.css';
-import Contact from './HomeSection/contact';
+import Contact from './Contact';
+import { getToken, isTokenExpired } from './auth';
 
 // ============================================================
 // TYPES
@@ -167,14 +168,15 @@ const SelfDiscoveryQuiz = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [streamText, setStreamText] = useState("");
-  const [ollamaModel, setOllamaModel] = useState(DEFAULT_MODEL);
-  const [ollamaUrl, setOllamaUrl] = useState(OLLAMA_BASE_URL);
+  const [ollamaModel] = useState(DEFAULT_MODEL);
+  const [ollamaUrl] = useState(OLLAMA_BASE_URL);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setMode(token ? "login" : "no-login");
+    const token = getToken();
+    // Treat expired tokens as logged-out so the user is gently redirected to login
+    setMode(token && !isTokenExpired(token) ? "login" : "no-login");
   }, []);
 
   const handleSelect = (value: string) => setSelectedOption(value);

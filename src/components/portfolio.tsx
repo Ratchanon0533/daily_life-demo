@@ -1,8 +1,9 @@
 import Nav from './nav-bar';
 import Navlogin from './nav-bar(login)';
 import styles from './css/portfolio.module.css';
-import Contact from './HomeSection/contact';
+import Contact from './Contact';
 import { useState, useMemo, useEffect, } from 'react';
+import { getToken, getUser, isTokenExpired, forceLogout, startAuthWatcher } from './auth';
 import {
     getDaysInMonth,
     format,
@@ -364,47 +365,32 @@ const Portfolio = () => {
 
     // ===== Effects for initialization =====
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            setMode("login");
-        } else {
+        const token = getToken();
+        if (!token) {
             setMode("no-login");
+            return;
         }
+        // If a stored token has already expired, force logout immediately
+        if (isTokenExpired(token)) {
+            forceLogout("Session expired. Please log in again.");
+            return;
+        }
+        setMode("login");
+        // Watch for the token expiring while the page is open
+        const stop = startAuthWatcher();
+        return stop;
     }, []);
 
     useEffect(() => {
-        const tryGet = (keys: string[]) => {
-            for (const k of keys) {
-                const v = localStorage.getItem(k);
-                if (v) return v;
+        const storedUser = getUser();
+        if (storedUser) {
+            const id = storedUser.id || storedUser.user_id;
+            if (id !== undefined) {
+                setUserId(id);
             }
-            return null;
-        };
-
-        const raw = tryGet(['user_id', 'userId', 'userid', 'user']);
-        if (raw) {
-            const storedUserData = localStorage.getItem("user") || '{}';
-            try {
-                const maybeObj = userData || JSON.parse(storedUserData);
-                if (maybeObj && (maybeObj.id || maybeObj.user_id)) {
-                    setUserId(maybeObj.id || maybeObj.user_id);
-                } else if (typeof raw === 'string') {
-                    setUserId(Number(raw) || raw);
-                }
-            } catch (e) {
-                setUserId(Number(raw) || raw);
-            }
-        }
-
-
-
-        if (!portId) {
-            const storedUserData = localStorage.getItem("user");
-            if (storedUserData) {
-                const parsed = JSON.parse(storedUserData);
-                setUserData(parsed);
-                // ✅ ใช้จากตัวแปร parsed โดยตรง ไม่ต้องรอ State
-                const seed = parsed.username || 'anon';
+            setUserData(storedUser);
+            if (!portId) {
+                const seed = storedUser.username || 'anon';
                 setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
             }
         }
@@ -575,7 +561,7 @@ const Portfolio = () => {
         const formData = new FormData();
         formData.append('image', file);
         try {
-            const token = localStorage.getItem('token');
+            const token = getToken();
             const res = await fetch(`https://api.dailylifes.online/upload/${endpoint}`, {
                 method: 'POST',
                 headers: {
@@ -687,7 +673,7 @@ const Portfolio = () => {
             );
 
             // Step 5: Send to createport or updateport endpoint
-            const token = localStorage.getItem('token');
+            const token = getToken();
 
             let res: Response;
             if (editingPortId) {
@@ -749,8 +735,7 @@ const Portfolio = () => {
             setTimeout(() => setIsDirty(false), 0);
             if (!editingPortId) {
                 // Regenerate portId for the next create so we don't collide
-                const storedUserData = localStorage.getItem("user");
-                const parsed = storedUserData ? JSON.parse(storedUserData) : null;
+                const parsed = getUser();
                 const seed = parsed?.username || 'anon';
                 setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
             }
@@ -1819,7 +1804,7 @@ const Portfolio = () => {
         if (!confirmDelete) return;
 
         try {
-            const token = localStorage.getItem('token');
+            const token = getToken();
             const response = await fetch(
                 `https://api.dailylifes.online/deleteport/${port_id}`,
                 {
@@ -1900,7 +1885,7 @@ const Portfolio = () => {
     // ===== Download portfolio as PDF (without entering edit mode) =====
     const handleDownloadPortfolio = async (port_id: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = getToken();
             const headers = { Authorization: `Bearer ${token}` };
 
             // Fetch all 5 sections in parallel (same as edit)
@@ -2042,7 +2027,7 @@ const Portfolio = () => {
     // ===== Load portfolio data for editing =====
     const handleEditPortfolio = async (port_id: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = getToken();
             const headers = { Authorization: `Bearer ${token}` };
 
             // Fetch all 5 sections in parallel
@@ -2212,8 +2197,7 @@ const Portfolio = () => {
                                         setEditingPortId(null);
                                         resetForm();
                                         // Generate a fresh portId whenever user opens the create tab
-                                        const storedUserData = localStorage.getItem("user");
-                                        const parsed = storedUserData ? JSON.parse(storedUserData) : null;
+                                        const parsed = getUser();
                                         const seed = parsed?.username || 'anon';
                                         setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
                                     }}
@@ -2371,8 +2355,7 @@ const Portfolio = () => {
                                                     setAllport("create");
                                                     setEditingPortId(null);
                                                     resetForm();
-                                                    const storedUserData = localStorage.getItem("user");
-                                                    const parsed = storedUserData ? JSON.parse(storedUserData) : null;
+                                                    const parsed = getUser();
                                                     const seed = parsed?.username || 'anon';
                                                     setPortId(`port_${seed}_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
                                                 }}

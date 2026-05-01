@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./css/login-register.module.css";
 import { useNavigate } from "react-router-dom";
+import { saveAuth } from "./auth";
 
 const Reg = () => {
     const [mode, setMode] = useState<"login" | "register">("login");
@@ -8,6 +9,19 @@ const Reg = () => {
     // Login
     const [loginUsername, setLoginUsername] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState<boolean>(() => {
+        return localStorage.getItem("rememberMe") === "1";
+    });
+
+    // If we were force-logged-out, surface the reason on the login page
+    useEffect(() => {
+        const reason = sessionStorage.getItem("logoutReason");
+        if (reason) {
+            setMessage(reason);
+            setAlertType("warning");
+            sessionStorage.removeItem("logoutReason");
+        }
+    }, []);
 
     // Register
     const [firstname, setFirstname] = useState("");
@@ -67,9 +81,7 @@ const Reg = () => {
             if (data.message === "Login Success") {
                 setMessage("Admin Login successful!");
                 setAlertType("success");
-                localStorage.setItem("user", JSON.stringify(data.user));
-                localStorage.setItem("token", data.token);
-                console.log(localStorage.getItem("user"))
+                saveAuth(data.token, data.user, rememberMe);
                 navigatory("/HOME");
             }
             else {
@@ -272,6 +284,26 @@ const Reg = () => {
                                     value={loginPassword}
                                     onChange={(e) => setLoginPassword(e.target.value)}
                                 />
+
+                                <label
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        margin: '8px 0 12px',
+                                        fontSize: '14px',
+                                        cursor: 'pointer',
+                                        userSelect: 'none'
+                                    }}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                    จดจำการเข้าสู่ระบบ (7 วัน)
+                                </label>
 
                                 <button
                                     type="submit"

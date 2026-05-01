@@ -1,0 +1,288 @@
+/* ==========================================================================
+   About page — Daily Life
+   Theme: Navy (#033E65) + Amber (#FFC014)
+   Prefix: ab-
+   ========================================================================== */
+
+.ab-page {
+    font-family: 'Kanit', 'Inter', sans-serif;
+    background: #fafbfc;
+    color: #2c3e50;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.ab-hero {
+    position: relative;
+    width: 100%;
+    height: 60vh;
+    min-height: 400px;
+    max-height: 600px;
+    overflow: hidden;
+}
+
+.ab-hero-slide {
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.8s ease;
+}
+
+.ab-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ab-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(3, 62, 101, 0.3) 0%, rgba(3, 62, 101, 0.8) 100%);
+}
+
+.ab-hero-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 2rem;
+    color: #fff;
+}
+
+.ab-hero-title {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    font-weight: 700;
+    margin: 0 0 1rem;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    max-width: 900px;
+}
+
+.ab-hero-sub {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    margin: 0;
+    opacity: 0.95;
+    max-width: 700px;
+}
+
+.ab-hero-dots {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 5;
+}
+
+.ab-hero-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0;
+}
+
+.ab-hero-dot-active {
+    background: #FFC014;
+    border-color: #FFC014;
+    transform: scale(1.2);
+}
+
+/* ==========================================================================
+   Section header (reused for Pricing)
+   ========================================================================== */
+.ab-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+}
+
+.ab-section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.ab-section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #033E65;
+    margin: 0 0 1rem;
+}
+
+.ab-section-title-en {
+    font-size: 1.25rem;
+    color: #888;
+    font-weight: 400;
+}
+
+.ab-section-divider {
+    width: 80px;
+    height: 4px;
+    background: #FFC014;
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   Pricing tier cards
+   ========================================================================== */
+.ab-pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.ab-pricing-card {
+    position: relative;
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.ab-pricing-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(3, 62, 101, 0.12);
+    border-color: #033E65;
+}
+
+.ab-pricing-card-highlight {
+    border-color: #FFC014;
+    background: linear-gradient(180deg, #fffbf0 0%, #fff 100%);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(255, 192, 20, 0.15);
+}
+
+.ab-pricing-card-highlight:hover {
+    border-color: #FFC014;
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(255, 192, 20, 0.25);
+}
+
+.ab-pricing-badge {
+    position: absolute;
+    top: -14px;
+    right: 1.5rem;
+    background: #FFC014;
+    color: #033E65;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(255, 192, 20, 0.3);
+}
+
+.ab-pricing-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #033E65;
+    margin: 0 0 0.75rem;
+}
+
+.ab-pricing-price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0 0 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ab-pricing-amount {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #033E65;
+}
+
+.ab-pricing-period {
+    font-size: 0.95rem;
+    color: #888;
+}
+
+.ab-pricing-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    flex: 1;
+}
+
+.ab-pricing-features li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #2c3e50;
+}
+
+.ab-pricing-features li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: 700;
+}
+
+.ab-pricing-btn {
+    width: 100%;
+    padding: 0.85rem;
+    background: #033E65;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ab-pricing-btn:hover {
+    background: #022740;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(3, 62, 101, 0.3);
+}
+
+.ab-pricing-card-highlight .ab-pricing-btn {
+    background: #FFC014;
+    color: #033E65;
+}
+
+.ab-pricing-card-highlight .ab-pricing-btn:hover {
+    background: #ffcd3d;
+    box-shadow: 0 6px 14px rgba(255, 192, 20, 0.4);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 1100px) {
+    .ab-pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .ab-section {
+        padding: 3rem 1rem;
+    }
+    .ab-section-title {
+        font-size: 1.5rem;
+    }
+    .ab-pricing-grid {
+        grid-template-columns: 1fr;
+    }
+    .ab-hero {
+        height: 50vh;
+        min-height: 320px;
+    }
+}

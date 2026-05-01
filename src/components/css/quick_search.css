@@ -1,0 +1,421 @@
+/* ==========================================================================
+   Quick search page — Daily Life
+   Theme: Navy (#033E65) + Amber (#FFC014)
+   All selectors are prefixed with `qs-` to avoid clashing with home.css
+   ========================================================================== */
+
+.qs-page {
+    font-family: 'Kanit', 'Inter', sans-serif;
+    background: #fafbfc;
+    color: #2c3e50;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   Hero carousel
+   ========================================================================== */
+.qs-hero {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    min-height: 360px;
+    max-height: 520px;
+    overflow: hidden;
+}
+
+.qs-hero-slide {
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.8s ease;
+}
+
+.qs-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.qs-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(3, 62, 101, 0.3) 0%, rgba(3, 62, 101, 0.8) 100%);
+}
+
+.qs-hero-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 2rem;
+    color: #fff;
+}
+
+.qs-hero-title {
+    font-size: clamp(1.5rem, 3.5vw, 2.6rem);
+    font-weight: 700;
+    margin: 0 0 1rem;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    max-width: 900px;
+}
+
+.qs-hero-sub {
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    margin: 0;
+    opacity: 0.95;
+    max-width: 700px;
+}
+
+.qs-hero-dots {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 5;
+}
+
+.qs-hero-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0;
+}
+
+.qs-hero-dot-active {
+    background: #FFC014;
+    border-color: #FFC014;
+    transform: scale(1.2);
+}
+
+/* ==========================================================================
+   Search form
+   ========================================================================== */
+.qs-search-section {
+    background: #033E65;
+    padding: 3rem 1.5rem 4rem;
+    color: #fff;
+}
+
+.qs-search-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.qs-search-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1.5rem;
+    color: #fff;
+    text-align: left;
+}
+
+.qs-search-subtitle {
+    font-size: 1.15rem;
+    opacity: 0.85;
+    font-weight: 400;
+}
+
+/* Grid of fields: 3 cols on desktop, 2 on tablet, 1 on mobile */
+.qs-search-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.qs-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    padding: 0 1rem;
+    height: 52px;
+    transition: box-shadow 0.2s ease;
+}
+
+.qs-field:focus-within {
+    box-shadow: 0 0 0 3px rgba(255, 192, 20, 0.4);
+}
+
+.qs-field-icon {
+    flex-shrink: 0;
+    color: #033E65;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+/* Defensive sizing — make sure SVG icons inside the field never blow up */
+.qs-field-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.qs-field-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #2c3e50;
+    min-width: 0;
+}
+
+.qs-field-input::placeholder {
+    color: #999;
+}
+
+.qs-field-clear {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.qs-field-clear:hover {
+    color: #dc3545;
+}
+
+/* Action buttons */
+.qs-search-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 1.25rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.qs-btn {
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0 2rem;
+    height: 48px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.qs-btn-primary {
+    background: #FFC014;
+    color: #033E65;
+}
+
+.qs-btn-primary:hover {
+    background: #ffcd3d;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(255, 192, 20, 0.4);
+}
+
+.qs-btn-secondary {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.qs-btn-secondary:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   Reusable section header (for Suggested + Results)
+   ========================================================================== */
+.qs-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+}
+
+.qs-section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.qs-section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #033E65;
+    margin: 0 0 1rem;
+}
+
+.qs-section-title-en {
+    font-size: 1.25rem;
+    color: #888;
+    font-weight: 400;
+}
+
+.qs-section-divider {
+    width: 80px;
+    height: 4px;
+    background: #FFC014;
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   Slideshow + logo grid (Suggested universities)
+   ========================================================================== */
+.qs-slideshow {
+    position: relative;
+    padding: 0 3.5rem;
+}
+
+.qs-slide-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: #033E65;
+    color: #fff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    z-index: 4;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qs-slide-btn:hover {
+    background: #FFC014;
+    color: #033E65;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.qs-slide-prev { left: 0; }
+.qs-slide-next { right: 0; }
+
+.qs-logo-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1.25rem;
+}
+
+.qs-logo-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1rem;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.qs-logo-card:hover {
+    border-color: #033E65;
+    box-shadow: 0 8px 20px rgba(3, 62, 101, 0.12);
+    transform: translateY(-4px);
+}
+
+.qs-logo-card img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   Results placeholder
+   ========================================================================== */
+.qs-results-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: #fff;
+    border: 1px dashed #d0d7de;
+    border-radius: 14px;
+    color: #666;
+}
+
+.qs-results-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.qs-results-empty p {
+    font-size: 1.05rem;
+    margin: 0 0 1.25rem;
+}
+
+.qs-results-back {
+    color: #033E65;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.qs-results-back:hover {
+    color: #FFC014;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 1100px) {
+    .qs-search-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .qs-logo-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .qs-section {
+        padding: 3rem 1rem;
+    }
+    .qs-section-title {
+        font-size: 1.5rem;
+    }
+    .qs-search-grid {
+        grid-template-columns: 1fr;
+    }
+    .qs-logo-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .qs-slideshow {
+        padding: 0 2.5rem;
+    }
+    .qs-slide-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    .qs-search-actions {
+        justify-content: stretch;
+    }
+    .qs-btn {
+        flex: 1;
+    }
+    .qs-hero {
+        height: 40vh;
+        min-height: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .qs-logo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
