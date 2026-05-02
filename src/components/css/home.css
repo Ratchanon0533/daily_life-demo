@@ -849,13 +849,26 @@
     text-decoration: underline;
 }
 
+/* By default (desktop) hide the mobile button — the in-row one is shown */
+.dl-search-btn-mobile {
+    display: none;
+}
+
 @media (max-width: 992px) {
     .dl-search-row {
         grid-template-columns: 1fr 1fr;
     }
 
-    .dl-search-btn {
-        grid-column: 1 / -1;
+    /* Hide the in-row search button on tablet/mobile */
+    .dl-search-row .dl-search-btn:not(.dl-search-btn-mobile) {
+        display: none;
+    }
+
+    /* Show the dedicated mobile button below the filter pills */
+    .dl-search-btn-mobile {
+        display: block;
+        width: 100%;
+        margin-top: 1rem;
     }
 }
 

@@ -308,6 +308,8 @@ const SearchSection = () => {
                         )}
                     </div>
 
+                    {/* Search button — appears here on desktop, moved below
+                        the filter pills on tablet/mobile via CSS `order` */}
                     <button className="dl-search-btn" onClick={handleSearch}>
                         ค้นหา
                     </button>
@@ -324,6 +326,12 @@ const SearchSection = () => {
                         รีเซ็ตการตั้งค่า
                     </button>
                 </div>
+
+                {/* Mobile-only search button (rendered below filters).
+                    Hidden on desktop where the in-row button is shown instead. */}
+                <button className="dl-search-btn dl-search-btn-mobile" onClick={handleSearch}>
+                    ค้นหา
+                </button>
 
                 <div className="dl-search-deep">
                     <Link to="/quick_search" className="dl-search-deep-link">
