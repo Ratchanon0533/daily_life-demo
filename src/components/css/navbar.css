@@ -39,9 +39,7 @@
     width: 3.6rem;
     height: 3.6rem;
     object-fit: contain;
-    border-radius: 10px;
-    background: #FFC014;
-    padding: 4px;
+    /* Raw image — no background frame */
 }
 
 /* ====== Menu (desktop default) ====== */

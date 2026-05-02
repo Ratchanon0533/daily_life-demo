@@ -1113,7 +1113,13 @@ const Portfolio = () => {
                         </button>
                         {(() => {
                             const pdfProps = {
-                                personal_image: profileImage ? URL.createObjectURL(profileImage) : null,
+                                // Use the freshly uploaded file if any; otherwise
+                                // fall back to the URL of the previously saved
+                                // profile image (so editing without re-uploading
+                                // still produces a PDF with the picture).
+                                personal_image: profileImage
+                                    ? URL.createObjectURL(profileImage)
+                                    : (Personal.profile_image_url || null),
                                 introduce: Personal.introduce || '',
                                 prefix: Personal.prefix || '',
                                 first_name: Personal.first_name || '',
