@@ -290,3 +290,288 @@
         background: rgba(255, 255, 255, 0.95);
     }
 }
+
+/* ==========================================================================
+   Profile modal (opens from navbar dropdown)
+   Theme: Navy (#033E65) + Amber (#FFC014) — matches the Daily Life brand
+   ========================================================================== */
+
+.dl-profile-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 39, 64, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    animation: dl-modal-bg-in 0.2s ease;
+}
+
+@keyframes dl-modal-bg-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.dl-profile-modal {
+    background: #fff;
+    color: #2c3e50;
+    border-radius: 22px;
+    width: 100%;
+    max-width: 460px;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(3, 62, 101, 0.35);
+    font-family: 'Kanit', sans-serif;
+    animation: dl-modal-in 0.25s ease;
+    overflow: hidden; /* keep header gradient inside rounded corners */
+}
+
+@keyframes dl-modal-in {
+    from { opacity: 0; transform: translateY(18px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ==== Header — navy bar with amber accent ==== */
+.dl-profile-modal-header {
+    background: #033E65;
+    color: #fff;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.dl-profile-modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 70px;
+    height: 4px;
+    background: #FFC014;
+    border-radius: 0 4px 0 0;
+}
+
+.dl-profile-modal-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+}
+
+.dl-profile-modal-close {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.dl-profile-modal-close:hover {
+    background: #FFC014;
+    color: #033E65;
+    transform: scale(1.05);
+}
+
+/* ==== Body ==== */
+.dl-profile-modal-body {
+    padding: 1.75rem 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Avatar */
+.dl-profile-avatar-wrap {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 0.5rem;
+}
+
+.dl-profile-avatar-ring {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #FFC014;
+    background: #033E65;
+    box-shadow: 0 8px 20px rgba(3, 62, 101, 0.25);
+}
+
+.dl-profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.dl-profile-avatar-fallback {
+    background: #033E65;
+    color: #FFC014;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.dl-profile-avatar-edit {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #FFC014;
+    border: 3px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #033E65;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dl-profile-avatar-edit:hover {
+    background: #ffcd3d;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(255, 192, 20, 0.4);
+}
+
+/* ==== Fields — light gray boxes with floating labels ==== */
+.dl-profile-field {
+    background: #f8f9fb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dl-profile-field:focus-within {
+    border-color: #033E65;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(3, 62, 101, 0.12);
+}
+
+.dl-profile-field-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #033E65;
+    font-weight: 500;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+}
+
+.dl-profile-field-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #2c3e50;
+    font-family: inherit;
+    font-size: 1.05rem;
+    padding: 0;
+}
+
+.dl-profile-field-input:disabled {
+    color: #2c3e50;
+    cursor: default;
+}
+
+.dl-profile-helper {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-align: center;
+    margin: 8px 0 0;
+}
+
+/* ==== Footer ==== */
+.dl-profile-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 1rem 1.75rem 1.5rem;
+    background: #f8f9fb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.dl-profile-btn {
+    padding: 11px 26px;
+    border-radius: 999px;
+    border: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dl-profile-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dl-profile-btn-primary {
+    background: #FFC014;
+    color: #033E65;
+}
+
+.dl-profile-btn-primary:hover:not(:disabled) {
+    background: #ffcd3d;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(255, 192, 20, 0.4);
+}
+
+.dl-profile-btn-ghost {
+    background: transparent;
+    color: #033E65;
+    border: 1px solid #d0d7de;
+}
+
+.dl-profile-btn-ghost:hover:not(:disabled) {
+    background: #fff;
+    border-color: #033E65;
+}
+
+/* ==== Mobile ==== */
+@media (max-width: 480px) {
+    .dl-profile-modal {
+        border-radius: 18px;
+    }
+
+    .dl-profile-modal-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .dl-profile-modal-body {
+        padding: 1.25rem 1.25rem 1rem;
+    }
+
+    .dl-profile-modal-footer {
+        padding: 0.75rem 1.25rem 1rem;
+    }
+
+    .dl-profile-avatar-wrap {
+        width: 110px;
+        height: 110px;
+    }
+
+    .dl-profile-modal-title {
+        font-size: 1.15rem;
+    }
+}

@@ -1,6 +1,7 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/Profile.css';
+import { getToken, getUser, isTokenExpired, forceLogout } from './auth';
 
 type UserProfile = {
   firstname?: string;
@@ -23,13 +24,12 @@ const ProfileSteam: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const storedUserString = localStorage.getItem("user");
-  const storedUser = storedUserString ? JSON.parse(storedUserString) : null;
+  const storedUser = getUser();
 
-  // โหลดข้อมูลผู้ใช้จาก localStorage ตอนเข้าเพจ
+  // โหลดข้อมูลผู้ใช้จาก auth storage ตอนเข้าเพจ
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    const token = getToken();
+    if (!token || isTokenExpired(token)) {
       navigate('/Register');
       return;
     }
@@ -93,8 +93,14 @@ const ProfileSteam: React.FC = () => {
         return;
       }
 
-      // อัปเดต localStorage
-      localStorage.setItem('user', JSON.stringify({ ...storedUser, ...profile }));
+      // Persist updated user back to whichever storage already holds it
+      // (localStorage if Remember me, sessionStorage otherwise)
+      const updated = JSON.stringify({ ...storedUser, ...profile });
+      if (localStorage.getItem('user')) {
+        localStorage.setItem('user', updated);
+      } else if (sessionStorage.getItem('user')) {
+        sessionStorage.setItem('user', updated);
+      }
 
       setEditing(false);
       setImageFile(null);
@@ -108,9 +114,7 @@ const ProfileSteam: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/');
+    forceLogout();
   };
 
   return (
