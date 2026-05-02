@@ -44,25 +44,57 @@ const QUICK_SEARCH_SLIDES: string[][] = [
     ],
 ];
 
-const TOP_UNI_SLIDES: string[][] = [
-    [
-        "https://www.chula.ac.th/wp-content/uploads/2020/05/cu-executive-hero.jpg",
-        "https://f.tpkcdn.com/images-720/5d73749f9fd86421fe2c192954d912f5.jpg",
-        "https://i.ytimg.com/vi/eEspYsI-zz4/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLC0Vv8m-5-PI-BgDSsRK_dwUzVc4g",
-        "https://campus.campus-star.com/app/uploads/2019/05/DSC_0828-1024x678.jpg",
-    ],
-    [
-        "https://campus.campus-star.com/app/uploads/2017/01/MFU-5.jpg",
-        "https://campus.campus-star.com/app/uploads/2017/01/KKU-3.jpg",
-        "https://campus.campus-star.com/app/uploads/2017/01/KKU-2.jpg",
-        "https://campus.campus-star.com/app/uploads/2017/01/NU-4.jpeg",
-    ],
-    [
-        "https://campus.campus-star.com/app/uploads/2017/01/KU-9.jpg",
-        "https://campus.campus-star.com/app/uploads/2017/01/SUT-1.jpeg",
-        "https://campus.campus-star.com/app/uploads/2017/01/06-1.jpg",
-        "https://campus.campus-star.com/app/uploads/2017/01/KMITL-2.jpg",
-    ],
+interface TopUniversity {
+    image: string;
+    name: string;
+    nameEn: string;
+    location: string;
+    description: string;
+}
+
+const TOP_UNIVERSITIES: TopUniversity[] = [
+    {
+        image: "https://www.chula.ac.th/wp-content/uploads/2020/05/cu-executive-hero.jpg",
+        name: "จุฬาลงกรณ์มหาวิทยาลัย",
+        nameEn: "Chulalongkorn University",
+        location: "📍 กรุงเทพมหานคร",
+        description: "มหาวิทยาลัยแห่งแรกของประเทศไทย เปิดสอนหลากหลายสาขาวิชา ทั้งสายวิทย์ ศิลป์ และวิชาชีพ",
+    },
+    {
+        image: "https://campus.campus-star.com/app/uploads/2017/01/MFU-5.jpg",
+        name: "มหาวิทยาลัยแม่ฟ้าหลวง",
+        nameEn: "Mae Fah Luang University",
+        location: "📍 เชียงราย",
+        description: "มหาวิทยาลัยในกำกับของรัฐ มีพื้นที่กว้างขวางท่ามกลางธรรมชาติ เน้นนานาชาติ",
+    },
+    {
+        image: "https://campus.campus-star.com/app/uploads/2017/01/KKU-3.jpg",
+        name: "มหาวิทยาลัยขอนแก่น",
+        nameEn: "Khon Kaen University",
+        location: "📍 ขอนแก่น",
+        description: "มหาวิทยาลัยชั้นนำในภาคตะวันออกเฉียงเหนือ เด่นด้านแพทยศาสตร์และเทคโนโลยี",
+    },
+    {
+        image: "https://campus.campus-star.com/app/uploads/2017/01/KU-9.jpg",
+        name: "มหาวิทยาลัยเกษตรศาสตร์",
+        nameEn: "Kasetsart University",
+        location: "📍 กรุงเทพมหานคร",
+        description: "มหาวิทยาลัยแห่งแรกที่เน้นด้านการเกษตร ปัจจุบันเปิดสอนครบทุกสาขาวิชา",
+    },
+    {
+        image: "https://campus.campus-star.com/app/uploads/2017/01/KMITL-2.jpg",
+        name: "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง",
+        nameEn: "King Mongkut's Institute of Technology Ladkrabang",
+        location: "📍 กรุงเทพมหานคร",
+        description: "สถาบันชั้นนำด้านวิศวกรรมศาสตร์ สถาปัตยกรรม และเทคโนโลยีสารสนเทศ",
+    },
+    {
+        image: "https://campus.campus-star.com/app/uploads/2017/01/NU-4.jpeg",
+        name: "มหาวิทยาลัยนเรศวร",
+        nameEn: "Naresuan University",
+        location: "📍 พิษณุโลก",
+        description: "มหาวิทยาลัยภาคเหนือตอนล่าง โดดเด่นด้านวิทยาศาสตร์สุขภาพและศิลปศาสตร์",
+    },
 ];
 
 const CAREER_SLIDES: string[][] = [
@@ -351,11 +383,59 @@ const HeroCarousel = () => {
 };
 
 // ===================================================================
-// Section: Banner
+// Section: Banner (CTA — invite users to build a portfolio)
 // ===================================================================
 const Banner = () => (
-    <section className="dl-section dl-banner">
-        <img src="/img/Group 47.png" alt="Banner" className="dl-banner-img" />
+    <section className="dl-section dl-banner-wrap">
+        <div className="dl-banner">
+            {/* Left side — yellow with text + pencils */}
+            <div className="dl-banner-left">
+                <div className="dl-banner-pencils" aria-hidden="true">
+                    <div className="dl-pcl dl-pcl-1">
+                        <div className="dl-pcl-body" />
+                        <div className="dl-pcl-tip" />
+                    </div>
+                    <div className="dl-pcl dl-pcl-2">
+                        <div className="dl-pcl-body" />
+                        <div className="dl-pcl-tip" />
+                    </div>
+                </div>
+
+                <div className="dl-banner-content">
+                    <span className="dl-banner-tag">★ ใช้ฟรี</span>
+                    <h2 className="dl-banner-title">
+                        สร้าง Portfolio<br />ในไม่กี่นาที
+                    </h2>
+                    <p className="dl-banner-sub">
+                        เครื่องมือสำหรับนักเรียน เตรียมพร้อมสู่รั้วมหาวิทยาลัย
+                    </p>
+                    <a href="/portfolio" className="dl-banner-cta">
+                        เริ่มสร้างเลย <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+
+            {/* Right side — navy with floating documents */}
+            <div className="dl-banner-right">
+                <div className="dl-banner-illust" aria-hidden="true">
+                    <span className="dl-banner-star dl-banner-star-1">✦</span>
+                    <span className="dl-banner-star dl-banner-star-2">✦</span>
+                    <div className="dl-banner-doc dl-banner-doc-1">
+                        <div className="dl-banner-doc-line" />
+                        <div className="dl-banner-doc-line" />
+                        <div className="dl-banner-doc-line" />
+                        <div className="dl-banner-doc-line" style={{ width: "70%" }} />
+                        <div className="dl-banner-doc-line" style={{ width: "50%" }} />
+                    </div>
+                    <div className="dl-banner-doc dl-banner-doc-2">
+                        <div className="dl-banner-doc-line" />
+                        <div className="dl-banner-doc-line" />
+                        <div className="dl-banner-doc-line" style={{ width: "65%" }} />
+                        <div className="dl-banner-doc-line" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 );
 
@@ -408,39 +488,66 @@ const QuickSearch = () => {
 const TopUniversity = () => {
     const [current, setCurrent] = useState(0);
 
+    // The interval is reset whenever `current` changes — both auto-rotate
+    // and user clicks update `current`, so any interaction restarts the
+    // 6-second countdown rather than letting a near-finished timer also
+    // fire right after a click.
     useEffect(() => {
         const id = setInterval(() => {
-            setCurrent((c) => (c + 1) % TOP_UNI_SLIDES.length);
+            setCurrent((c) => (c + 1) % TOP_UNIVERSITIES.length);
         }, 6000);
         return () => clearInterval(id);
-    }, []);
+    }, [current]);
+
+    const goPrev = () => setCurrent((c) => (c - 1 + TOP_UNIVERSITIES.length) % TOP_UNIVERSITIES.length);
+    const goNext = () => setCurrent((c) => (c + 1) % TOP_UNIVERSITIES.length);
 
     return (
-        <section className="dl-section">
-            <SectionHeader titleTh="มหาวิทยาลัยยอดนิยม" titleEn="Top University" />
-            <div className="dl-slideshow">
-                <button
-                    className="dl-slide-btn dl-slide-prev"
-                    onClick={() => setCurrent((c) => (c - 1 + TOP_UNI_SLIDES.length) % TOP_UNI_SLIDES.length)}
-                    aria-label="Previous"
-                >❮</button>
-                <div className="dl-image-grid dl-image-grid-4">
-                    {TOP_UNI_SLIDES[current].map((url, i) => (
-                        <div className="dl-image-card" key={i}>
-                            <img src={url} alt={`top university ${i + 1}`} />
+        <section className="dl-uni-section">
+            <div className="dl-uni-card">
+                {/* Sliding track — only images move with the slide */}
+                <div
+                    className="dl-uni-track"
+                    style={{ transform: `translate3d(-${current * 100}%, 0, 0)` }}
+                >
+                    {TOP_UNIVERSITIES.map((uni, idx) => (
+                        <div className="dl-uni-slide" key={idx}>
+                            <img src={uni.image} alt={uni.name} className="dl-uni-card-img" />
                         </div>
                     ))}
                 </div>
-                <button
-                    className="dl-slide-btn dl-slide-next"
-                    onClick={() => setCurrent((c) => (c + 1) % TOP_UNI_SLIDES.length)}
-                    aria-label="Next"
-                >❯</button>
-                <div className="dl-slide-dots">
-                    {TOP_UNI_SLIDES.map((_, i) => (
+
+                {/* Overlay (always over the visible slide, not part of the track) */}
+                <div className="dl-uni-card-overlay" />
+
+                {/* Title overlay (top-left) */}
+                <div className="dl-uni-card-header">
+                    <h2 className="dl-uni-card-title">
+                        มหาวิทยาลัยยอดนิยม <span className="dl-uni-card-title-en">(Top University)</span>
+                    </h2>
+                    <div className="dl-uni-card-divider" />
+                </div>
+
+                {/* University info — fades in/out without moving with the image.
+                    `key={current}` re-mounts the block on every change so the
+                    fade-in animation re-fires. */}
+                <div className="dl-uni-card-info" key={current}>
+                    <div className="dl-uni-card-location">{TOP_UNIVERSITIES[current].location}</div>
+                    <h3 className="dl-uni-card-name">{TOP_UNIVERSITIES[current].name}</h3>
+                    <p className="dl-uni-card-name-en">{TOP_UNIVERSITIES[current].nameEn}</p>
+                    <p className="dl-uni-card-desc">{TOP_UNIVERSITIES[current].description}</p>
+                </div>
+
+                {/* Prev/Next arrows */}
+                <button className="dl-uni-arrow dl-uni-arrow-prev" onClick={goPrev} aria-label="Previous">❮</button>
+                <button className="dl-uni-arrow dl-uni-arrow-next" onClick={goNext} aria-label="Next">❯</button>
+
+                {/* Dots */}
+                <div className="dl-uni-dots">
+                    {TOP_UNIVERSITIES.map((_, i) => (
                         <button
                             key={i}
-                            className={`dl-slide-dot ${i === current ? "dl-slide-dot-active" : ""}`}
+                            className={`dl-uni-dot ${i === current ? "dl-uni-dot-active" : ""}`}
                             onClick={() => setCurrent(i)}
                             aria-label={`Slide ${i + 1}`}
                         />
@@ -578,9 +685,9 @@ const Home = ({ loggedIn }: HomeProps = {}) => {
             <SearchSection />
 
             <HeroCarousel />
+            <TopUniversity />
             <Banner />
             <QuickSearch />
-            <TopUniversity />
             <PopularCareer />
             <Suggestion />
             <Partner />
