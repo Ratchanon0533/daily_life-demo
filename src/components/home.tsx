@@ -181,6 +181,9 @@ const SearchSection = () => {
     const [inputUniversity, setInputUniversity] = useState("");
     const [inputProvince, setInputProvince] = useState("");
     const [inputFaculty, setInputFaculty] = useState("");
+    // On mobile this controls whether the inputs/filters are visible.
+    // Desktop ignores this state via CSS — it always shows the form.
+    const [expanded, setExpanded] = useState(false);
 
     const isThaiText = (text: string): boolean => /[\u0E00-\u0E7F]/.test(text);
 
@@ -229,11 +232,47 @@ const SearchSection = () => {
     };
 
     return (
-        <section className="dl-search-section">
+        <section className={`dl-search-section ${expanded ? "dl-search-expanded" : ""}`}>
             <div className="dl-search-inner">
-                <h2 className="dl-search-title">
-                    ค้นหามหาวิทยาลัย <span className="dl-search-subtitle">จากทั่วประเทศ</span>
-                </h2>
+                <div
+                    className="dl-search-header"
+                    onClick={() => setExpanded(o => !o)}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={expanded}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setExpanded(o => !o);
+                        }
+                    }}
+                >
+                    <h2 className="dl-search-title">
+                        ค้นหามหาวิทยาลัย <span className="dl-search-subtitle">จากทั่วประเทศ</span>
+                    </h2>
+                    {/* Mobile-only toggle indicator — hidden on desktop via CSS.
+                        It's a visual cue; the whole header is clickable. */}
+                    <span
+                        className="dl-search-toggle"
+                        aria-hidden="true"
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            style={{ transform: expanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.25s ease" }}
+                        >
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </span>
+                </div>
+
+                <div className="dl-search-collapsible">
 
                 <div className="dl-search-row">
                     {/* University name */}
@@ -338,6 +377,7 @@ const SearchSection = () => {
                         ค้นหาแบบละเอียด →
                     </Link>
                 </div>
+                </div>{/* /dl-search-collapsible */}
             </div>
         </section>
     );
