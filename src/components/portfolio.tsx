@@ -2,7 +2,7 @@ import Nav from './nav-bar';
 import Navlogin from './nav-bar(login)';
 import styles from './css/portfolio.module.css';
 import Contact from './Contact';
-import { useState, useMemo, useEffect, } from 'react';
+import { useState, useMemo, useEffect, useRef, } from 'react';
 import { getToken, getUser, isTokenExpired, forceLogout, startAuthWatcher } from './auth';
 import {
     getDaysInMonth,
@@ -401,10 +401,15 @@ const Portfolio = () => {
         try {
             const d = new Date(year, month, day);
             if (!isNaN(d.getTime())) {
-                setPersonal(prev => ({
-                    ...prev,
-                    date_birth: d.toISOString().slice(0, 10)
-                }));
+                // Build the date string from local components to match the format used elsewhere
+                // (handleEditPortfolio writes the same local-date format). Avoids the .toISOString()
+                // timezone shift that would make the comparison miss and trigger a spurious dirty flag.
+                const newDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                // Bail out when the value hasn't changed — returning prev keeps the same object reference
+                // so React skips the re-render and the dirty-tracker effect doesn't fire.
+                setPersonal(prev =>
+                    prev.date_birth === newDate ? prev : { ...prev, date_birth: newDate }
+                );
             }
         } catch (e) {
             // ignore
@@ -681,6 +686,7 @@ const Portfolio = () => {
                 const updatePayload = {
                     user_id: userId,
                     port_id: editingPortId,
+                    template_id: selectedTemplate,
                     personal_info: {
                         ...Personal,
                         profile_image_url: profileImageUrl ?? Personal.profile_image_url ?? null,
@@ -704,6 +710,7 @@ const Portfolio = () => {
                 const data = {
                     user_id: userId,
                     port_id: portId,
+                    template_id: selectedTemplate,
                     personal_info: {
                         ...Personal,
                         profile_image_url: profileImageUrl,
@@ -729,10 +736,14 @@ const Portfolio = () => {
                 throw new Error(`HTTP ${res.status}: ${text}`);
             }
 
+            // Persist template choice locally so it survives reloads even if the backend doesn't store it.
+            const savedPortId = editingPortId || portId;
+            try { localStorage.setItem(`port_template_${savedPortId}`, String(selectedTemplate)); } catch { /* quota / private mode */ }
+
             setSaveMessage(editingPortId ? 'อัปเดตสำเร็จ!' : 'บันทึกสำเร็จ!');
-            // Mark the form as clean (will flip back to dirty next time the user changes anything)
-            // setTimeout pushes this state update past the useEffect that sets isDirty=true on form changes
-            setTimeout(() => setIsDirty(false), 0);
+            // Mark the form as clean. Skip the next dirty run in case any setter above changed state.
+            skipDirtyRef.current = true;
+            setIsDirty(false);
             if (!editingPortId) {
                 // Regenerate portId for the next create so we don't collide
                 const parsed = getUser();
@@ -1847,6 +1858,8 @@ const Portfolio = () => {
     const [showTemplateModal, setShowTemplateModal] = useState<boolean>(false);
     // True when the form has unsaved changes (gets reset to false right after a successful save)
     const [isDirty, setIsDirty] = useState<boolean>(false);
+    // Set to true right before a programmatic load (edit/save) so the next form-state useEffect skips marking dirty
+    const skipDirtyRef = useRef<boolean>(false);
 
 
     const handlegetport = async () => {
@@ -1880,13 +1893,15 @@ const Portfolio = () => {
         }
     }, [port, userData?.id]);
 
-    // Mark form as dirty whenever any form-state changes.
-    // This effect runs on every form-state change but uses a ref-like guard pattern to avoid
-    // marking dirty during programmatic loads (handleEditPortfolio sets isDirty=false explicitly afterward).
+    // Mark form as dirty whenever any form-state changes — but skip the run that follows a programmatic load.
     useEffect(() => {
+        if (skipDirtyRef.current) {
+            skipDirtyRef.current = false;
+            return;
+        }
         setIsDirty(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [Personal, profileImage, educational, skillsAbilities, activitiesCertificates, universityChoice]);
+    }, [Personal, profileImage, educational, skillsAbilities, activitiesCertificates, universityChoice, selectedTemplate]);
 
     // ===== Download portfolio as PDF (without entering edit mode) =====
     const handleDownloadPortfolio = async (port_id: string) => {
@@ -2157,12 +2172,27 @@ const Portfolio = () => {
                 setUniversityChoice(universityData.data);
             }
 
-            // Switch to edit mode
+            // --- Template choice: prefer backend value, fall back to localStorage, default to 1 ---
+            const backendTemplateId =
+                personalData?.data?.[0]?.template_id ??
+                personalData?.template_id;
+            let templateChoice: 1 | 2 | 3 = 1;
+            if (backendTemplateId === 1 || backendTemplateId === 2 || backendTemplateId === 3) {
+                templateChoice = backendTemplateId;
+            } else {
+                try {
+                    const stored = localStorage.getItem(`port_template_${port_id}`);
+                    const n = stored ? parseInt(stored, 10) : NaN;
+                    if (n === 1 || n === 2 || n === 3) templateChoice = n as 1 | 2 | 3;
+                } catch { /* private mode / disabled */ }
+            }
+            setSelectedTemplate(templateChoice);
+
+            // Switch to edit mode. Skip the next dirty-flag run since this load is programmatic.
+            skipDirtyRef.current = true;
             setEditingPortId(port_id);
             setAllport("create");
-            // Mark form clean — user hasn't edited anything yet.
-            // setTimeout ensures this runs after the useEffect that flips isDirty=true on state changes.
-            setTimeout(() => setIsDirty(false), 0);
+            setIsDirty(false);
 
         } catch (error: any) {
             console.error('Edit load error:', error);
@@ -2216,7 +2246,7 @@ const Portfolio = () => {
 
                         {port === "allport" && (
                             <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-                                <h2 style={{ marginBottom: '24px', color: '#333', fontFamily: 'Kanit, sans-serif' }}>แฟ้มสะสมผลงานของฉัน</h2>
+                                <h2 style={{ marginBottom: '24px', color: '#333', fontFamily: 'Kanit, sans-serif', textAlign: 'center' }}>แฟ้มสะสมผลงานของฉัน</h2>
 
                                 {portList.length === 0 ? (
                                     <div style={{

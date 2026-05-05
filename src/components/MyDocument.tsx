@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     overflow: "hidden",
   },
-  profileImage: { width: 170, height: 200, objectFit: "cover" as any, margin: "0 auto", marginTop: 10 },
+  profileImage: { width: 170, height: 200, objectFit: "cover", margin: "0 auto", marginTop: 10 },
 
   sidePad: { paddingHorizontal: 16 },
 
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     height: "75%",
     margin: "3 auto",
     borderRadius: 3,
-    objectFit: "cover" as any,
+    objectFit: "cover",
 
 
   },
@@ -454,23 +454,6 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
                 </View>
               )}
 
-              {/* มหาวิทยาลัย */}
-              {hasUni && (
-                <View style={styles.section}>
-                  <SectionTitle label="มหาวิทยาลัยที่สนใจ" />
-                  <View style={styles.infoGrid}>
-                    <InfoCell label="มหาวิทยาลัย" value={university} />
-                    <InfoCell label="คณะ" value={faculty} />
-                    <InfoCell label="สาขา" value={major} />
-                  </View>
-                  {reason && (
-                    <Text style={[styles.para, { marginTop: 4 }]}>
-                      เหตุผล: {reason}
-                    </Text>
-                  )}
-                </View>
-              )}
-
               {/* ✅ กิจกรรม — แต่ละ card มีรูปของตัวเองแยกกัน */}
 
 
@@ -478,6 +461,25 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
           </View>
         </View>
       </Page>
+
+      {/* มหาวิทยาลัยที่สนใจ — own page so long reason text never gets clipped by the sidebar row */}
+      {hasUni && (
+        <Page size="A4" style={styles.page} wrap>
+          <View style={[styles.section, { marginTop: 26, paddingHorizontal: 26 }]}>
+            <SectionTitle label="มหาวิทยาลัยที่สนใจ" />
+            <View style={styles.infoGrid}>
+              <InfoCell label="มหาวิทยาลัย" value={university} />
+              <InfoCell label="คณะ" value={faculty} />
+              <InfoCell label="สาขา" value={major} />
+            </View>
+            {reason && (
+              <Text style={[styles.para, { marginTop: 8 }]}>
+                เหตุผล: {reason}
+              </Text>
+            )}
+          </View>
+        </Page>
+      )}
 
       <Page size="A4" style={styles.page} wrap>
 
@@ -526,24 +528,25 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
 
       </Page>
 
-      <Page size="A4" style={styles.page} wrap>
-        {study_results && (
-          <View style={[styles.section, { marginTop: 26, paddingHorizontal: 26 }]}>
+      {study_results && (
+        <Page size="A4" style={styles.page}>
+          <View style={{ flex: 1, marginTop: 26, paddingHorizontal: 26, paddingBottom: 26 }}>
             <SectionTitle label="เอกสารผลการเรียน" />
-
-            <Image
-              src={study_results} 
-              style={{
-                width: '100%',
-                height: 'auto',
-                borderRadius: 4,
-                border: '1pt solid #eeeeee'
-              }}
-            />
-
+            <View style={{ flex: 1, marginTop: 6 }}>
+              <Image
+                src={study_results}
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  objectFit: 'contain',
+                  borderRadius: 4,
+                  border: '1pt solid #eeeeee'
+                }}
+              />
+            </View>
           </View>
-        )}
-      </Page>
+        </Page>
+      )}
 
     </Document>
   );
@@ -553,261 +556,543 @@ export const PortfolioPDF: React.FC<PDFProps> = ({
 // Template 2: Classic — Formal/minimal, government-document style
 // ===========================================================================
 
+const CL = {
+  ink: "#111",
+  text: "#222",
+  muted: "#6B6B6B",
+  rule: "#1F1F1F",
+  faint: "#D9D9D9",
+  zebra: "#F4F4F4",
+  band: "#FAFAFA",
+};
+
 const classicStyles = StyleSheet.create({
   page: {
-    padding: 40,
+    paddingTop: 48,
+    paddingBottom: 48,
+    paddingHorizontal: 56,
     fontFamily: "Kanit",
-    fontSize: 11,
-    color: "#000",
+    fontSize: 10.5,
+    color: CL.text,
     backgroundColor: "#fff",
   },
+
+  /* Header band */
   header: {
-    textAlign: "center",
-    marginBottom: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: "#000",
-    paddingBottom: 12,
+    alignItems: "center",
+    marginBottom: 22,
+    paddingBottom: 14,
+    borderBottomWidth: 1.5,
+    borderBottomColor: CL.rule,
+  },
+  headerEyebrow: {
+    fontSize: 8.5,
+    color: CL.muted,
+    letterSpacing: 4,
+    textTransform: "uppercase",
+    marginBottom: 6,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 700,
-    marginBottom: 4,
+    color: CL.ink,
+    letterSpacing: 0.5,
+  },
+  headerRuleThin: {
+    height: 0.5,
+    width: 60,
+    backgroundColor: CL.rule,
+    marginTop: 8,
   },
   headerSub: {
-    fontSize: 11,
-    color: "#444",
+    fontSize: 10.5,
+    color: CL.muted,
+    marginTop: 8,
   },
+
+  /* Profile block */
   topRow: {
     flexDirection: "row",
-    marginBottom: 18,
+    marginBottom: 22,
   },
   photoBox: {
-    width: 90,
-    height: 110,
-    borderWidth: 1,
-    borderColor: "#000",
-    marginRight: 18,
+    width: 96,
+    height: 120,
+    borderWidth: 0.75,
+    borderColor: CL.rule,
+    marginRight: 22,
+    backgroundColor: CL.band,
   },
   photoImg: {
     width: "100%",
     height: "100%",
     objectFit: "cover",
   },
+  photoPlaceholder: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 9,
+    color: CL.muted,
+  },
   infoCol: {
     flex: 1,
-    paddingTop: 4,
+    paddingTop: 2,
   },
-  infoLine: {
-    marginBottom: 4,
-    fontSize: 11,
+  infoRow: {
+    flexDirection: "row",
+    marginBottom: 5,
   },
   infoLabel: {
+    width: 110,
+    fontSize: 10,
+    color: CL.muted,
     fontWeight: 700,
+    letterSpacing: 0.3,
+  },
+  infoValue: {
+    flex: 1,
+    fontSize: 10.5,
+    color: CL.ink,
+  },
+
+  /* Sections */
+  section: {
+    marginBottom: 14,
+  },
+  sectionTitleWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  sectionNum: {
+    width: 22,
+    height: 22,
+    borderWidth: 1,
+    borderColor: CL.rule,
+    fontSize: 10,
+    fontWeight: 700,
+    color: CL.ink,
+    textAlign: "center",
+    paddingTop: 4,
+    marginRight: 8,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 700,
-    marginTop: 12,
-    marginBottom: 6,
-    paddingBottom: 3,
-    borderBottomWidth: 1,
-    borderBottomColor: "#000",
+    color: CL.ink,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    flex: 1,
+    paddingBottom: 4,
+    borderBottomWidth: 0.75,
+    borderBottomColor: CL.rule,
   },
+
   para: {
-    fontSize: 11,
-    lineHeight: 1.5,
+    fontSize: 10.5,
+    lineHeight: 1.55,
     marginBottom: 4,
+    color: CL.text,
   },
+
+  /* Two-column education grid */
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  gridCell: {
+    width: "50%",
+    paddingRight: 8,
+    marginBottom: 6,
+    flexDirection: "row",
+  },
+  gridLabel: {
+    fontSize: 9.5,
+    color: CL.muted,
+    fontWeight: 700,
+    letterSpacing: 0.3,
+    width: 92,
+  },
+  gridValue: {
+    flex: 1,
+    fontSize: 10.5,
+    color: CL.ink,
+  },
+
+  /* Skills table */
   table: {
-    borderWidth: 1,
-    borderColor: "#000",
-    marginBottom: 8,
+    borderTopWidth: 0.75,
+    borderBottomWidth: 0.75,
+    borderColor: CL.rule,
+    marginTop: 4,
+    marginBottom: 4,
   },
   tableRow: {
     flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#000",
+  },
+  tableHeadRow: {
+    backgroundColor: CL.band,
+    borderBottomWidth: 0.75,
+    borderBottomColor: CL.rule,
+  },
+  tableZebra: {
+    backgroundColor: CL.zebra,
   },
   tableHead: {
     fontWeight: 700,
-    backgroundColor: "#eee",
-    padding: 4,
-    borderRightWidth: 1,
-    borderRightColor: "#000",
-    fontSize: 10,
+    padding: 6,
+    fontSize: 9.5,
+    color: CL.ink,
+    letterSpacing: 0.3,
+    textTransform: "uppercase",
   },
   tableCell: {
-    padding: 4,
-    borderRightWidth: 1,
-    borderRightColor: "#000",
+    padding: 6,
     fontSize: 10,
+    color: CL.text,
   },
-  activityRow: {
-    flexDirection: "row",
-    marginBottom: 8,
+
+  /* Activities */
+  activityCard: {
+    marginBottom: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderTopWidth: 0.5,
+    borderTopColor: CL.faint,
+  },
+  activityCardFirst: {
+    borderTopWidth: 0,
+    paddingTop: 2,
   },
   activityImg: {
-    width: 70,
-    height: 50,
-    objectFit: "cover",
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: "#999",
+    width: "100%",
+    objectFit: "contain",
+    marginBottom: 6,
+  },
+  activityImgPlaceholder: {
+    width: "100%",
+    height: 120,
+    borderWidth: 0.5,
+    borderColor: CL.faint,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 6,
+  },
+  activityImgPlaceholderText: {
+    fontSize: 9,
+    color: CL.muted,
+    letterSpacing: 1,
+  },
+  activityDetails: {
+    paddingTop: 0,
+  },
+  activityTitleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    marginBottom: 3,
+    paddingBottom: 3,
+    borderBottomWidth: 0.5,
+    borderBottomColor: CL.faint,
+  },
+  activityName: {
+    fontSize: 11.5,
+    fontWeight: 700,
+    color: CL.ink,
+    flex: 1,
+    paddingRight: 8,
+  },
+  activityDate: {
+    fontSize: 9.5,
+    color: CL.muted,
+    letterSpacing: 0.4,
+  },
+  activityDesc: {
+    fontSize: 10,
+    lineHeight: 1.45,
+    color: CL.text,
+    marginTop: 2,
+  },
+
+  /* Footer */
+  footer: {
+    position: "absolute",
+    bottom: 24,
+    left: 56,
+    right: 56,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    fontSize: 8.5,
+    color: CL.muted,
+    borderTopWidth: 0.5,
+    borderTopColor: CL.faint,
+    paddingTop: 6,
   },
 });
 
 export const PortfolioPDFClassic: React.FC<PDFProps> = (props) => {
-  const fullName = `${props.prefix ?? ""} ${props.first_name ?? ""} ${props.last_name ?? ""}`.trim();
+  const fullName = [props.prefix, props.first_name, props.last_name]
+    .filter(Boolean).join(" ");
+  const fullAddress = [
+    props.address, props.subdistrict, props.district, props.province, props.postal_code,
+  ].filter(Boolean).join(" ");
+  const birth = [props.birth_day, props.birth_month, props.birth_year]
+    .filter(Boolean).join(" ");
+
+  const hasIdentity = !!(birth || props.nationality || props.id_card || props.gender
+    || props.height || props.weight || props.phonenumber1 || props.phonenumber2
+    || props.email || fullAddress);
+  const hasEdu = !!(props.school || props.educational_qualifications || props.graduation
+    || props.study_path || props.grade_average || props.province_edu || props.district_edu);
+  const hasSkills = !!(props.skills_details || (props.skills && props.skills.length > 0) || props.others_skills);
+  const hasUni = !!(props.university || props.faculty || props.major || props.reason);
+  const hasActivities = !!(props.activities && props.activities.length > 0);
+  const hasStudyResults = !!(props.study_results && typeof props.study_results === "string");
+
+  const InfoRow = ({ label, value }: { label: string; value?: React.ReactNode }) =>
+    value ? (
+      <View style={classicStyles.infoRow}>
+        <Text style={classicStyles.infoLabel}>{label}</Text>
+        <Text style={classicStyles.infoValue}>{value}</Text>
+      </View>
+    ) : null;
+
+  const GridCell = ({ label, value }: { label: string; value?: React.ReactNode }) =>
+    value ? (
+      <View style={classicStyles.gridCell}>
+        <Text style={classicStyles.gridLabel}>{label}</Text>
+        <Text style={classicStyles.gridValue}>{value}</Text>
+      </View>
+    ) : null;
+
+  const SectionTitleC = ({ num, label }: { num: string; label: string }) => (
+    <View style={classicStyles.sectionTitleWrap}>
+      <Text style={classicStyles.sectionNum}>{num}</Text>
+      <Text style={classicStyles.sectionTitle}>{label}</Text>
+    </View>
+  );
+
+  const Footer = () => (
+    <View style={classicStyles.footer} fixed>
+      <Text>{fullName || "Portfolio"}</Text>
+      <Text render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
+    </View>
+  );
+
+  let sec = 0;
+  const next = () => String(++sec).padStart(2, "0");
 
   return (
     <Document>
-      <Page size="A4" style={classicStyles.page}>
+      <Page size="A4" style={classicStyles.page} wrap>
         {/* HEADER */}
         <View style={classicStyles.header}>
-          <Text style={classicStyles.headerTitle}>แฟ้มสะสมผลงาน (Portfolio)</Text>
-          <Text style={classicStyles.headerSub}>{fullName || "—"}</Text>
+          <Text style={classicStyles.headerEyebrow}>P O R T F O L I O</Text>
+          <Text style={classicStyles.headerTitle}>{fullName || "แฟ้มสะสมผลงาน"}</Text>
+          <View style={classicStyles.headerRuleThin} />
+          {props.introduce && (
+            <Text style={classicStyles.headerSub}>แฟ้มสะสมผลงาน · Portfolio</Text>
+          )}
         </View>
 
-        {/* TOP: photo + basic info */}
+        {/* PROFILE */}
         <View style={classicStyles.topRow}>
           <View style={classicStyles.photoBox}>
             {props.personal_image ? (
               <Image src={props.personal_image} style={classicStyles.photoImg} />
             ) : (
-              <Text style={{ textAlign: "center", marginTop: 40, fontSize: 9, color: "#888" }}>
-                รูปถ่าย
-              </Text>
+              <View style={classicStyles.photoPlaceholder}>
+                <Text>รูปถ่าย</Text>
+              </View>
             )}
           </View>
 
           <View style={classicStyles.infoCol}>
-            <Text style={classicStyles.infoLine}>
-              <Text style={classicStyles.infoLabel}>ชื่อ-นามสกุล:</Text> {fullName || "—"}
-            </Text>
-            <Text style={classicStyles.infoLine}>
-              <Text style={classicStyles.infoLabel}>วันเกิด:</Text>{" "}
-              {props.birth_day ?? "—"} {props.birth_month ?? ""} {props.birth_year ?? ""}
-            </Text>
-            <Text style={classicStyles.infoLine}>
-              <Text style={classicStyles.infoLabel}>สัญชาติ:</Text> {props.nationality || "—"}
-            </Text>
-            <Text style={classicStyles.infoLine}>
-              <Text style={classicStyles.infoLabel}>เลขประจำตัวประชาชน:</Text>{" "}
-              {props.id_card || "—"}
-            </Text>
-            <Text style={classicStyles.infoLine}>
-              <Text style={classicStyles.infoLabel}>เบอร์ติดต่อ:</Text>{" "}
-              {props.phonenumber1 || "—"}
-              {props.phonenumber2 ? `, ${props.phonenumber2}` : ""}
-            </Text>
-            <Text style={classicStyles.infoLine}>
-              <Text style={classicStyles.infoLabel}>อีเมล:</Text> {props.email || "—"}
-            </Text>
-            <Text style={classicStyles.infoLine}>
-              <Text style={classicStyles.infoLabel}>ที่อยู่:</Text>{" "}
-              {[props.address, props.subdistrict, props.district, props.province, props.postal_code]
-                .filter(Boolean)
-                .join(" ") || "—"}
-            </Text>
+            <InfoRow label="ชื่อ-นามสกุล" value={fullName} />
+            <InfoRow label="วันเกิด" value={birth} />
+            <InfoRow label="สัญชาติ" value={props.nationality} />
+            <InfoRow label="บัตรประชาชน" value={props.id_card} />
+            <InfoRow label="เพศ" value={props.gender} />
+            {(props.height || props.weight) && (
+              <InfoRow
+                label="ส่วนสูง / น้ำหนัก"
+                value={[
+                  props.height ? `${props.height} ซม.` : null,
+                  props.weight ? `${props.weight} กก.` : null,
+                ].filter(Boolean).join(" / ")}
+              />
+            )}
+            <InfoRow
+              label="เบอร์ติดต่อ"
+              value={[props.phonenumber1, props.phonenumber2].filter(Boolean).join(", ")}
+            />
+            <InfoRow label="อีเมล" value={props.email} />
+            <InfoRow label="ที่อยู่" value={fullAddress} />
           </View>
         </View>
 
         {/* INTRODUCE */}
         {props.introduce && (
-          <>
-            <Text style={classicStyles.sectionTitle}>ประวัติแนะนำตัว</Text>
+          <View style={classicStyles.section}>
+            <SectionTitleC num={next()} label="ประวัติแนะนำตัว" />
             <Text style={classicStyles.para}>{props.introduce}</Text>
-          </>
+          </View>
         )}
 
         {/* EDUCATION */}
-        <Text style={classicStyles.sectionTitle}>ประวัติการศึกษา</Text>
-        <Text style={classicStyles.para}>
-          <Text style={classicStyles.infoLabel}>โรงเรียน:</Text> {props.school || "—"}
-        </Text>
-        <Text style={classicStyles.para}>
-          <Text style={classicStyles.infoLabel}>วุฒิการศึกษา:</Text>{" "}
-          {props.educational_qualifications || "—"}
-          {props.study_path ? ` (${props.study_path})` : ""}
-        </Text>
-        <Text style={classicStyles.para}>
-          <Text style={classicStyles.infoLabel}>เกรดเฉลี่ย:</Text> {props.grade_average ?? "—"}
-        </Text>
-        <Text style={classicStyles.para}>
-          <Text style={classicStyles.infoLabel}>ปีที่จบ:</Text> {props.graduation || "—"}
-        </Text>
-
-        {/* SKILLS */}
-        <Text style={classicStyles.sectionTitle}>ทักษะ / ความสามารถ</Text>
-        {props.skills_details ? (
-          <Text style={classicStyles.para}>{props.skills_details}</Text>
-        ) : null}
-        {props.skills && props.skills.length > 0 && (
-          <View style={classicStyles.table}>
-            <View style={classicStyles.tableRow}>
-              <Text style={[classicStyles.tableHead, { width: "20%" }]}>ภาษา</Text>
-              <Text style={[classicStyles.tableHead, { width: "20%" }]}>ฟัง</Text>
-              <Text style={[classicStyles.tableHead, { width: "20%" }]}>พูด</Text>
-              <Text style={[classicStyles.tableHead, { width: "20%" }]}>อ่าน</Text>
-              <Text style={[classicStyles.tableHead, { width: "20%", borderRightWidth: 0 }]}>เขียน</Text>
+        {hasEdu && (
+          <View style={classicStyles.section}>
+            <SectionTitleC num={next()} label="ประวัติการศึกษา" />
+            <View style={classicStyles.grid}>
+              <GridCell label="โรงเรียน" value={props.school} />
+              <GridCell label="วุฒิการศึกษา" value={props.educational_qualifications} />
+              <GridCell label="แผนการเรียน" value={props.study_path} />
+              <GridCell label="ปีที่จบ" value={props.graduation} />
+              <GridCell label="เกรดเฉลี่ย" value={props.grade_average} />
+              <GridCell label="จังหวัด" value={props.province_edu} />
+              <GridCell label="เขต/อำเภอ" value={props.district_edu} />
             </View>
-            {props.skills.map((s, i) => (
-              <View key={i} style={[classicStyles.tableRow, i === props.skills!.length - 1 ? { borderBottomWidth: 0 } : {}]}>
-                <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.language || "—"}</Text>
-                <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.listening || "—"}</Text>
-                <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.speaking || "—"}</Text>
-                <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.reading || "—"}</Text>
-                <Text style={[classicStyles.tableCell, { width: "20%", borderRightWidth: 0 }]}>{s.writing || "—"}</Text>
-              </View>
-            ))}
           </View>
         )}
-        {props.others_skills && (
-          <Text style={classicStyles.para}>
-            <Text style={classicStyles.infoLabel}>ทักษะอื่นๆ:</Text> {props.others_skills}
-          </Text>
+
+        {/* SKILLS */}
+        {hasSkills && (
+          <View style={classicStyles.section}>
+            <SectionTitleC num={next()} label="ทักษะ / ความสามารถ" />
+            {props.skills_details && (
+              <Text style={classicStyles.para}>{props.skills_details}</Text>
+            )}
+            {props.skills && props.skills.length > 0 && (
+              <View style={classicStyles.table}>
+                <View style={[classicStyles.tableRow, classicStyles.tableHeadRow]} wrap={false}>
+                  <Text style={[classicStyles.tableHead, { width: "20%" }]}>ภาษา</Text>
+                  <Text style={[classicStyles.tableHead, { width: "20%" }]}>ฟัง</Text>
+                  <Text style={[classicStyles.tableHead, { width: "20%" }]}>พูด</Text>
+                  <Text style={[classicStyles.tableHead, { width: "20%" }]}>อ่าน</Text>
+                  <Text style={[classicStyles.tableHead, { width: "20%" }]}>เขียน</Text>
+                </View>
+                {props.skills.map((s, i) => (
+                  <View
+                    key={i}
+                    style={i % 2 === 1
+                      ? [classicStyles.tableRow, classicStyles.tableZebra]
+                      : classicStyles.tableRow}
+                    wrap={false}
+                  >
+                    <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.language || "—"}</Text>
+                    <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.listening || "—"}</Text>
+                    <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.speaking || "—"}</Text>
+                    <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.reading || "—"}</Text>
+                    <Text style={[classicStyles.tableCell, { width: "20%" }]}>{s.writing || "—"}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+            {props.others_skills && (
+              <Text style={[classicStyles.para, { marginTop: 4 }]}>
+                <Text style={{ fontWeight: 700, color: CL.muted }}>ทักษะอื่นๆ · </Text>
+                {props.others_skills}
+              </Text>
+            )}
+          </View>
         )}
 
-        {/* ACTIVITIES */}
-        {props.activities && props.activities.length > 0 && (
-          <>
-            <Text style={classicStyles.sectionTitle}>กิจกรรม / เกียรติบัตร</Text>
-            {props.activities.map((a, idx) => (
-              <View key={idx} style={classicStyles.activityRow}>
+        {!hasIdentity && !props.introduce && !hasEdu && !hasSkills && !hasUni && (
+          <Text style={[classicStyles.para, { textAlign: "center", color: CL.muted, marginTop: 40 }]}>
+            ยังไม่มีข้อมูล
+          </Text>
+        )}
+        <Footer />
+      </Page>
+
+      {/* UNIVERSITY — own page so long reason text never splits across pages */}
+      {hasUni && (
+        <Page size="A4" style={classicStyles.page} wrap>
+          <View style={classicStyles.section}>
+            <SectionTitleC num={next()} label="มหาวิทยาลัยที่สนใจ" />
+            <View style={classicStyles.grid}>
+              <GridCell label="มหาวิทยาลัย" value={props.university} />
+              <GridCell label="คณะ" value={props.faculty} />
+              <GridCell label="สาขา" value={props.major} />
+            </View>
+            {props.reason && (
+              <View style={{ marginTop: 8 }}>
+                <Text style={[classicStyles.gridLabel, { width: "auto", marginBottom: 4 }]}>
+                  เหตุผล
+                </Text>
+                <Text style={classicStyles.para}>{props.reason}</Text>
+              </View>
+            )}
+          </View>
+          <Footer />
+        </Page>
+      )}
+
+      {/* ACTIVITIES — own page so cards never split */}
+      {hasActivities && (
+        <Page size="A4" style={classicStyles.page} wrap>
+          <View style={classicStyles.section}>
+            <SectionTitleC num={next()} label="กิจกรรม / เกียรติบัตร" />
+            {props.activities!.map((a, idx) => (
+              <View
+                key={idx}
+                style={idx === 0
+                  ? [classicStyles.activityCard, classicStyles.activityCardFirst]
+                  : classicStyles.activityCard}
+                wrap={false}
+              >
+                {/* Image */}
                 {a.photos && a.photos[0] ? (
                   <Image src={a.photos[0]} style={classicStyles.activityImg} />
-                ) : null}
-                <View style={{ flex: 1 }}>
-                  <Text style={[classicStyles.para, { fontWeight: 700 }]}>
-                    {idx + 1}. {a.name_project || "—"}
-                  </Text>
-                  <Text style={classicStyles.para}>วันที่: {a.date || "—"}</Text>
-                  {a.description ? (
-                    <Text style={classicStyles.para}>{a.description}</Text>
-                  ) : null}
+                ) : (
+                  <View style={classicStyles.activityImgPlaceholder}>
+                    <Text style={classicStyles.activityImgPlaceholderText}>NO IMAGE</Text>
+                  </View>
+                )}
+
+                {/* Details below image */}
+                <View style={classicStyles.activityDetails}>
+                  <View style={classicStyles.activityTitleRow}>
+                    <Text style={classicStyles.activityName}>
+                      {a.name_project || `กิจกรรมที่ ${idx + 1}`}
+                    </Text>
+                    {a.date && (
+                      <Text style={classicStyles.activityDate}>{formatThaiDate(a.date)}</Text>
+                    )}
+                  </View>
+                  {a.description && (
+                    <Text style={classicStyles.activityDesc}>{a.description}</Text>
+                  )}
                 </View>
               </View>
             ))}
-          </>
-        )}
+          </View>
+          <Footer />
+        </Page>
+      )}
 
-        {/* UNIVERSITY */}
-        <Text style={classicStyles.sectionTitle}>มหาวิทยาลัยที่ต้องการเข้าศึกษา</Text>
-        <Text style={classicStyles.para}>
-          <Text style={classicStyles.infoLabel}>มหาวิทยาลัย:</Text> {props.university || "—"}
-        </Text>
-        <Text style={classicStyles.para}>
-          <Text style={classicStyles.infoLabel}>คณะ:</Text> {props.faculty || "—"}
-        </Text>
-        <Text style={classicStyles.para}>
-          <Text style={classicStyles.infoLabel}>สาขา:</Text> {props.major || "—"}
-        </Text>
-        {props.reason && (
-          <Text style={classicStyles.para}>
-            <Text style={classicStyles.infoLabel}>เหตุผล:</Text> {props.reason}
-          </Text>
-        )}
-      </Page>
+      {/* STUDY RESULTS — own page, image fits within remaining space */}
+      {hasStudyResults && (
+        <Page size="A4" style={classicStyles.page}>
+          <View style={classicStyles.section}>
+            <SectionTitleC num={next()} label="เอกสารผลการเรียน" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Image
+              src={props.study_results as string}
+              style={{
+                flex: 1,
+                width: "100%",
+                objectFit: "contain",
+                borderWidth: 0.5,
+                borderColor: CL.faint,
+              }}
+            />
+          </View>
+          <Footer />
+        </Page>
+      )}
     </Document>
   );
 };
