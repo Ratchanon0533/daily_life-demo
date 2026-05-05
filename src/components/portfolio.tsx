@@ -1007,7 +1007,7 @@ const Portfolio = () => {
                                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                             />
                         ) : (
-                            <div className={styles["port-image-placeholder"]}>ไม่มีรูปภาพ</div>
+                            <div className={styles["port-image-placeholder"]}>No Image</div>
                         )}
                     </div>
                     <div className={styles["port-name"]}>
@@ -2509,7 +2509,8 @@ const Portfolio = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        padding: '20px'
+                        padding: '20px',
+                        animation: 'tplOverlayFadeIn 0.25s ease-out'
                     }}
                 >
                     <div
@@ -2523,7 +2524,8 @@ const Portfolio = () => {
                             maxHeight: '90vh',
                             overflowY: 'auto',
                             boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-                            fontFamily: 'Kanit, sans-serif'
+                            fontFamily: 'Kanit, sans-serif',
+                            animation: 'tplModalPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
                         }}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -2558,6 +2560,22 @@ const Portfolio = () => {
                                         onClick={() => {
                                             setSelectedTemplate(tpl.id);
                                             setShowTemplateModal(false);
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (!isSelected) {
+                                                e.currentTarget.style.borderColor = tpl.accent;
+                                                e.currentTarget.style.background = '#fafbfc';
+                                            }
+                                            e.currentTarget.style.transform = 'translateY(-4px)';
+                                            e.currentTarget.style.boxShadow = `0 12px 24px rgba(0,0,0,0.15)`;
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!isSelected) {
+                                                e.currentTarget.style.borderColor = '#e0e0e0';
+                                                e.currentTarget.style.background = '#fff';
+                                            }
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = 'none';
                                         }}
                                         style={{
                                             border: isSelected ? `3px solid ${tpl.accent}` : '2px solid #e0e0e0',
